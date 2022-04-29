@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/normalize.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>{% block 'titulo'%} {% endblock %}</title>
+
+
+    <!-- JQUERY -->
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <!-- -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;500;700&display=swap" rel="stylesheet">
+</head>
+
+<body class='site'>
+    <div class="content">
+        <div class='fixed-nav-bar'>
+            <ul class="nav-ul-comum">
+                <p>MENU HOME</p>
+            </ul>
+            <ul class='nav-ul'>
+                
+                {% if 'admin' %}
+                <li>
+                    <p class="abre-cadastro">
+                        Cadastrar
+                    </p>
+                    <ul class="drop-menu-cadastro">
+                        <p>MENU ADM</p>  
+                    </ul>
+                </li>
+                {% endif %}
+                
+                <li>
+                    <div class="abre-usuario">
+                        <img class="usuario-img" src="{{ request.session.usuario_logado.img_usuario }}" alt="">
+                    </div>    
+                    <ul class="drop-menu-usuario">
+                        {% if request.session.usuario_logado %}
+                        <li><a href="{% url 'usuario:logout' %}">LOGOUT</a></li>
+                        {% else %}
+                        <li><a href="{% url 'usuario:login' %}">LOGIN</a></li>
+                        {% endif %}
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    
+        {% block 'nav-bar-aula' %}
+        {% endblock %}
+    <div class="box-novo">
+            {% block 'conteudo' %}
+    
+            {% endblock %}
+    </div>
+    
+    </div>
+   
+<footer>
+    <p>Oi</p>
+</footer>
+
+    <script type="text/javascript" src="{% static 'javascript/script.js' %}"></script>
+
+</body>
+</html>

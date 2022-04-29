@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block 'titulo'%} Blog {% endblock %}
+{% block 'conteudo' %}
+
+
+<div class="box-principal-blog">
+    <div class="principal-box-lingua">
+        {% for i in range.range %}
+        <p>{{ i }}</p>
+        {% endfor %}
+        <div>
+            <h1>1</h1>
+            {% for aula in aulas_1 %}
+            <p>{{ aula }}</p>
+            <a href="/ensino/aula/{{ aula.id }}"> {{ aula }}</a>
+            {% endfor %}
+        </div>
+        {{ aulas_1}}
+        {{ aulas_2}}
+        {{ aulas_3}}
+        {{ aulas_4}}
+        {{ aulas_5}}
+    </div>
+</div>
+
+{% endblock %}

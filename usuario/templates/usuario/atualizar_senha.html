@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block 'titulo'%}Atualizar senha {% endblock %}
+{% block 'conteudo' %}
+<div class="principal-box-cad">
+    <h2>
+        Atualizar senha
+    </h2>
+    <div class="forms">
+        <form class="principal-box-form" method="POST">
+            {% csrf_token %}
+            <div class="form-cadastro">
+                <h3>Senha</h3>
+                <label for="senha_antiga_1">Senha antiga</label>
+                <input type="password" name="senha_antiga_1">
+                <label for="senha_antiga_2">Confirmação de senha antiga</label>
+                <input type="password" name="senha_antiga_2">
+                <label for="senha">Senha</label>
+                <input type="password" name="senha">
+            </div>
+            <button class="btn-cadastro" type="submit">Atualizar</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

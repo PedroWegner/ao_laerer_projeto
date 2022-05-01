@@ -11,11 +11,27 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 
 from usuario.models import Usuario
-from .models import ClassePalavra, Contexto, Administrador, Atividade, Lingua, Aula
+from .models import ClassePalavra, Contexto, Administrador, Atividade, Lingua, Aula, NivelLingua, Palavra, PalavraContexto, EnvioAtividade
 # from .forms import *
 # from pessoa.models import Endereco, Pessoa, TipoUsuario, Usuario
 # from pessoa.forms import PessoaCadastro, EnderecoCadastro, AtualizarPessoa, AtualizarEndereco, AtualizarSenha
 import bcrypt
+
+# admin
+
+
+class LinguaCadastroView(FormView):
+    template_name = 'ensino/cadastro/cadastro_lingua.html'
+    form_class = LinguaCadastro
+
+    def get_success_url(self):
+        return reverse('usuario:home')
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+
+#
 
 
 class MenuLinguasView(ListView):
@@ -31,24 +47,127 @@ class MenuLinguaView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['range'] = {'range': range(1, 6)}
+        context['niveis'] = {}
         for i in context['range']['range']:
-            context[f"aulas_{i}"] = Aula.objects.filter(
-                lingua=self.get_object(),
-                nivel__valor_nivel=i
+            context['niveis'].update(
+                {
+                    f'{i}': Aula.objects.filter(
+                        lingua=self.get_object(),
+                        nivel__valor_nivel=i,
+                        is_licenced=False)
+                }
             )
 
-        for i in range(1, 6):
-            print(context[f'aulas_{i}'])
+        # for i in range(1, 6):
+        #     print(context[f'aulas_{i}'])
 
         return context
 
 
-class AulaCadastroView(DetailView):
+class MenuLinguaNivelView(DetailView):
+    template_name = 'ensino/modulo_nivel.html'
+    model = NivelLingua
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['aulas'] = Aula.objects.filter(
+            lingua=get_object_or_404(
+                Lingua, id=self.request.build_absolute_uri().split('/')[-2]
+            ),
+            nivel=self.get_object(),
+            is_licenced=True
+        )
+
+        return context
+
+
+class CadastraPalavraView(DetailView):
+    template_name = 'ensino/cadastro/cadastro_palavra.html'
+    model = Lingua
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = PalavraForms(
+            data=self.request.POST or None,
+        )
+
+        return context
+
+    def get(self, *args, **kwargs):
+        if not 'usuario_logado' in self.request.session:
+            return redirect('usuario:login')
+        return super().get(self, *args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        palavra = Palavra.objects.filter(
+            palavra=self.request.POST.get('palavra')
+        ).first()
+        if palavra:
+
+            Contexto(
+                contexto=self.request.POST.get('contexto')).save()
+            contexto = Contexto.objects.filter(
+                contexto=self.request.POST.get('contexto')
+            ).first()
+            palavra.contexto.add(contexto)
+            return HttpResponseRedirect(self.request.path_info)
+        else:
+            Palavra(
+                palavra=self.request.POST.get('palavra'),
+                lingua=self.get_object(),
+                classe=ClassePalavra.objects.filter(
+                    id=self.request.POST.get('classe')
+                ).first(),
+                significado=self.request.POST.get('significado'),
+                nivel=NivelLingua.objects.filter(
+                    id=self.request.POST.get('nivel')
+                ).first(),
+                escrita_fonetica=self.request.POST.get('escrita_fonetica')
+            ).save()
+            Contexto(
+                contexto=self.request.POST.get('contexto')).save()
+            Palavra.objects.filter(
+                palavra=self.request.POST.get('palavra')
+            ).first().contexto.add(Contexto.objects.filter(
+                contexto=self.request.POST.get('contexto')
+            ).first())
+            return HttpResponseRedirect(self.request.path_info)
+
+
+class LinguaDicionarioView(DetailView):
+    template_name = 'ensino/dicionario_lingua.html'
+    model = Lingua
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['palavras'] = Palavra.objects.filter(
+            lingua=self.get_object()
+        )
+
+        return context
+
+
+class PalavraView(DetailView):
+    template_name = 'ensino/palavra.html'
+    model = Palavra
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['contextos'] = Contexto.objects.filter(
+            id__in=PalavraContexto.objects.filter(
+                palavra=self.get_object()
+            ).values('contexto_id')
+        )
+
+        return context
+
+
+class AulaCadastroView(View):
     """
     View com dois forms: de criar aula e de criar atividade
     """
     template_name = 'ensino/cadastro/cadastro_aula.html'
-    model = Lingua
 
     def setup(self, *args, **kwargs):
         super().setup(*args, **kwargs)
@@ -59,28 +178,26 @@ class AulaCadastroView(DetailView):
                 data=self.request.POST or None,
                 files=self.request.FILES or None,
             ),
-            # 'criar_atividade': CriarAtividadeForms(
-            #     data=self.request.POST or None,
-            #     files=self.request.FILES or None,
-            # ),
+            'criar_atividade': CriarAtividadeForms(
+                data=self.request.POST or None,
+                files=self.request.FILES or None,
+            ),
         }
 
         # atribuidas variaveis para utilizar no post
         self.criar_aula = self.context['criar_aula']
-        # self.criar_atividade = self.context['criar_atividade']
+        self.criar_atividade = self.context['criar_atividade']
 
         self.renderizar = render(
             self.request, self.template_name, self.context
         )
 
     def get(self, *args, **kwargs):
-        # if not 'usuario_logado' in self.request.session:
-        #     print('usuario deslogado')
-        #     return redirect('departamento:login')
+        if not 'usuario_logado' in self.request.session:
+            return redirect('usuario:login')
 
         # if not self.request.session['usuario_logado']['tipo_usuario_id'] == 3:
         #     return redirect('departamento:home')
-        print(self.get_object())
         return self.renderizar
 
     def post(self, *args, **kwargs):
@@ -93,16 +210,44 @@ class AulaCadastroView(DetailView):
         )
         aula = self.criar_aula.save(commit=False)
         aula.autor_aula = autor
-        aula.lingua = self.get_object()
+        print()
+        if self.request.session['usuario_logado']['is_licenced']:
+            aula.is_licenced = self.request.POST.get('is_licenced') == 'on'
+
         aula.save()
 
         # cadastra atividade
-        # atividade = self.criar_atividade.save(commit=False)
-        # atividade.professor = professor
-        # atividade.aula = aula
-        # atividade.save()
+        atividade = self.criar_atividade.save(commit=False)
+        atividade.autor = autor
+        atividade.aula = aula
+        atividade.save()
 
         return redirect('usuario:home')
+
+
+class AtualizarAulaView(UpdateView):
+    """
+    View para atualizacao de aula
+    """
+    template_name = 'ensino/atualizar_aula.html'
+    model = Aula
+    form_class = AtualizarAulaForms
+
+    def get_success_url(self):
+        return reverse('usuario:home')
+
+    def get_context_data(self, **kwargs):
+
+        return super().get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        att_aula = form.save(commit=False)
+        att_aula.aula = form.cleaned_data.get('aula') or self.get_object().aula
+        att_aula.conteudo = form.cleaned_data.get(
+            'conteudo') or self.get_object().conteudo
+        form.save()
+
+        return super().form_valid(form)
 
 
 class AulaView(DetailView):
@@ -129,198 +274,97 @@ class AulaView(DetailView):
         #     )
         # elif self.request.session['usuario_logado']['tipo_usuario_id'] == 1:
 
-        #     context['atividade_ja_enviada'] = EnvioAtividade.objects.filter(
-        #         aluno__id=self.request.session['usuario_logado']['aluno_id'],
-        #         atividade__aula__id=self.object.aula.id,
-        #     )
-        # context['aulas_modulo'] = get_object_or_404(
-        #     Modulo, id=self.get_object().modulo.id
-        # ).aulas.all()
+        context['atividade_ja_enviada'] = EnvioAtividade.objects.filter(
+            autor__id=self.request.session['usuario_logado']['usuario_id'],
+            atividade__aula__id=self.object.id,
+        )
+        context['aulas'] = Aula.objects.filter(
+            nivel=self.get_object().nivel,
+            lingua=self.get_object().lingua
+        )
+        if self.get_object().is_licenced:
+            context['aulas'] = context['aulas'].filter(
+                is_licenced=True
+            )
+        else:
+            context['aulas'] = context['aulas'].filter(
+                is_licenced=False
+            )[:10]
+
         return context
 
 
-# class MeuPainelView(View):
-#     """
-#     Classe da view de entrada.
-#     Nesta view eh separado os modulos que determinado usuario pode ter acesso.
-#     Caso ele seja aluno, os modulos matriculados, caso seja professor, os modulos
-#     vinculados a ele.
-#     """
-#     template_name = 'departamento/meu_painel.html'
+class MeuPainelAulasView(ListView):
+    """
+    View de exibicao de aulas, usuario com permissao eh professor
+    Iguala o modulo aberto a None para para restrigir telas posteriores
+    """
+    template_name = 'ensino/meu_painel_aulas.html'
+    model = Aula
+    context_object_name = 'aulas'
 
-#     def setup(self, *args, **kwargs):
-#         super().setup(*args, **kwargs)
+    def get(self, *args, **kwargs):
+        if not 'usuario_logado' in self.request.session:
+            print('usuario deslogado')
+            return redirect('usuario:login')
 
-#         self.renderizar = render(
-#             self.request, self.template_name
-#         )
+        return super().get(self, *args, **kwargs)
 
-#     def get(self, *args, **kwargs):
-#         if not 'usuario_logado' in self.request.session:
-#             print('usuario deslogado')
-#             return redirect('departamento:login')
-
-#         if self.request.session['usuario_logado']['tipo_usuario_id'] == 1:
-#             aluno = get_object_or_404(
-#                 Aluno, id=self.request.session['usuario_logado']['aluno_id']
-#             )
-#             self.modulo_list = {
-#                 'modulos_ingles': aluno.modulo.filter(
-#                     lingua=1
-#                 ),
-#                 'modulos_alemão': aluno.modulo.filter(
-#                     lingua=2
-#                 ),
-#                 'modulos_noruegues': aluno.modulo.filter(
-#                     lingua=3
-#                 )
-#             }
-
-#             self.renderizar = render(
-#                 self.request, self.template_name, self.modulo_list
-#             )
-#             return self.renderizar
-
-#         elif self.request.session['usuario_logado']['tipo_usuario_id'] == 3:
-#             # VIEW DO PROFESSOR
-#             # separa os modulos ao qual usuario esta vinculado
-#             professor = get_object_or_404(
-#                 Professor, pessoa_id=self.request.session['usuario_logado']['pessoa_id']
-#             )
-
-#             # modulos vinculado
-#             modulos = professor.modulo.all()
-#             self.modulo_list = {
-#                 'modulos': modulos
-#             }
-#             # sobrescreve self.renderizar
-#             self.renderizar = render(
-#                 self.request, self.template_name, self.modulo_list
-#             )
-#             return self.renderizar
-
-#         return self.renderizar
-
-#     def post(self, *args, **kwargs):
-#         return self.renderizar
-
-# # VIEW DA AULA #
+    def get_queryset(self):
+        queryset = Aula.objects.filter(
+            autor_aula=self.request.session['usuario_logado']['usuario_id']
+        )
+        return queryset
 
 
-# class AulaCadastroView(View):
-#     """
-#     View com dois forms: de criar aula e de criar atividade
-#     """
-#     template_name = 'departamento/cadastro/cadastro_aula.html'
+class AtividadeUsuarioCadastroView(DetailView, FormView):
+    template_name = 'ensino/cadastro/cadastro_atividade_usuario.html'
+    model = Atividade
+    form_class = AtividadeEnviadaForms
 
-#     def setup(self, *args, **kwargs):
-#         super().setup(*args, **kwargs)
+    def get(self, *args, **kwargs):
+        if not 'usuario_logado' in self.request.session:
+            return redirect('usuario:login')
 
-#         # contexto com os dois forms
-#         self.context = {
-#             'criar_aula': CriarAulaForms(
-#                 data=self.request.POST or None,
-#                 files=self.request.FILES or None,
-#             ),
-#             'criar_atividade': CriarAtividadeForms(
-#                 data=self.request.POST or None,
-#                 files=self.request.FILES or None,
-#             ),
-#         }
+        return super().get(*args, **kwargs)
 
-#         # atribuidas variaveis para utilizar no post
-#         self.criar_aula = self.context['criar_aula']
-#         self.criar_atividade = self.context['criar_atividade']
-#         self.renderizar = render(
-#             self.request, self.template_name, self.context
-#         )
+    def get_success_url(self):
+        return reverse('ensino:menu_linguas')
 
-#     def get(self, *args, **kwargs):
-#         if not 'usuario_logado' in self.request.session:
-#             print('usuario deslogado')
-#             return redirect('departamento:login')
+    def post(self, request, *args, **kwargs):
+        if not self.request.session['usuario_logado']:
+            return HttpResponseForbidden()
+        self.object = self.get_object()
+        return super().post(request, *args, **kwargs)
 
-#         if not self.request.session['usuario_logado']['tipo_usuario_id'] == 3:
-#             return redirect('departamento:home')
-#         return self.renderizar
-
-#     def post(self, *args, **kwargs):
-#         if not self.criar_aula.is_valid() or not self.criar_atividade.is_valid():
-#             return self.renderizar
-
-#         # cadastra professor
-#         professor = get_object_or_404(
-#             Professor, id=self.request.session['usuario_logado']['professor_id']
-#         )
-#         aula = self.criar_aula.save(commit=False)
-#         aula.professor = professor
-#         aula.save()
-
-#         # cadastra atividade
-#         atividade = self.criar_atividade.save(commit=False)
-#         atividade.professor = professor
-#         atividade.aula = aula
-#         atividade.save()
-
-#         return redirect('departamento:home')
-
-# # atualizar aqui
+    def form_valid(self, form):
+        # cadastra envio de atividade
+        enviar_atividade = form.save(commit=False)
+        enviar_atividade.autor = get_object_or_404(
+            Usuario, id=self.request.session['usuario_logado']['usuario_id']
+        )
+        enviar_atividade.atividade = self.get_object()
+        enviar_atividade.save()
+        return super().form_valid(form)
 
 
-# class AulaProfessorView(DetailView):
-#     template_name = 'departamento/aula_professor.html'
-#     model = Aula
-#     context_object_name = 'aula'
+class AtividadeAlunoAtualizarView(UpdateView):
+    template_name = 'ensino/atualizar_atividade.html'
+    model = EnvioAtividade
+    form_class = AtualizarAtividadeAluno
 
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context['form'] = AtualizarAulaForms
-#         return context
+    def get(self, *args, **kwargs):
+        if not 'usuario_logado' in self.request.session:
+            return redirect('usuario:login')
 
+        return super().get(*args, **kwargs)
 
-# class AtualizarAulaView(UpdateView):
-#     """
-#     View para atualizacao de aula
-#     """
-#     template_name = 'departamento/aula_professor.html'
-#     model = Aula
-#     form_class = AtualizarAulaForms
+    def get_success_url(self):
+        return reverse('usuario:home')
 
-#     def get_success_url(self):
-#         return reverse('departamento:home')
-
-#     def get_context_data(self, **kwargs):
-
-#         return super().get_context_data(**kwargs)
-
-#     def form_valid(self, form):
-#         att_aula = form.save(commit=False)
-#         att_aula.aula = form.cleaned_data.get('aula') or self.get_object().aula
-#         att_aula.conteudo = form.cleaned_data.get(
-#             'conteudo') or self.get_object().conteudo
-#         form.save()
-
-#         return super().form_valid(form)
-
-
-# class ProfessorAulaView(View):
-#     model = Aula
-
-#     def get(self, request, *args, **kwargs):
-#         if not 'usuario_logado' in self.request.session:
-#             print('usuario deslogado')
-#             return redirect('departamento:login')
-
-#         if not self.request.session['usuario_logado']['tipo_usuario_id'] == 3:
-#             return redirect('departamento:home')
-
-#         view = AulaProfessorView.as_view()
-#         return view(request, *args, **kwargs)
-
-#     def post(self, request, *args, **kwargs):
-#         if self.request.session['usuario_logado']['tipo_usuario_id'] == 3:
-#             view = AtualizarAulaView.as_view()
-#         return view(request, *args, **kwargs)
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
 
 
 # class AulaRegistraModuloView(FormView):
@@ -380,155 +424,6 @@ class AulaView(DetailView):
 #                 aula=aula
 #             )
 #             instancia.save()
-#         return super().form_valid(form)
-
-
-# class MeuPainelAulasView(ListView):
-#     """
-#     View de exibicao de aulas, usuario com permissao eh professor
-#     Iguala o modulo aberto a None para para restrigir telas posteriores
-#     """
-#     template_name = 'departamento/meu_painel_aulas.html'
-#     model = Aula
-#     context_object_name = 'aulas'
-
-#     def get(self, *args, **kwargs):
-#         if not 'usuario_logado' in self.request.session:
-#             print('usuario deslogado')
-#             return redirect('departamento:login')
-
-#         # ANALSIAR ESSA POSSIBILDIADE
-#         if not 'professor_id' in self.request.session['usuario_logado']:
-#             return redirect('departamento:home')
-
-#         return super().get(self, *args, **kwargs)
-
-#     def get_queryset(self):
-#         queryset = Aula.objects.filter(
-#             professor_id=self.request.session['usuario_logado']['professor_id'])
-#         return queryset
-
-#         # PRECISO ATRIBUIR RESTRICOES AINDA
-
-
-# class ModuloView(DetailView):
-#     """
-#     Tela que exibe modulos do usuario
-#     """
-#     template_name = 'departamento/modulo.html'
-#     model = Modulo
-#     context_object_name = 'modulo'
-
-#     def get(self, *args, **kwargs):
-#         if not 'usuario_logado' in self.request.session:
-#             print('usuario deslogado')
-#             return redirect('departamento:login')
-
-#         if not 'aluno_id' in self.request.session['usuario_logado'] and not 'professor_id' in self.request.session['usuario_logado']:
-#             return redirect('departamento:home')
-
-#         return super().get(*args, **kwargs)
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         # query para selecionar alunos matriculados em determinado modulo
-#         if self.request.session['usuario_logado']['tipo_usuario_id'] == 3:
-#             context['alunos_matriculados'] = Aluno.objects.filter(
-#                 modulo=self.get_object())
-
-#         # query com todas as aulas do modulo selecionado
-#         context['aulas_modulo'] = self.get_object().aulas.all()  # rever aqui
-#         return context
-
-
-# # ACIMA É O NOVO #
-
-# class ModuloAulaView(DetailView):
-#     """
-#     View que sera utilizada em metodo get de view principal
-#     criada para juntar informacoes de uma aula em especifico junto de um forms
-#     Em seu metodo get_context_data eh envaido um formulario diferente para cada
-#     tipo de usuario
-#     """
-#     template_name = 'departamento/modulo_aula.html'
-#     model = AulaVinculaModulo
-#     context_object_name = 'aula'
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         if self.request.session['usuario_logado']['tipo_usuario_id'] == 3:
-
-#             context['professor_responsavel'] = Professor.objects.filter(
-#                 id=self.object.aula.professor_id).first()
-#             context['form'] = AtividadePostagemForms  # VERIFICAR ISSO DEPOIS
-#             context['alunos_matriculados'] = Aluno.objects.filter(
-#                 modulo__id=self.object.modulo.id
-#             )
-#         elif self.request.session['usuario_logado']['tipo_usuario_id'] == 1:
-
-#             context['atividade_ja_enviada'] = EnvioAtividade.objects.filter(
-#                 aluno__id=self.request.session['usuario_logado']['aluno_id'],
-#                 atividade__aula__id=self.object.aula.id,
-#             )
-#         context['aulas_modulo'] = get_object_or_404(
-#             Modulo, id=self.get_object().modulo.id
-#         ).aulas.all()
-#         return context
-
-
-# class AtividadeAlunoCadastroView(DetailView, FormView):
-#     template_name = 'departamento/cadastro/cadastro_atividade_aluno.html'
-#     model = Atividade
-#     form_class = AtividadeEnviadaForms
-
-#     def get(self, *args, **kwargs):
-#         if not 'usuario_logado' in self.request.session:
-#             return redirect('departamento:login')
-
-#         if not 'aluno_id' in self.request.session['usuario_logado']:
-#             return redirect('departamento:home')
-
-#         return super().get(*args, **kwargs)
-
-#     def get_success_url(self):
-#         return reverse('departamento:home')
-
-#     def post(self, request, *args, **kwargs):
-#         if not self.request.session['usuario_logado']:
-#             return HttpResponseForbidden()
-#         self.object = self.get_object()
-#         return super().post(request, *args, **kwargs)
-
-#     def form_valid(self, form):
-#         # cadastra envio de atividade
-#         enviar_atividade = form.save(commit=False)
-#         enviar_atividade.aluno = get_object_or_404(
-#             Aluno, id=self.request.session['usuario_logado']['aluno_id']
-#         )
-#         enviar_atividade.atividade = self.get_object()
-#         enviar_atividade.save()
-#         return super().form_valid(form)
-
-
-# class AtividadeAlunoAtualizarView(UpdateView):
-#     template_name = 'departamento/atualizar_atividade.html'
-#     model = EnvioAtividade
-#     form_class = AtualizarAtividadeAluno
-
-#     def get(self, *args, **kwargs):
-#         if not 'usuario_logado' in self.request.session:
-#             return redirect('departamento:login')
-
-#         if not 'aluno_id' in self.request.session['usuario_logado']:
-#             return redirect('departamento:home')
-
-#         return super().get(*args, **kwargs)
-
-#     def get_success_url(self):
-#         return reverse('departamento:home')
-
-#     def form_valid(self, form):
-#         form.save()
 #         return super().form_valid(form)
 
 

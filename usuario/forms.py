@@ -4,6 +4,11 @@ from . import models
 from utils.valida_cpf import valida_cpf
 
 
+class UsuarioLogin(forms.Form):
+    usuario = forms.CharField(max_length=200)
+    senha = forms.CharField(widget=forms.PasswordInput())
+
+
 class UsuarioCadastro(forms.ModelForm):
     class Meta:
         model = models.Usuario
@@ -133,13 +138,20 @@ class AtualizarEndereco(forms.ModelForm):
         }
 
         cep = cleaned.get('cep')
-        cep = re.sub(r'[^0-9]', '', cep)
+        if cep:
+            cep = re.sub(r'[^0-9]', '', cep)
 
-        if len(cep) > 8 or len(cep) < 8:
-            validation_errors['cep'] = "CEP inválido"
+            if len(cep) > 8 or len(cep) < 8:
+                validation_errors['cep'] = "CEP inválido"
 
-        if validation_errors:
-            raise(forms.ValidationError(validation_errors))
+            if validation_errors:
+                raise(forms.ValidationError(validation_errors))
+
+
+class AtualizarUsuario(forms.ModelForm):
+    class Meta:
+        model = models.Usuario
+        fields = ('img_usuario', )
 
 
 class AtualizarSenha(forms.ModelForm):

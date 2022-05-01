@@ -2,11 +2,20 @@
 
 {% block 'conteudo' %}
 <div class="principal-box-noticias">
+    {% for noticia in noticias %}
     <div class="box-noticias">
+        <a href="/forum/noticia/{{noticia.id}}">
+            <img src="{{ noticia.imagem_noticia.url }}" alt="">
+            <div class="pre-text-noticias">
+                <h2>{{ noticia.titulo_noticia}}</h2>
 
-        <p>{{ request.session.usuario_logado }}</p>
+        </a>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+            feugiat ornare libero in pretium. Nullam non turpis imperdiet,
+            blandit leo vitae, egestas massa.</p>
+        <span>Postado em: {{noticia.data_post}} por {{noticia.administrador.pessoa}}</span>
     </div>
 </div>
-
+{% endfor %}
 </div>
 {% endblock %}

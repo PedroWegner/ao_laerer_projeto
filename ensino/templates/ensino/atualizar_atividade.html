@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block 'conteudo' %}
+<div class="principal-box-cad">
+    <h1>REENVIAR ATIVIDADE</h1>
+    <div class="forms">
+        <form class="principal-box-form" s method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-cadastro">
+                {{ form }}
+            </div>
+            <button class="btn-cadastro" type="submit">Reenviar</button>
+        </form>
+    </div>
+</div>
+
+
+
+{% endblock %}

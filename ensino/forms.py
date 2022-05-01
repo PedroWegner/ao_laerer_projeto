@@ -7,6 +7,12 @@ from django import forms
 from . import models
 
 
+class LinguaCadastro(forms.ModelForm):
+    class Meta:
+        model = models.Lingua
+        fields = ('lingua', 'lingua_img')
+
+
 class AtividadePostagemForms(forms.ModelForm):
     """ 
     Formulario para postagem de atividades
@@ -41,7 +47,7 @@ class CriarAulaForms(forms.ModelForm):
     class Meta:
         model = models.Aula
         fields = ('aula', 'conteudo', 'conteudo_download',
-                  'nivel', 'aula_gravada')
+                  'nivel', 'lingua', 'aula_gravada')
 
 
 class CriarAtividadeForms(forms.ModelForm):

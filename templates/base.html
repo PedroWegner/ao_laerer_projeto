@@ -22,32 +22,46 @@
     <div class="content">
         <div class='fixed-nav-bar'>
             <ul class="nav-ul-comum">
-                <p>MENU HOME</p>
+                <li>
+                    <a href="{% url 'usuario:home' %}">HOME</a>
+                    <a href="{% url 'ensino:menu_linguas' %}">Línguas</a>
+                    <a href="{% url 'forum:forum' %}">Forum</a>
+                    <a href="{% url 'ensino:minhas_aulas' %}">Minhas aulas</a>
+                </li>
             </ul>
             <ul class='nav-ul'>
                 
-                {% if 'admin' %}
+                {% if request.session.usuario_logado.is_admin %}
                 <li>
                     <p class="abre-cadastro">
                         Cadastrar
                     </p>
                     <ul class="drop-menu-cadastro">
-                        <p>MENU ADM</p>  
+                        <li>
+                            
+                            <a href="{% url 'ensino:cadastro_lingua' %}">Cadastrar língua</a>
+                            <a href="{% url 'forum:cadastro_noticia' %}">Cadastrar notícia</a>
+                        </li>
                     </ul>
                 </li>
                 {% endif %}
                 
                 <li>
+                    {% if request.session.usuario_logado %}
                     <div class="abre-usuario">
                         <img class="usuario-img" src="{{ request.session.usuario_logado.img_usuario }}" alt="">
                     </div>    
                     <ul class="drop-menu-usuario">
-                        {% if request.session.usuario_logado %}
+                        
+                        <li><a href="{% url 'usuario:atualizar_dados' %}">Atualizar dados</a></li>
+                        <li><a href="{% url 'usuario:atualizar_senha' %}">Atualizar senha</a></li>
+                        <li><a href="/usuario/{{request.session.usuario_logado.usuario_id}}/atualizar">Atualizar usuario</a></li>
                         <li><a href="{% url 'usuario:logout' %}">LOGOUT</a></li>
-                        {% else %}
-                        <li><a href="{% url 'usuario:login' %}">LOGIN</a></li>
-                        {% endif %}
+                        
                     </ul>
+                    {% else %}
+                    <a href="{% url 'usuario:login' %}">LOGIN</a>
+                    {% endif %}
                 </li>
             </ul>
         </div>

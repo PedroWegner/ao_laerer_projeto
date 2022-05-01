@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block 'titulo'%} Blog {% endblock %}
+{% block 'conteudo' %}
+
+
+<div class="box-principal-blog">
+    <div class="principal-box-lingua">
+        {% for lingua in linguas%}
+        <div class="box-lingua">
+            <a href="lingua/{{ lingua.id }}">
+                {% if lingua.lingua_img %}
+                <img src="{{ lingua.lingua_img.url }}" alt="">
+                {% endif %}
+                <h2>{{lingua}}</h2>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

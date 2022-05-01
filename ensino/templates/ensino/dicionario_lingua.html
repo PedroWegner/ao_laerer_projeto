@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block 'titulo'%}Publicação de notícia{% endblock %}
+{% block 'conteudo' %}
+<div class="principal-box-cad">
+    <h2>
+        dict de {{lingua}}
+    </h2>
+    <div>
+        {% for palavra in palavras %}
+        <a href="/ensino/lingua/palavra/{{ palavra.id }}">{{ palavra }}</a>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

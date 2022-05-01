@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block 'titulo' %}Blog - {{lingua}}{% endblock %}
+{% block 'conteudo' %}
+<div class="principal-box-postagem">
+    <div class="box-postagens">
+        {% for postagem in postagens %}
+        <div class="box-postagem-indv">
+            <a href="postagem/{{ postagem.id }}">
+                <h3>{{postagem.titulo_postagem}}</h3>
+            </a>
+            <p>{{ postagem.autor }} - {{ postagem.data_postagem }}</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div>
+        <div class="pergunta-publicacao">
+            <p>
+                Você está no blog de {{ lingua}}
+            </p>
+            <a class="btn-cadastro" href="postagem/registro/{{ lingua.id}}">Publicar</a>
+        </div>
+        <div class="postagens-recentes">
+            <h3>Ultimas publicações</h3>
+            {% for postagem_recente in postagens_recentes %}
+            <a class="link-post-recent" href="postagem/{{ postagem_recente.id }}">
+                {{ postagem_recente.titulo_postagem}}
+            </a>
+            <p class="autor-post-recent">
+                Por {{ postagem_recente.autor.pessoa.nome }} {{ postagem_recente.autor.pessoa.sobrenome }}
+            </p>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+
+{% endblock %}

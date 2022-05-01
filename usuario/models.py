@@ -91,6 +91,7 @@ class Usuario(models.Model):
     # tipo_usuario = models.ForeignKey(TipoUsuario, on_delete=models.DO_NOTHING)
     pessoa = models.ForeignKey(Pessoa, on_delete=models.CASCADE)
     is_admin = models.BooleanField(default=False)
+    is_licenced = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return f'{self.pessoa.nome} {self.pessoa.sobrenome}'

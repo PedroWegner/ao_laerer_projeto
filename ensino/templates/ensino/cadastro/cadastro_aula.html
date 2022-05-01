@@ -12,6 +12,10 @@
                 <div class="form-cadastro">
                     <h3>Aula</h3>
                     {{ criar_aula }}
+                    {% if request.session.usuario_logado.is_licenced %}
+                    <label for="id_is_licened">Aula licenciada</label>
+                    <input type="checkbox" id='id_is_licened' name="is_licenced">
+                    {% endif %}
                 </div>
                 <div class="form-cadastro">
                     <h3>Atividade</h3>

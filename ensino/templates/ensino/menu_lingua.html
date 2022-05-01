@@ -5,21 +5,29 @@
 
 <div class="box-principal-blog">
     <div class="principal-box-lingua">
-        {% for i in range.range %}
-        <p>{{ i }}</p>
-        {% endfor %}
-        <div>
-            <h1>1</h1>
-            {% for aula in aulas_1 %}
-            <p>{{ aula }}</p>
-            <a href="/ensino/aula/{{ aula.id }}"> {{ aula }}</a>
-            {% endfor %}
+        {% for nivel, aulas in niveis.items %}
+        <div class="nivel">
+            <div class="nivel-licenciado">
+                <h1>licenciadas</h1>
+                <a href="{{nivel}}/nivel/{{lingua.id}}">Modulo {{ nivel }}</a>
+            </div>
+            <div class="nivel-n-licenciado">
+                {% for aula in aulas %}
+                <div class="nivel-aula">
+                    <p>{{value}}</p>
+                    <a href="/ensino/aula/{{ aula.id }}">{{ aula }}</a>
+                </div>
+                {% endfor %}
+            </div>
+
         </div>
-        {{ aulas_1}}
-        {{ aulas_2}}
-        {{ aulas_3}}
-        {{ aulas_4}}
-        {{ aulas_5}}
+        {% endfor %}
+    </div>
+    <div>
+        <h2>dicionario</h2>
+        <a class="btn-cadastro" href="{{ lingua.id }}/palavra/cadastro">Criar
+            palavra</a>
+        <a href="{{ lingua.id }}/dicionario" class="btn-cadastro">dict</a>
     </div>
 </div>
 

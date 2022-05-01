@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block 'conteudo' %}
+<div class="principal-box-noticia">
+    <div class="box-noticia">
+        <img class="img-noticia" src="{{ noticia.imagem_noticia.url }}" alt="">
+        <div class="conteudo-noticia">
+            <h2>{{ noticia.titulo_noticia }}</h2>
+            <p>{{ noticia.conteudo_noticia|linebreaks }}</p>
+            <span>{{ noticia.data_post}} por {{ noticia.administrador.pessoa.nome }}
+                {{noticia.administrador.pessoa.sobrenome }}
+            </span>
+        </div>
+    </div>
+</div>
+{% endblock %}

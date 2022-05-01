@@ -168,6 +168,7 @@ class Aula(models.Model):
         upload_to='img_aula/%Y/%m', null=True, blank=True)
     palavra = models.ManyToManyField(
         Palavra, related_name='aulas', through="AulaPalavra")
+    is_licenced = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return self.aula
@@ -202,8 +203,8 @@ class Atividade(models.Model):
     aula = models.ForeignKey(
         Aula, on_delete=models.CASCADE, related_name='atividade')
     data_post = models.DateField(default=timezone.now)
-    usuario = models.ForeignKey(
-        UsuarioEnsino, on_delete=models.DO_NOTHING)
+    autor = models.ForeignKey(
+        Usuario, on_delete=models.DO_NOTHING, null=True)
     atividade_doc = models.FileField(
         upload_to='atividade_postada/%Y/%m', verbose_name='Atividade')
     comentario = models.TextField(blank=True, null=True)
@@ -249,7 +250,7 @@ class EnvioAtividade(models.Model):
     """
     data_entrega = models.DateField(
         default=timezone.now)  # I HAVE TO CHANGE IT
-    usuario = models.ForeignKey(UsuarioEnsino, on_delete=models.DO_NOTHING)
+    autor = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING, null=True)
     atividade = models.ForeignKey(
         Atividade, on_delete=models.DO_NOTHING, related_name='atividades_enviadas')
     envio_atividade_doc = models.FileField(
@@ -259,7 +260,7 @@ class EnvioAtividade(models.Model):
     envio_definitivo = models.BooleanField(default=False)
 
     def __str__(self) -> str:
-        return f'{self.atividade} enviada por {self.aluno.pessoa}'
+        return f'{self.atividade} enviada por {self.autor}'
 
     class Meta:
         verbose_name = 'Atividade enviada'

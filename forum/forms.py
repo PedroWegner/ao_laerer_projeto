@@ -27,3 +27,9 @@ class MensagemForms(forms.ModelForm):
     class Meta:
         model = Mensagem
         fields = ('texto', 'imagem_mensagem')
+
+
+class PublicarNoticiaForms(forms.ModelForm):
+    class Meta:
+        model = models.Noticia
+        fields = ('titulo_noticia', 'conteudo_noticia', 'imagem_noticia')

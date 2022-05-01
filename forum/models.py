@@ -18,7 +18,8 @@ class Noticia(models.Model):
 class Postagem(models.Model):
     titulo_postagem = models.CharField(max_length=60)
     conteudo_postagem = models.TextField()
-    imagem_postagem = models.ImageField(upload_to='blog/postagem/%Y/%m')
+    imagem_postagem = models.ImageField(
+        upload_to='blog/postagem/%Y/%m', blank=True, null=True)
     data_postagem = models.DateField(default=timezone.now)
     autor = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING)
     lingua = models.ForeignKey(Lingua, on_delete=models.DO_NOTHING)

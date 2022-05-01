@@ -2,6 +2,27 @@
 {% load static %}
 {% block 'titulo'%} {{aula}} {% endblock %}
 
+{% block 'nav-bar-aula' %}
+<div class="nav-bar-aula-modulo show">
+    <a class="titulo-modulo" href="/modulo/{{ modulo.pk}}">{{ modulo.modulo }}</a>
+    <span class="btn-show"><img src="{% static 'imgs/ponteiro_verde.png' %}" alt=""></span>
+</div>
+<div class="nav-bar-aula-aulas show">
+    <ul>
+
+        {% for aula in aulas %}
+        <li>
+            <div>
+                <a href="/ensino/aula/{{ aula.pk }}">{{ aula }}</a>
+                <p class="nome-professor">{{ aula.autor }}</p>
+            </div>
+
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}
 
 {% block 'conteudo' %}
 <div class="box-principal-aula">
@@ -10,7 +31,7 @@
         <div>
             <h2>{{ aula }}</h2>
             <p>{{ aula.autor_aula }}</p>
-            <video controls="controls" autoplay="autoplay">
+            <video controls="controls">
                 <source src="{{ aula.aula_gravada.url}}" type="video/mp4">
 
             </video>
@@ -25,29 +46,16 @@
         </div>
 
     </div>
-    {% if request.session.usuario_logado.tipo_usuario_id == 3%}
-    <div class="box-alunos-matriculados">
-        <h2>Alunos matriculados e atividades recebidas</h2>
-        {% for aluno_matriculado in alunos_matriculados %}
-        <p>{{ aluno_matriculado }}</p>
-        {% endfor %}
-        {% if request.session.usuario_logado.professor_id == professor_responsavel.id %}
-        <a href="atividade/{{  aula.aula.id }}">ATIVIDADES DOS ALUNOS</a>
-        {% endif %}
-    </div>
-    {% if not request.session.modulo_aberto %}
-    {% endif %}
     <!-- VIEW DO ALUNO -->
-    {% elif request.session.usuario_logado.tipo_usuario_id == 1%}
 
     <div class="box-atividade-aula">
         <div class="box-conteudo">
             <h2>Atividade</h2>
-            <p>{{ aula.aula.atividade.first.comentario }}</p>
+            <p>{{ aula.atividade.first.comentario }}</p>
             <div class="box-atividade-envia">
-                <a href="{{ aula.aula.atividade.all.first.atividade_doc.url}}" target="_blank">Atividade</a>
+                <a href="{{ aula.atividade.first.atividade_doc.url}}" target="_blank">Atividade</a>
                 {% if not atividade_ja_enviada %}
-                <a href="atividade/cadastro/{{ aula.aula.atividade.all.first.id }}">Enviar atividade</a>
+                <a href="atividade/cadastro/{{ aula.atividade.first.id }}">Envie atividade</a>
                 {% else %}
                 {% if not atividade_ja_enviada.first.envio_definitivo %}
                 <a href="atividade/atualizar/{{ atividade_ja_enviada.first.id }}">Reenviar atividade</a>
@@ -60,5 +68,5 @@
     </div>
 </div>
 
-{% endif %}
+
 {% endblock %}

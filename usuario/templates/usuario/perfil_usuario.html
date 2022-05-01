@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block 'titulo'%} Blog {% endblock %}
+{% block 'conteudo' %}
+<div class="box-principal-blog">
+    <div class="user-info">
+        <div class="user">
+            <img src="{{ usuario.img_usuario.url }}" alt="">
+            <h2>{{ usuario.pessoa }}</h2>
+            <span>{{ usuario.tipo_usuario }}</span>
+            {% if usuario.id == request.session.usuario_logado.usuario_id %}
+
+            {% else %}
+            {% if conversa %}
+            <a href="conversa/{{ conversa.pk }}">Conversa</a>
+            {% else %}
+            <a href="cad/conv/{{ usuario.id }}">Inicia uma conversa</a>
+            {% endif %}
+            {% endif %}
+
+        </div>
+        <div class="cursos-user">
+            {% if usuario.tipo_usuario.id == 1 %}
+            <h3>Cursos completos</h3>
+            {% if cursos_vinculados %}
+            {% for curso in cursos_vinculados %}
+            <p>{{curso}}</p>
+            {% endfor %}
+            {% else %}
+            <p>Esse aluno não completou nenhum curso</p>
+            {% endif %}
+            {% elif usuario.tipo_usuario.id == 2%}
+
+            {% elif usuario.tipo_usuario.id == 3 %}
+            <h3>Cursos que dá aula</h3>
+            {% for curso in cursos_vinculados %}
+            <p>{{curso}}</p>
+            {% endfor %}
+            {% else %}
+
+            {% endif %}
+        </div>
+    </div>
+    <div class="forum-info">
+        <div class="postagens-user">
+            <h3>Ultimas postagens</h3>
+            {% for postagem in postagens %}
+            <div class="postagem-user">
+                <a href="/forum/lingua/postagem/{{ postagem.id }}">{{ postagem.titulo_postagem }}</a>
+                <span>Postado em {{ postagem.data_postagem }} no forum de {{ postagem.lingua }}</span>
+            </div>
+
+            {% endfor %}
+        </div>
+        <div class="comentarios-user">
+            <h3>Ultimas postagens comentadas</h3>
+            {% for comentario in comentarios %}
+            <div class="comentario-user">
+                <a href="/forum/lingua/postagem/{{ comentario.postagem.id }}">
+                    {{ comentario.postagem.titulo_postagem}}</a>
+                <span>Comentado em {{ comentario.data_comentario }} no forum de {{ comentario.postagem.lingua }}</span>
+            </div>
+
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

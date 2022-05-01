@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block 'titulo'%} {% endblock %}
+
+{% block 'nav-bar-aula' %}
+<div class="nav-bar-aula-modulo show">
+    <a class="titulo-modulo" href="/modulo/{{ modulo.pk}}">{{ modulo.modulo }}</a>
+    <span class="btn-show"><img src="{% static 'imgs/ponteiro_verde.png' %}" alt=""></span>
+</div>
+<div class="nav-bar-aula-aulas show">
+    <ul>
+
+        {% for aula in aulas %}
+        <li>
+            <div>
+                <a href="/ensino/aula/{{ aula.pk }}">{{ aula }}</a>
+                <p class="nome-professor">{{ aula.autor }}</p>
+            </div>
+
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}
+
+{% block 'conteudo' %}
+
+<!-- ALUNO -->
+<div class="principal-box-meu-painel">
+
+    <div class="box-modulo-painel">
+        <div>
+            <h1>{{ nivellingua }}</h1>
+            <p></p>
+        </div>
+        <div>
+            <h1>aulas</h1>
+            {% for aula in aulas %}
+            <a href="/ensino/aula/{{ aula.id }}">{{ aula }}</a>
+            {% endfor %}
+        </div>
+        <div>
+            <p>
+                Aliquam sagittis erat et rutrum tincidunt. Aenean dictum mattis
+                condimentum. Pellentesque tempus mauris sit amet ultrices ornare.
+                Suspendisse lorem velit, varius a condimentum vitae, auctor a sapien.
+                Nam nibh elit, ullamcorper eu lobortis non, dapibus eget lectus. Aenean
+                vulputate a lectus eget sagittis. Pellentesque vestibulum ante quis
+                nunc congue consequat. Morbi nisl tellus, efficitur nec ultricies in,
+                aliquet sit amet lectus. Proin eget faucibus enim. In hac habitasse
+                platea dictumst. Proin sit amet pellentesque mauris.
+                Duis laoreet lectus vitae tortor dictum, eu convallis turpis tempor. Fusce in ultricies nibh.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

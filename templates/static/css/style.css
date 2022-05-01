@@ -925,10 +925,37 @@ ul.drop-menu-usuario li:first-child {
 
 .principal-box-lingua {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    width: 100%;
     gap: 30px;
     margin: 0 auto;
     margin-top: 40px;
+}
+
+.nivel {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    gap: 15px;
+    background-color: #48757D;
+    width: 100%;
+    padding: 15px;
+}
+
+.nivel-licenciado {
+    background-color: #2A2A2A;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.nivel-n-licenciado {
+    background-color: #181818;
+
+}
+
+.nivel-aula {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .box-lingua {

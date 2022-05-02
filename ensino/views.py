@@ -1,23 +1,17 @@
+import random
+from django.views.generic import TemplateView
 from .forms import *
-from typing import List
 from django.http import HttpResponseRedirect
 from django.views import View
 from django.views.generic.list import ListView
 from django.views.generic.edit import UpdateView
 from django.views.generic import FormView
-from django.views.generic.detail import SingleObjectMixin, DetailView
+from django.views.generic.detail import DetailView
 from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse
-
+from django.urls import reverse, reverse_lazy
 from usuario.models import Usuario
-from .models import ClassePalavra, Contexto, Administrador, Atividade, Lingua, Aula, NivelLingua, Palavra, PalavraContexto, EnvioAtividade
-# from .forms import *
-# from pessoa.models import Endereco, Pessoa, TipoUsuario, Usuario
-# from pessoa.forms import PessoaCadastro, EnderecoCadastro, AtualizarPessoa, AtualizarEndereco, AtualizarSenha
-import bcrypt
-
-# admin
+from .models import ClassePalavra, AtividadeAula, Alternativa, Contexto, Atividade, Lingua, AtividadeQuestao, Aula, NivelLingua, Palavra, PalavraContexto, EnvioAtividade, Questao
 
 
 class LinguaCadastroView(FormView):
@@ -278,6 +272,9 @@ class AulaView(DetailView):
             autor__id=self.request.session['usuario_logado']['usuario_id'],
             atividade__aula__id=self.object.id,
         )
+        context['teste_atividade_nova'] = AtividadeAula.objects.filter(
+            aula=self.get_object()
+        ).first()
         context['aulas'] = Aula.objects.filter(
             nivel=self.get_object().nivel,
             lingua=self.get_object().lingua
@@ -291,6 +288,21 @@ class AulaView(DetailView):
                 is_licenced=False
             )[:10]
 
+        return context
+
+
+class TesteAtividadeAulaView(DetailView):
+    template_name = 'ensino/teste_atividade_aula.html'
+    model = AtividadeAula
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['atividade'] = self.get_object()
+        context['questoes'] = Questao.objects.filter(
+            id__in=AtividadeQuestao.objects.filter(
+                atividade=self.get_object()
+            ).values('questao_id')
+        )
         return context
 
 
@@ -367,65 +379,115 @@ class AtividadeAlunoAtualizarView(UpdateView):
         return super().form_valid(form)
 
 
-# class AulaRegistraModuloView(FormView):
-#     """
-#     View para vincular uma ou mais aulas a um modulo
-#     """
-#     template_name = 'departamento/registra_aula_modulo.html'
-#     # model = AulaVinculaModulo
-#     form_class = VinculaAulaModulo
+class TesteAdicionaPalavraAula(TemplateView, DetailView):
+    template_name = 'ensino/teste_add_palavra.html'
+    model = Aula
 
-#     def get(self, *args, **kwargs):
-#         if not 'usuario_logado' in self.request.session:
-#             print('usuario deslogado')
-#             return redirect('departamento:login')
+    def get(self, *args, **kwargs):
+        formset = PalavraAulaForms(
+            queryset=Palavra.objects.none(),
+        )
+        return self.render_to_response(
+            {
+                'add_palavra': formset,
+                'aula': self.get_object(),
+            },
+        )
 
-#         if not self.request.session['usuario_logado']['tipo_usuario_id'] == 3:
-#             return redirect('departamento:home')
+    def post(self, *args, **kwargs):
+        formset = PalavraAulaForms(
+            data=self.request.POST,
+        )
+        if formset.is_valid():
+            forms = formset.save(commit=False)
+            for form in forms:
+                form.aula = self.get_object()
+                form.save()
+            return redirect(reverse_lazy('usuario:home'))
 
-#         return super().get(*args, **kwargs)
+        return self.render_to_response({'add_palavra': formset})
 
-#     def get_success_url(self):
-#         return reverse('departamento:home')
 
-#     def get_form_kwargs(self, *args, **kwargs):
-#         kwargs = super(AulaRegistraModuloView,
-#                        self).get_form_kwargs(*args, **kwargs)
-#         kwargs['request'] = self.request.session['usuario_logado']
-#         return kwargs
+class TesteCriaQuestao(TemplateView):
+    template_name = 'ensino/teste_questao.html'
 
-#     def form_valid(self, form):  # AQUI PRECISO ARRUMAR.
-#         """
-#         Funcao para cadastrar varias aulas a um modulo, caso o usuario solicite
-#         """
-#         # parte da regra de negocio (um professor pode ter apenas 5 atividades em modulo)
-#         aula_total = Aula.objects.filter(
-#             professor__id=self.request.session['usuario_logado']['professor_id'],
-#             modulo=form.cleaned_data.get('modulo')
-#         )
-#         aulas_lista = Aula.objects.filter(
-#             pk__in=form.cleaned_data.get('aulas')
-#         )
-#         if len(aula_total) >= 5 or len(aula_total) + len(aulas_lista) > 5:
-#             return super().form_valid(form)
-#         # # # #
-#         qtd_aula_modulo = AulaVinculaModulo.objects.filter(
-#             modulo=form.cleaned_data.get('modulo')
-#         ).count()
+    def get(self, *args, **kwargs):
+        formset = AlternativasQuestaoFormset(
+            queryset=Palavra.objects.none(),
+        )
+        form = QuestaoForms()
+        return self.render_to_response(
+            {
+                'add_questao': form,
+                'add_alternativa': formset,
+            },
+        )
 
-#         # RN
-#         if qtd_aula_modulo >= 20:
-#             return super().form_valid(form)
-#         #
-#         # loop para cadastrar as aulas em um modulo
-#         for aula in aulas_lista:
-#             instancia = AulaVinculaModulo(
-#                 modulo=form.cleaned_data.get('modulo'),
-#                 aula=aula
-#             )
-#             instancia.save()
-#         return super().form_valid(form)
+    def post(self, *args, **kwargs):
+        formset = AlternativasQuestaoFormset(
+            data=self.request.POST,
+        )
+        form = QuestaoForms(
+            data=self.request.POST,
+        )
+        if formset.is_valid() and form.is_valid():
+            print('está valido')
+            questao = form.save(commit=False)
+            questao.autor = get_object_or_404(
+                Usuario, id=self.request.session['usuario_logado']['usuario_id']
+            )
+            questao.save()
+            alternativas = formset.save(commit=False)
+            for alternativa in alternativas:
+                alternativa.questao = questao
+                alternativa.save()
+            return redirect(reverse_lazy('usuario:home'))
 
+        return self.render_to_response(
+            {
+                'add_questao': form,
+                'add_alternativa': formset,
+            },
+        )
+
+
+class TesteResolucaoQuestao(DetailView):
+    template_name = 'ensino/teste_resolucao.html'
+    model = Questao
+
+    def get_context_data(self, **kwargs):
+        context = super(TesteResolucaoQuestao, self).get_context_data(**kwargs)
+        context['questao'] = self.get_object()
+        correta = Alternativa.objects.filter(
+            questao=self.get_object(),
+            is_correct=True,
+        ).all().order_by('?').first()
+        erradas = Alternativa.objects.filter(
+            questao=self.get_object(),
+            is_correct=False,
+        ).all().order_by('?')[:4]
+        alternativas = list()
+        for errada in erradas:
+            alternativas.append(errada)
+        alternativas.append(correta)
+        random.shuffle(alternativas)
+        context['alternativas'] = alternativas
+
+        return context
+
+    def post(self, *args, **kwargs):
+        alternativa_entrada = self.request.POST.get('alternativa')
+        certo = Alternativa.objects.filter(
+            alternativa=alternativa_entrada,
+            questao=self.get_object(),
+            is_correct=True,
+        ).first()
+        if not certo:
+            print('errado')
+        else:
+            print('certo')
+
+        return redirect('usuario:home')
 
 # class AulaView(SingleObjectMixin, View):
 #     """

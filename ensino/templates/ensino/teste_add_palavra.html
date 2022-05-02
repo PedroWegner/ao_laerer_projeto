@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block 'titulo'%} Blog {% endblock %}
+{% block 'conteudo' %}
+
+
+<div class="box-principal-blog">
+    <p>aula: {{ aula.id }}</p>
+    <h1>teste add palavra em aula</h1>
+    <form id="form-container" method="POST">
+        {% csrf_token %}
+        {{add_palavra.management_form}}
+
+        {% for form in add_palavra %}
+        <div class="palavra-form">
+            {{form.as_p}}
+        </div>
+
+        {% endfor %}
+        <button id="add-form" type="button">+</button>
+        <button type="submit">add palavra</button>
+
+    </form>
+
+
+</div>
+
+<script>
+    let palavra_form = document.querySelectorAll(".palavra-form")
+    let container = document.querySelector("#form-container")
+    let addButton = document.querySelector("#add-form")
+    let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
+
+    let formNum = palavra_form.length - 1
+    addButton.addEventListener('click', addForm)
+
+    function addForm(e) {
+        e.preventDefault()
+
+        let newForm = palavra_form[0].cloneNode(true)
+        let formRegex = RegExp(`form-(\\d){1}-`, 'g')
+
+        formNum++
+        newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNum}-`)
+        container.insertBefore(newForm, addButton)
+
+        totalForms.setAttribute('value', `${formNum + 1}`)
+        if (formNum == 19) {
+            addButton.disabled = true
+        }
+    }
+</script>
+
+{% endblock %}

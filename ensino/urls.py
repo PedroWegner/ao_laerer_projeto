@@ -27,4 +27,13 @@ urlpatterns = [
          views.AtividadeUsuarioCadastroView.as_view(), name='enviar_atividade'),
     path('aula/atividade/atualizar/<int:pk>',
          views.AtividadeAlunoAtualizarView.as_view(), name='reenviar_atividade'),
+
+    # TESTES #
+    path('minhas_aulas/aula/<int:pk>/add_palavra',
+         views.TesteAdicionaPalavraAula.as_view()),
+
+    path('aula/atividade/<int:pk>', views.TesteAtividadeAulaView.as_view()),
+    path('criar_questao',
+         views.TesteCriaQuestao.as_view(), name='add_questao'),
+    path('questao/<int:pk>', views.TesteResolucaoQuestao.as_view())
 ]

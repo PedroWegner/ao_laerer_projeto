@@ -9,6 +9,7 @@
             <p>Você está na aula {{ aula }} </p>
             <a href="{{ aula.id }}/add_palavra">adicionar palavras</a>
             <a href="{% url 'ensino:add_questao' %}">criar questao</a>
+            <a href="{{ aula.id }}/adiciona_atividade">Adicionar atividade</a>
         </div>
         <div class="box-video-aula">
             <h2>{{ aula }}</h2>

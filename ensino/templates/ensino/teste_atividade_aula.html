@@ -3,14 +3,21 @@
 {% block 'conteudo' %}
 
 
-<div class="box-principal-blog">
-    <p>aula: {{ atividade }}</p>
-
-    {% for questao in questoes %}
-    <p>{{ questao.frase }}</p>
-    <p>{{questao.resposta}}-{{questao.errada_1}}-{{questao.errada_2}}-{{questao.errada_3}}</p>
-    {% endfor %}
-
+<div class="box-principal-blog" style="color:aliceblue;">
+    <form method="POST">
+        {% csrf_token %}
+        {% for questao_id, questao in lista_questoes.items %}
+        {% for frase, alternativas in questao.items %}
+        <p>{{ frase }}</p>
+        {% for alternativa in alternativas %}
+        <input type="radio" name="{{ questao_id }}" id="alternativa-{{questao_id}}-{{alternativa}}"
+            value="{{alternativa}}">
+        <label for="alternativa-{{questao_id}}-{{alternativa}}">{{ alternativa }}</label>
+        {% endfor %}
+        {% endfor %}
+        {% endfor %}
+        <button type="submit">Resposta</button>
+    </form>
 
 
 </div>

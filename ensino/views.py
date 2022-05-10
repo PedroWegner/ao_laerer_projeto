@@ -11,12 +11,23 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from usuario.models import Usuario
-from .models import ClassePalavra, AtividadeAula, Alternativa, Contexto, Atividade, Lingua, AtividadeQuestao, Aula, NivelLingua, Palavra, PalavraContexto, EnvioAtividade, Questao
+from .models import ClassePalavra, AtividadeAula, Alternativa, Contexto, Atividade, UsuarioLingua
+from .models import Lingua, AtividadeQuestao, Aula, NivelLingua, Palavra
+from .models import PalavraContexto, EnvioAtividade, Questao
 
 
 class LinguaCadastroView(FormView):
     template_name = 'ensino/cadastro/cadastro_lingua.html'
     form_class = LinguaCadastro
+
+    def get(self, *args, **kwargs):
+        if not "usuario_logado" in self.request.session:
+            return redirect('usuario:login')
+
+        if not self.request.session["usuario_logado"]["is_admin"]:
+            return redirect('usuario:home')
+
+        return super().get(*args, **kwargs)
 
     def get_success_url(self):
         return reverse('usuario:home')
@@ -24,8 +35,6 @@ class LinguaCadastroView(FormView):
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
-
-#
 
 
 class MenuLinguasView(ListView):
@@ -40,20 +49,18 @@ class MenuLinguaView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['range'] = {'range': range(1, 6)}
+        niveis = NivelLingua.objects.all()
         context['niveis'] = {}
-        for i in context['range']['range']:
+        for nivel in niveis:
             context['niveis'].update(
                 {
-                    f'{i}': Aula.objects.filter(
+                    f'{nivel.valor_nivel}': Aula.objects.filter(
                         lingua=self.get_object(),
-                        nivel__valor_nivel=i,
-                        is_licenced=False)
+                        nivel=nivel,
+                        is_licenced=False
+                    )
                 }
             )
-
-        # for i in range(1, 6):
-        #     print(context[f'aulas_{i}'])
 
         return context
 
@@ -204,7 +211,6 @@ class AulaCadastroView(View):
         )
         aula = self.criar_aula.save(commit=False)
         aula.autor_aula = autor
-        print()
         if self.request.session['usuario_logado']['is_licenced']:
             aula.is_licenced = self.request.POST.get('is_licenced') == 'on'
 
@@ -291,25 +297,67 @@ class AulaView(DetailView):
         return context
 
 
-class TesteAtividadeAulaView(DetailView):
-    template_name = 'ensino/teste_atividade_aula.html'
-    model = AtividadeAula
+class TesteMeuPainelAulasView(View):
+    template_name = 'ensino/meu_painel_aulas.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['atividade'] = self.get_object()
-        context['questoes'] = Questao.objects.filter(
-            id__in=AtividadeQuestao.objects.filter(
-                atividade=self.get_object()
-            ).values('questao_id')
+    def get(self, *args, **kwargs):
+        if not "usuario_logado" in self.request.session:
+            return redirect('usuario:login')
+
+        context = {}
+        linguas = Lingua.objects.filter(
+            id__in=UsuarioLingua.objects.filter(
+                usuario_id=self.request.session['usuario_logado']['usuario_id'],
+            ).values('lingua_id')
         )
-        return context
+        niveis = NivelLingua.objects.all()
+        if self.request.session['usuario_logado']['is_licenced']:
+            context['licenced_linguas'] = {}
+        context['linguas'] = {}
+        for lingua in linguas:
+            context['linguas'].update(
+                {
+                    f'{lingua}': {}
+                }
+            )
+            if 'licenced_linguas' in context:
+                context['licenced_linguas'].update(
+                    {
+                        f'{lingua}': {}
+                    }
+                )
+            for nivel in niveis:
+                aulas = Aula.objects.filter(
+                    lingua__lingua=lingua,
+                    nivel=nivel,
+                    is_licenced=False
+                )
+                if aulas:
+                    context['linguas'][f'{lingua}'].update(
+                        {
+                            f'{nivel}': aulas
+                        }
+                    )
+                if 'licenced_linguas' in context:
+                    aulas = Aula.objects.filter(
+                        lingua__lingua=lingua,
+                        nivel=nivel,
+                        is_licenced=True
+                    )
+                    if aulas:
+                        context['licenced_linguas'][f'{lingua}'].update(
+                            {
+                                f'{nivel}': aulas
+                            }
+                        )
+        return render(
+            self.request, self.template_name, context
+        )
 
 
 class MeuPainelAulasView(ListView):
     """
-    View de exibicao de aulas, usuario com permissao eh professor
-    Iguala o modulo aberto a None para para restrigir telas posteriores
+
     """
     template_name = 'ensino/meu_painel_aulas.html'
     model = Aula
@@ -317,7 +365,6 @@ class MeuPainelAulasView(ListView):
 
     def get(self, *args, **kwargs):
         if not 'usuario_logado' in self.request.session:
-            print('usuario deslogado')
             return redirect('usuario:login')
 
         return super().get(self, *args, **kwargs)
@@ -487,6 +534,98 @@ class TesteResolucaoQuestao(DetailView):
         else:
             print('certo')
 
+        return redirect('usuario:home')
+
+
+class TesteAdicionaAtividadeAula(DetailView):
+    template_name = 'ensino/teste_adiciona_atividade.html'
+    model = Aula
+
+    def get_context_data(self, **kwargs):
+        context = super(TesteAdicionaAtividadeAula,
+                        self).get_context_data(**kwargs)
+        context['aula'] = self.get_object()
+
+        context['questoes_disponiveis'] = Questao.objects.filter(
+            nivel=self.get_object().nivel,
+            lingua=self.get_object().lingua
+        )
+
+        return context
+
+    def post(self, *args, **kwargs):
+        get_questoes = self.request.POST.getlist('questoes')
+        atividade = AtividadeAula(
+            aula=self.get_object()
+        )
+        atividade.save()
+        for id_questao in get_questoes:
+            questao = get_object_or_404(
+                Questao, id=id_questao
+            )
+            AtividadeQuestao(
+                atividade=atividade,
+                questao=questao,
+            ).save()
+        return redirect('usuario:home')
+
+
+class TesteResolucaoAtividade(DetailView):
+    template_name = 'ensino/teste_atividade_aula.html'
+    model = AtividadeAula
+
+    def get_context_data(self, **kwargs):
+        context = super(TesteResolucaoAtividade,
+                        self).get_context_data(**kwargs)
+        context['atividade'] = self.get_object()
+        questoes = Questao.objects.filter(
+            id__in=AtividadeQuestao.objects.filter(
+                atividade=self.get_object(),
+            ).values('questao_id')
+        )
+        context['lista_questoes'] = {}
+        for questao in questoes:
+
+            correta = Alternativa.objects.filter(
+                questao=questao,
+                is_correct=True,
+            ).all().order_by('?').first()
+            erradas = Alternativa.objects.filter(
+                questao=questao,
+                is_correct=False,
+            ).all().order_by('?')[:3]
+            alternativas = list()
+            for errada in erradas:
+                alternativas.append(errada)
+            alternativas.append(correta)
+            random.shuffle(alternativas)
+            context['lista_questoes'].update(
+                {
+                    f'{questao.id}': {
+                        f"{questao.frase}": alternativas,
+                    }
+                }
+            )
+
+        return context
+
+    def post(self, *args, **kwargs):
+        questoes = Questao.objects.filter(
+            id__in=AtividadeQuestao.objects.filter(
+                atividade=self.get_object(),
+            ).values('questao_id')
+        )
+        certas = int(0)
+        for questao in questoes:
+            alternativa_entrada = self.request.POST.get(f'{questao.id}')
+            certo = Alternativa.objects.filter(
+                alternativa=alternativa_entrada,
+                questao=questao,
+                is_correct=True,
+            ).first()
+            if certo:
+                certas += 1
+        nota = (certas * 100) / (questoes.count())
         return redirect('usuario:home')
 
 # class AulaView(SingleObjectMixin, View):

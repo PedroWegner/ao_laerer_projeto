@@ -82,6 +82,8 @@ class Pessoa(models.Model):
 
 
 # FAZER UM TESTE PARA MELHORAR O ENCAPSULAMENTO
+
+
 class Usuario(models.Model):
     usuario = models.CharField(max_length=250, unique=True)
     email = models.EmailField(max_length=250, unique=True)

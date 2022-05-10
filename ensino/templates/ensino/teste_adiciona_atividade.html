@@ -4,13 +4,22 @@
 
 
 <div class="box-principal-questao box-principal-blog">
-    <p>{{ questao.frase }}</p>
+
     <form method="POST">
         {% csrf_token %}
-        {% for alternativa in alternativas %}
-        <input type="radio" name="alternativa" id="alternativa-{{alternativa}}" value="{{alternativa}}">
-        <label for="alternativa-{{alternativa}}">{{ alternativa }}</label>
+
+
+        {% for q in questoes_disponiveis %}
+        <div class="questao">
+            <label for="id-{{q.id}}">
+                <p>{{ q.frase}}</p>
+            </label>
+            <input type="checkbox" id="id-{{q.id}}" name="questoes" value="{{q.id}}">
+        </div>
+
         {% endfor %}
+
+
         <button type="submit">Resposta</button>
     </form>
 

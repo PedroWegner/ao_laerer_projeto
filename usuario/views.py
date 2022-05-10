@@ -2,17 +2,13 @@ from dataclasses import is_dataclass
 from ensino.models import UsuarioEnsino
 from forum.models import Noticia
 from django.http import HttpResponseRedirect
-from re import X
 from django.views import View
 from django.views.generic.list import ListView
 from django.views.generic.edit import UpdateView
 from django.views.generic import FormView
-from django.views.generic.detail import SingleObjectMixin, DetailView
-from django.http import HttpResponseForbidden
+from django.views.generic.detail import DetailView
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-
-import usuario
 from .forms import *
 from .models import *
 from forum.models import Conversa, ConversaUsuario, Mensagem, Postagem, Comentario
@@ -178,7 +174,6 @@ class PerfilUsuarioView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        print(self.get_object())
         # if self.get_object().tipo_usuario.id == 1:
         #     context['cursos_vinculados'] = ModuloMatriculaAluno.objects.filter(
         #         aluno__usuario=self.get_object(),
@@ -208,8 +203,6 @@ class PerfilUsuarioView(DetailView):
                     usuario_id=self.request.session['usuario_logado']['usuario_id'],
                 ).values('conversa_id'),
             ).first()
-            print(context['conversa'])
-
         return context
 
 
@@ -217,6 +210,18 @@ class ConversaView(DetailView):
     template_name = 'usuario/conversa.html'
     model = Conversa
     object_context_name = 'conversa'
+
+    def get(self, *args, **kwargs):
+        if not "usuario_logado" in self.request.session:
+            return redirect('usuario:login')
+
+        checagem = ConversaUsuario.objects.filter(
+            usuario_id=self.request.session['usuario_logado']['usuario_id'],
+            conversa_id=self.get_object(),
+        )
+        if not checagem:
+            return redirect('usuario:home')
+        return super().get(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -229,11 +234,6 @@ class ConversaView(DetailView):
         )
 
         return context
-
-    def get(self, *args, **kwargs):
-        # aqui precisa colocar a lógica para evtar que um outro usuario nao da conversa tenha acesso
-
-        return super().get(*args, **kwargs)
 
     def post(self, *args, **kwargs):
         Mensagem(

@@ -2,6 +2,49 @@
 
 {% block 'conteudo' %}
 <div class="principal-box-minhas-aulas">
+    <div class="conteudo-meu-ensino">
+        <div class='box-meu-ensino'>
+            <h1>aulas</h1>
+            {% if linguas %}
+            <div>
+                <h1>aulas normais</h1>
+                {% for lingua, niveis in linguas.items %}
+                <p>{{lingua}}</p>
+                {% for nivel, aulas in niveis.items %}
+                <div>
+                    <h2>{{ nivel }}</h2>
+                    {% for aula in aulas %}
+                    <a href="minhas_aulas/aula/{{ aula.id }}">{{aula}}</a>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% if licenced_linguas %}
+            <div>
+                <h1>aulas licenciadas</h1>
+                {% for lingua, niveis in licenced_linguas.items %}
+                <p>{{lingua}}</p>
+                {% for nivel, aulas in niveis.items %}
+                <div>
+                    <h2>{{ nivel }}</h2>
+                    {% for aula in aulas %}
+                    <a href="minhas_aulas/aula/{{ aula.id }}">{{aula}}</a>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        <div class="box-meu-ensino">
+            <h1>questões</h1>
+        </div>
+    </div>
+
+
+
     <div class="box-gerenciar-aula">
         <a class="btn-cadastro" href="{% url 'ensino:cadastro_aula' %}">CRIAR AULA</a>
     </div>

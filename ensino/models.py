@@ -31,6 +31,12 @@ class NivelLingua(models.Model):
         verbose_name_plural = "Níveis de língua"
 
 
+class UsuarioLingua(models.Model):
+    lingua = models.ForeignKey(Lingua, on_delete=models.DO_NOTHING)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    nivel = models.ForeignKey(NivelLingua, on_delete=models.DO_NOTHING)
+
+
 class Administrador(models.Model):
     pessoa = models.ForeignKey(Pessoa, on_delete=models.CASCADE)
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)

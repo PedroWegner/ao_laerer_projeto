@@ -889,11 +889,22 @@ ul.drop-menu-usuario li:first-child {
 
 
 .principal-box-minhas-aulas {
-    display: flex;
-    margin: 0 auto;
-    flex-direction: column;
-    width: 860px;
-    align-items: center;
+    display: grid;
+    grid-template-columns: 3.5fr 1fr;
+    gap: 25px;
+    padding-top: 60px;
+}
+
+.conteudo-meu-ensino {
+    display: grid;
+    gap: 25px;
+}
+
+.box-meu-ensino {
+    background-color: #171717;
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 25px 40px 25px 40px;
 }
 
 .box-gerenciar-aula {
@@ -1384,7 +1395,13 @@ ul.drop-menu-usuario li:first-child {
     margin-bottom: 10px;
 }
 
+/**/
 
+.box-principal-questao {
+    color: white;
+}
+
+/**/
 @media screen and (max-width: 1450px) {
     .box-modulo p {
         max-width: 100%;

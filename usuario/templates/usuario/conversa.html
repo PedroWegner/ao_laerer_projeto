@@ -11,7 +11,8 @@
             <div class="coautor">
 
                 {% endif %}
-                <p>{{mensagem.texto|linebreaks }} - {{ mensagem.autor }}</p>
+                <p>{{mensagem.texto|linebreaks }}</p>
+                <p>{{ mensagem.autor }} - {{ mensagem.data_envio}}</p>
 
             </div>
             {% endfor %}

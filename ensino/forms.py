@@ -1,8 +1,6 @@
-from ast import Mod
-from typing import Type
-from .models import Aula
-from dataclasses import fields
-from tkinter import Widget
+from django.forms import inlineformset_factory
+from django.forms.models import inlineformset_factory
+from django.forms import modelformset_factory
 from django import forms
 from . import models
 
@@ -70,11 +68,6 @@ class AtualizarAulaForms(forms.ModelForm):
         for field in self.Meta.unrequired:
             self.fields[field].required = False
 
-    # aula = forms.CharField(required=False)
-    # aula_gravada = forms.FileField(required=False)
-    # conteudo_download = forms.FileField(required=False)
-    # conteudo = forms.CharField(required=False)
-
     class Meta:
         model = models.Aula
         fields = ('aula', 'conteudo', 'conteudo_download', 'aula_gravada')
@@ -94,11 +87,39 @@ class AtualizarAtividadeAluno(forms.ModelForm):
 
 # NOVOS CADASTROS
 
+# A PALAVRA FORMS CONSIGO FAZER COMO O DE QUESTAO, E AUMENTAR QUANTIDADE DE CONTEXTO
+
 
 class PalavraForms(forms.ModelForm):
     contexto = forms.CharField(max_length=255)
 
     class Meta:
         model = models.Palavra
-        fields = ('palavra', 'classe', 'significado',
-                  'nivel', 'escrita_fonetica')
+        fields = ('palavra', 'lingua', 'nivel', 'classe', 'significado',
+                  'escrita_fonetica')
+
+
+PalavraAulaForms = modelformset_factory(
+    models.AulaPalavra, fields=('palavra',), extra=1,
+)
+
+
+class QuestaoForms(forms.ModelForm):
+    class Meta:
+        model = models.Questao
+        fields = ('frase', 'lingua', 'nivel',)
+
+
+class AlternativaForms(forms.ModelForm):
+    class Meta:
+        model = models.Alternativa
+        fields = ('alternativa', 'is_correct', )
+
+
+AlternativasQuestaoFormset = inlineformset_factory(
+    models.Questao,
+    models.Alternativa,
+    form=AlternativaForms,
+    extra=1,
+    can_delete=False
+)

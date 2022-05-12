@@ -31,79 +31,27 @@ class NivelLingua(models.Model):
         verbose_name_plural = "Níveis de língua"
 
 
+class UsuarioLingua(models.Model):
+    lingua = models.ForeignKey(Lingua, on_delete=models.DO_NOTHING)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    nivel = models.ForeignKey(NivelLingua, on_delete=models.DO_NOTHING)
+
+
 class Administrador(models.Model):
     pessoa = models.ForeignKey(Pessoa, on_delete=models.CASCADE)
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
 
 
-class UsuarioEnsino(models.Model):
-    pessoa = models.ForeignKey(Pessoa, on_delete=models.CASCADE)
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+class UsuarioLingua(models.Model):
+    usuario = models.ForeignKey(
+        Usuario, on_delete=models.CASCADE, null=True, blank=True)
+    lingua = models.ForeignKey(
+        Lingua, on_delete=models.CASCADE, null=True, blank=True)
+    nivel = models.ForeignKey(
+        NivelLingua, on_delete=models.CASCADE, null=True, blank=True)
 
-
-# class Departamento(models.Model):
-#     """
-#     Tabela de departamentos do curso
-#     """
-#     cod_departamento = models.CharField(max_length=2)
-#     lingua = models.ForeignKey(Lingua, on_delete=models.DO_NOTHING)
-
-#     def __str__(self) -> str:
-#         return f'Departamento de {self.lingua}'
-
-
-# revisar construcao de classe
-# class Modulo(models.Model):
-#     """
-#     Tabela de modulos disponiveis no curso
-#     """
-#     modulo = models.CharField(max_length=50)
-#     cod_modulo = models.CharField(max_length=3)
-#     lingua = models.ForeignKey(Lingua, on_delete=models.DO_NOTHING)
-#     nivel = models.ForeignKey(NivelLingua, on_delete=models.DO_NOTHING)
-#     '''
-#     usar funcao splits 'dep de x'(split, ' ')[2]
-#     '''
-#     departamento = models.ForeignKey(Departamento, on_delete=models.CASCADE)
-#     img_modulo = models.ImageField(
-#         upload_to='img_modulo/%Y/%m', null=True, blank=True)
-
-#     def __str__(self) -> str:
-#         return f'{self.cod_modulo} - {self.modulo}'
-
-
-# class Professor(models.Model):
-#     """
-#     Tabela de professores
-#     """
-#     pessoa = models.ForeignKey(Pessoa, on_delete=models.DO_NOTHING)
-#     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-#     departamento = models.ForeignKey(Departamento, on_delete=models.DO_NOTHING)
-#     lingua = models.ForeignKey(Lingua, on_delete=models.DO_NOTHING)
-#     nivel = models.ForeignKey(NivelLingua, on_delete=models.DO_NOTHING)
-#     # TENTAR CRIAR A TERCEIRA TABELA A MAO
-#     modulo = models.ManyToManyField(
-#         Modulo, blank=True, through='ModuloVinculoProfessor')
-
-#     def __str__(self) -> str:
-#         return f'{self.pessoa.nome} {self.pessoa.sobrenome}'
-
-
-# class ModuloVinculoProfessor(models.Model):
-#     """
-#     Tabela de muitos para muitos, facilita alguns registros e querys assim.
-#     """
-#     professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
-#     modulo = models.ForeignKey(Modulo, on_delete=models.CASCADE)
-#     data_vinculo = models.DateField(default=timezone.now)
-#     ativo = models.BooleanField(default=True)
-
-#     def __str__(self) -> str:
-#         return f'{self.professor} vinculado a {self.modulo}'
-
-#     class Meta:
-#         verbose_name = 'Professor vinculado a módulo'
-#         verbose_name_plural = 'Professores vinculados a módulos'
+    def __str__(self) -> str:
+        return f'{self.usuario} - {self.lingua} - {self.nivel}'
 
 
 class ClassePalavra(models.Model):
@@ -160,8 +108,7 @@ class Aula(models.Model):
                               on_delete=models.DO_NOTHING)
     lingua = models.ForeignKey(
         Lingua, blank=True, null=True, on_delete=models.CASCADE)
-    # modulo = models.ManyToManyField(
-    #     Modulo, blank=True, through='AulaVinculaModulo')
+
     autor_aula = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING)
     aula_gravada = models.FileField(upload_to='aula/%Y/%m')
     img_aula = models.ImageField(
@@ -179,23 +126,6 @@ class AulaPalavra(models.Model):
     palavra = models.ForeignKey(Palavra, on_delete=models.DO_NOTHING)
 
 
-# class AulaVinculaModulo(models.Model):
-#     """
-#     Tabela de muitos para muitos de aula com modulo
-#     """
-#     aula = models.ForeignKey(
-#         Aula, on_delete=models.CASCADE, related_name='modulos')
-#     modulo = models.ForeignKey(
-#         Modulo, on_delete=models.CASCADE, related_name='aulas')
-
-#     def __str__(self) -> str:
-#         return f'{self.modulo.modulo} - {self.aula}'
-
-#     class Meta:
-#         verbose_name = 'Módulo e aula'
-#         verbose_name_plural = 'Módulos e aulas'
-
-
 class Atividade(models.Model):
     """
     Tabela para registrar atividades de aulas
@@ -211,37 +141,6 @@ class Atividade(models.Model):
 
     def __str__(self) -> str:
         return f'Atividade da aula {self.aula.aula}'
-
-
-# class Aluno(models.Model):
-#     """
-#     Tabela para registro de alunos
-#     """
-#     pessoa = models.ForeignKey(Pessoa, on_delete=models.DO_NOTHING)
-#     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-#     modulo = models.ManyToManyField(
-#         Modulo, blank=True, related_name='alunos', through='ModuloMatriculaAluno')  # THROUGH
-
-#     def __str__(self) -> str:
-#         return f'{self.pessoa.nome} {self.pessoa.sobrenome}'
-
-
-# class ModuloMatriculaAluno(models.Model):
-#     """
-#     Tabela de muitos para muitos, de aluno com modulo; criada para ter mais
-#     atribuos na tabela
-#     """
-#     aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE) # ALTERAR PARA USUARIO
-#     modulo = models.ForeignKey(Modulo, on_delete=models.CASCADE)
-#     data_matricula = models.DateField(default=timezone.now)
-#     aprovado = models.BooleanField(default=False)
-
-#     def __str__(self):
-#         return f'{self.aluno} > {self.modulo}({self.modulo.nivel})'
-
-#     class Meta:
-#         verbose_name = 'Aluno matriculado'
-#         verbose_name_plural = 'Alunos matriculados'
 
 
 class EnvioAtividade(models.Model):
@@ -265,3 +164,57 @@ class EnvioAtividade(models.Model):
     class Meta:
         verbose_name = 'Atividade enviada'
         verbose_name_plural = 'Atividades enviadas'
+
+
+# teste nova atividade
+class Questao(models.Model):
+    frase = models.CharField(max_length=255)
+    autor = models.ForeignKey(
+        Usuario,
+        null=True,
+        on_delete=models.DO_NOTHING
+    )
+    lingua = models.ForeignKey(
+        Lingua,
+        on_delete=models.DO_NOTHING,
+    )
+    nivel = models.ForeignKey(
+        NivelLingua,
+        on_delete=models.DO_NOTHING,
+    )
+
+    def __str__(self):
+        return f'{self.frase[:10]}'
+
+
+class Alternativa(models.Model):
+    alternativa = models.CharField(max_length=60)
+    is_correct = models.BooleanField(default=False)
+    questao = models.ForeignKey(Questao, on_delete=models.DO_NOTHING)
+
+    def __str__(self):
+        return self.alternativa
+
+
+class AtividadeAula(models.Model):
+    aula = models.ForeignKey(Aula, on_delete=models.DO_NOTHING)
+    questao = models.ManyToManyField(
+        Questao, related_name='atividade', through="AtividadeQuestao")
+
+    def __str__(self):
+        return f'Atividade - {self.aula}'
+
+
+class AtividadeQuestao(models.Model):
+    atividade = models.ForeignKey(AtividadeAula, on_delete=models.DO_NOTHING)
+    questao = models.ForeignKey(Questao, on_delete=models.DO_NOTHING)
+
+    def __str__(self):
+        return f'{self.atividade} - {self.questao}'
+
+
+class EnvioAtividadeAula(models.Model):
+    autor = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING)
+    atividade = models.ForeignKey(AtividadeAula, on_delete=models.DO_NOTHING)
+    aprovado = models.BooleanField(default=False)
+    nota = models.FloatField()

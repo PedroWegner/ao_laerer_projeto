@@ -14,7 +14,7 @@ urlpatterns = [
     #
     path('lingua/cadastro', views.LinguaCadastroView.as_view(),
          name='cadastro_lingua'),
-    path('minhas_aulas', views.MeuPainelAulasView.as_view(),
+    path('minhas_aulas', views.TesteMeuPainelAulasView.as_view(),
          name='minhas_aulas'),
     path('minhas_aulas/aula/<int:pk>',
          views.AtualizarAulaView.as_view(), name='atualizar_aula'),
@@ -27,4 +27,17 @@ urlpatterns = [
          views.AtividadeUsuarioCadastroView.as_view(), name='enviar_atividade'),
     path('aula/atividade/atualizar/<int:pk>',
          views.AtividadeAlunoAtualizarView.as_view(), name='reenviar_atividade'),
+
+    # TESTES #
+    path('minhas_aulas/aula/<int:pk>/add_palavra',
+         views.TesteAdicionaPalavraAula.as_view()),
+
+    path('aula/atividade/<int:pk>', views.TesteResolucaoAtividade.as_view()),
+    path('aula/redo/atividade/<int:pk>',
+         views.TesteUpdateAtividadeConcluida.as_view()),
+    path('criar_questao',
+         views.TesteCriaQuestao.as_view(), name='add_questao'),
+    path('questao/<int:pk>', views.TesteResolucaoQuestao.as_view()),
+    path('minhas_aulas/aula/<int:pk>/adiciona_atividade',
+         views.TesteAdicionaAtividadeAula.as_view()),
 ]

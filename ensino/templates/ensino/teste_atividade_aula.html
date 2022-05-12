@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block 'titulo'%} Blog {% endblock %}
+{% block 'conteudo' %}
+
+
+<div class="box-principal-blog" style="color:aliceblue;">
+    <form method="POST">
+        {% csrf_token %}
+        {% for questao_id, questao in lista_questoes.items %}
+        {% for frase, alternativas in questao.items %}
+        <p>{{ frase }}</p>
+        {% for alternativa in alternativas %}
+        <input type="radio" name="{{ questao_id }}" id="alternativa-{{questao_id}}-{{alternativa}}"
+            value="{{alternativa}}">
+        <label for="alternativa-{{questao_id}}-{{alternativa}}">{{ alternativa }}</label>
+        {% endfor %}
+        {% endfor %}
+        {% endfor %}
+        <button type="submit">Resposta</button>
+    </form>
+
+
+</div>
+
+{% endblock %}

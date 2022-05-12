@@ -1,34 +1,40 @@
 {% extends 'base.html' %}
+{% load filters %}
 {% block 'titulo'%} Blog {% endblock %}
 {% block 'conteudo' %}
 
 
 <div class="box-principal-blog">
     <div class="principal-box-lingua">
+        <p>{{ nivel_usuario }}</p>
         {% for nivel, aulas in niveis.items %}
-        <div class="nivel">
-            <div class="nivel-licenciado">
-                <h1>licenciadas</h1>
-                <a href="{{nivel}}/nivel/{{lingua.id}}">Modulo {{ nivel }}</a>
-            </div>
-            <div class="nivel-n-licenciado">
-                {% for aula in aulas %}
-                <div class="nivel-aula">
-                    <p>{{value}}</p>
-                    <a href="/ensino/aula/{{ aula.id }}">{{ aula }}</a>
+        {% if nivel_usuario >= nivel|convert_int %}
+        <div class="nivel desbloqueado">
+            {% else %}
+            <div class="nivel bloqueado">
+                {% endif %}
+                <div class="nivel-licenciado">
+                    <h1>licenciadas</h1>
+                    <a href="{{nivel}}/nivel/{{lingua.id}}">Modulo {{ nivel }}</a>
                 </div>
-                {% endfor %}
+                <div class="nivel-n-licenciado">
+                    {% for aula in aulas %}
+                    <div class="nivel-aula">
+                        <p>{{value}}</p>
+                        <a href="/ensino/aula/{{ aula.id }}">{{ aula }}</a>
+                    </div>
+                    {% endfor %}
+                </div>
+
             </div>
-
+            {% endfor %}
         </div>
-        {% endfor %}
+        <div>
+            <h2>dicionario</h2>
+            <a class="btn-cadastro" href="{{ lingua.id }}/palavra/cadastro">Criar
+                palavra</a>
+            <a href="{{ lingua.id }}/dicionario" class="btn-cadastro">dict</a>
+        </div>
     </div>
-    <div>
-        <h2>dicionario</h2>
-        <a class="btn-cadastro" href="{{ lingua.id }}/palavra/cadastro">Criar
-            palavra</a>
-        <a href="{{ lingua.id }}/dicionario" class="btn-cadastro">dict</a>
-    </div>
-</div>
 
-{% endblock %}
+    {% endblock %}

@@ -58,6 +58,9 @@ class ConversaUsuario(models.Model):
 
     """
 
+    def __str__(self) -> str:
+        return f'{self.conversa.id} - {self.usuario}'
+
 
 class Mensagem(models.Model):
     conversa = models.ForeignKey(Conversa, on_delete=models.DO_NOTHING)

@@ -48,29 +48,20 @@
     </div>
     <!-- VIEW DO ALUNO -->
 
-    <div class="box-atividade-aula">
-        <div class="box-conteudo">
-            <h2>Atividade</h2>
-            <p>{{ aula.atividade.first.comentario }}</p>
-            <div class="box-atividade-envia">
-                <a href="{{ aula.atividade.first.atividade_doc.url}}" target="_blank">Atividade</a>
-                {% if not atividade_ja_enviada %}
-                <a href="atividade/cadastro/{{ aula.atividade.first.id }}">Envie atividade</a>
-                {% else %}
-                {% if not atividade_ja_enviada.first.envio_definitivo %}
-                <a href="atividade/atualizar/{{ atividade_ja_enviada.first.id }}">Reenviar atividade</a>
-                {% else %}
-                <p>Atividade já foi enviada por definitivo</p>
-                {% endif %}
-                {% endif %}
-            </div>
-        </div>
-    </div>
 
-    <div>
-        <p>{{teste_atividade_nova}}</p>
-        <p>{{teste_atividade_nova.id}}</p>
-        <a href="atividade/{{teste_atividade_nova.id}}">Acesse a atividade</a>
+
+    <div style="color:white;">
+        {% if atividade_concluida %}
+        <h4>Atividade já concluida</h4>
+        <p>nota: {{ atividade_concluida.nota }}</p>
+        <p>Situação: {% if atividade_concluida %}aprovado{% else %}não aprovado{% endif %}</p>
+        <a href="redo/atividade/{{ atividade_concluida.id }}">Refazer</a>
+        {% else %}
+        <p>{{atividade_aula}}</p>
+        <p>{{atividade_aula.id}}</p>
+        <a href="atividade/{{atividade_aula.id}}">Acesse a atividade</a>
+        {% endif %}
+
     </div>
 </div>
 

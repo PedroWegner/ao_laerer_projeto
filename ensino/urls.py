@@ -33,6 +33,8 @@ urlpatterns = [
          views.TesteAdicionaPalavraAula.as_view()),
 
     path('aula/atividade/<int:pk>', views.TesteResolucaoAtividade.as_view()),
+    path('aula/redo/atividade/<int:pk>',
+         views.TesteUpdateAtividadeConcluida.as_view()),
     path('criar_questao',
          views.TesteCriaQuestao.as_view(), name='add_questao'),
     path('questao/<int:pk>', views.TesteResolucaoQuestao.as_view()),

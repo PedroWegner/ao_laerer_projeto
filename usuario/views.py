@@ -1,5 +1,6 @@
+from ensino.models import *
 from dataclasses import is_dataclass
-from ensino.models import UsuarioEnsino
+from ensino.models import UsuarioLingua
 from forum.models import Noticia
 from django.http import HttpResponseRedirect
 from django.views import View
@@ -77,10 +78,14 @@ class UsuarioCadastroView(View):
         usuario.pessoa = pessoa
         usuario.save()
 
-        usuario_ensino = UsuarioEnsino()
-        usuario_ensino.usuario = usuario
-        usuario_ensino.pessoa = pessoa
+        # PRECISO TESTAR ISSO
+        for lingua in Lingua.objects.all():
+            UsuarioLingua(
+                usuario=usuario,
+                lingua=lingua
+            ).save()
 
+        # aqui tem que redirecionar para a tela de login
         return redirect('usuario:home')
 
 
@@ -183,6 +188,25 @@ class PerfilUsuarioView(DetailView):
         #     context['cursos_vinculados'] = ModuloVinculoProfessor.objects.filter(
         #         professor__usuario=self.get_object(),
         #     )
+        context['aulas_concluidas'] = {}
+        for lingua in Lingua.objects.all():
+            context['aulas_concluidas'][f'{lingua}'] = {}
+            for nivel in NivelLingua.objects.all():
+                context['aulas_concluidas'][f'{lingua}'].update(
+                    {
+                        f'{nivel}': Aula.objects.filter(
+                            id__in=Atividade.objects.filter(
+                                id__in=EnvioAtividadeAula.objects.filter(
+                                    autor=self.get_object(),
+                                    aprovado=True
+                                ).values('atividade_id')
+                            ).values('aula_id'),
+                            lingua=lingua,
+                            nivel=nivel,
+                        ).count()
+                    }
+                )
+        print(context['aulas_concluidas'])
         context['postagens'] = Postagem.objects.filter(
             autor=self.get_object()
         )[:5]
@@ -252,13 +276,16 @@ class IniciaConversa(DetailView):
     model = Usuario
 
     def get(self, *args, **kwargs):
+        # AQUI COLOCAR ALGO QUE IMPEÇA CRIAR UMA NOVA COISA
         conversa = Conversa.objects.create()
         conversa.usuario.add(self.get_object())
         conversa.usuario.add(get_object_or_404(
             Usuario, id=self.request.session['usuario_logado']['usuario_id']
         ))
 
-        return redirect('forum:forum')
+        return redirect(reverse('usuario:conversa', kwargs={'pk': conversa.id}))
+
+        return redirect('forum:forum')  # PRECISO ALTERAR AQUI!!!!
 
 
 class DadosAtualizarView(View):
@@ -357,10 +384,7 @@ class SenhaAtualizarView(View):
                     'utf-8'), bcrypt.gensalt()))[2:-1]
             )
             return redirect('usuario:logout')
-
         return self.renderizar
-
-# tem que alterar, ta alterando cripto da senha
 
 
 class UsuarioAtualizarView(UpdateView):

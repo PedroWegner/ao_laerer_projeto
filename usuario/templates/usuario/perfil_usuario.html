@@ -63,6 +63,18 @@
             {% endfor %}
         </div>
     </div>
+
+    <div style="color:white;">
+        {% for lingua, niveis in aulas_concluidas.items %}
+        {% for nivel, qt_concluida in niveis.items %}
+        {% if qt_concluida %}
+        <p>{{lingua}}</p>
+        <p>{{ nivel }}</p>
+        <p>{{ qt_concluida }}</p>
+        {% endif %}
+        {% endfor %}
+        {% endfor %}
+    </div>
 </div>
 
 {% endblock %}

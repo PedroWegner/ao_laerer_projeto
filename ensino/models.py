@@ -42,9 +42,16 @@ class Administrador(models.Model):
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
 
 
-class UsuarioEnsino(models.Model):
-    pessoa = models.ForeignKey(Pessoa, on_delete=models.CASCADE)
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+class UsuarioLingua(models.Model):
+    usuario = models.ForeignKey(
+        Usuario, on_delete=models.CASCADE, null=True, blank=True)
+    lingua = models.ForeignKey(
+        Lingua, on_delete=models.CASCADE, null=True, blank=True)
+    nivel = models.ForeignKey(
+        NivelLingua, on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self) -> str:
+        return f'{self.usuario} - {self.lingua} - {self.nivel}'
 
 
 class ClassePalavra(models.Model):
@@ -210,3 +217,4 @@ class EnvioAtividadeAula(models.Model):
     autor = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING)
     atividade = models.ForeignKey(AtividadeAula, on_delete=models.DO_NOTHING)
     aprovado = models.BooleanField(default=False)
+    nota = models.FloatField()

@@ -26,13 +26,6 @@ class Genero(models.Model):
         return self.genero
 
 
-# class TipoUsuario(models.Model):
-#     tipo_usuario = models.CharField(max_length=250)
-
-#     def __str__(self) -> str:
-#         return self.tipo_usuario
-
-
 class EstadoCivil(models.Model):
     estado_civil = models.CharField(max_length=250)
 
@@ -70,17 +63,6 @@ class Pessoa(models.Model):
     def __str__(self) -> str:
         return f'{self.nome} {self.sobrenome}'
 
-    # def clean(self):
-    #     pass
-        ''' cpf = re.sub(r'[^0-9]', '', self.cpf)
-        nascimento = re.sub(r'[^0-9]', '', self.data_nascimento)
-        if not cpf.isnumeric():
-            raise ValidationError('cpf inválido')
-
-        if not nascimento.isnumeric():
-            raise ValidationError('data inválida')'''
-
-
 # FAZER UM TESTE PARA MELHORAR O ENCAPSULAMENTO
 
 
@@ -97,20 +79,3 @@ class Usuario(models.Model):
 
     def __str__(self) -> str:
         return f'{self.pessoa.nome} {self.pessoa.sobrenome}'
-
-    def save(self, *args, **kwargs):
-        """
-        Funcao save para alterar a senha do usuario toda vez que ele for criado
-
-        """
-        # abaixo unidecode tira acentos
-        # self.usuario = f'{unidecode(self.pessoa.nome)}{unidecode(self.pessoa.sobrenome)}'.lower(
-        # )
-        # self.senha = f'{unidecode(self.pessoa.nome)}@{self.pessoa.cpf}'.lower()
-        # print(self.senha)
-        # self.email = f'{unidecode(self.pessoa.nome)}{unidecode(self.pessoa.sobrenome)}@eduamais.com'.lower()
-        senha_criptografada = bcrypt.hashpw(
-            (self.senha).encode('utf-8'), bcrypt.gensalt()
-        )
-        self.senha = str(senha_criptografada)[2:-1]
-        super().save(*args, **kwargs)

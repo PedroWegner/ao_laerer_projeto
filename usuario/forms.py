@@ -2,6 +2,7 @@ from django import forms
 import re
 from . import models
 from utils.valida_cpf import valida_cpf
+import bcrypt
 
 
 class UsuarioLogin(forms.Form):
@@ -17,6 +18,18 @@ class UsuarioCadastro(forms.ModelForm):
             'email',
             'senha',
         )
+
+    def save(self, commit=True):
+        usuario = super(UsuarioCadastro, self).save(commit=False)
+        data = self.cleaned_data
+        senha = data['senha']
+        senha_criptografada = bcrypt.hashpw(
+            (senha).encode('utf-8'), bcrypt.gensalt()
+        )
+        usuario.senha = str(senha_criptografada)[2:-1]
+        if commit:
+            usuario.save()
+        return usuario
 
 
 class PessoaCadastro(forms.ModelForm):
@@ -46,7 +59,7 @@ class PessoaCadastro(forms.ModelForm):
             raise(forms.ValidationError(validation_errors))
 
 
-class EnderecoCadastro(forms.ModelForm):
+class (forms.ModelForm):
     class Meta:
         model = models.Endereco
         fields = (

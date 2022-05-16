@@ -1,3 +1,4 @@
+from re import M
 from .models import EnvioAtividadeAula
 import random
 from django.views.generic import TemplateView
@@ -62,15 +63,20 @@ class MenuLinguaView(DetailView):
                     )
                 }
             )
-        print(self.request.session['usuario_logado']['senha'])
         # para restringir aulas nas quais usuario podera acessar no template
-        context['nivel_usuario'] = int(NivelLingua.objects.filter(
+        nivel_usuario = NivelLingua.objects.filter(
             id__in=UsuarioLingua.objects.filter(
                 usuario_id=self.request.session['usuario_logado']['usuario_id'],
                 lingua=self.get_object()
             ).values('nivel_id')
-        ).first().valor_nivel) + 1
-        print(context['nivel_usuario'])
+        ).first()
+
+        # dah pra altera aqui, ja que temos valor_nivel = 0
+        if nivel_usuario:
+            context['nivel_usuario'] = int(nivel_usuario.valor_nivel) + 1
+        else:
+            context['nivel_usuario'] = 1
+
         return context
 
 
@@ -297,7 +303,6 @@ class AulaView(DetailView):
             atividade__aula=self.get_object(),
         ).first()
 
-        print(context['atividade_concluida'])
         context['aulas'] = Aula.objects.filter(
             nivel=self.get_object().nivel,
             lingua=self.get_object().lingua
@@ -495,7 +500,6 @@ class TesteCriaQuestao(TemplateView):
             data=self.request.POST,
         )
         if formset.is_valid() and form.is_valid():
-            print('está valido')
             questao = form.save(commit=False)
             questao.autor = get_object_or_404(
                 Usuario, id=self.request.session['usuario_logado']['usuario_id']
@@ -522,20 +526,7 @@ class TesteResolucaoQuestao(DetailView):
     def get_context_data(self, **kwargs):
         context = super(TesteResolucaoQuestao, self).get_context_data(**kwargs)
         context['questao'] = self.get_object()
-        correta = Alternativa.objects.filter(
-            questao=self.get_object(),
-            is_correct=True,
-        ).all().order_by('?').first()
-        erradas = Alternativa.objects.filter(
-            questao=self.get_object(),
-            is_correct=False,
-        ).all().order_by('?')[:4]
-        alternativas = list()
-        for errada in erradas:
-            alternativas.append(errada)
-        alternativas.append(correta)
-        random.shuffle(alternativas)
-        context['alternativas'] = alternativas
+        context['alternativas'] = seleciona_alternativas(self.get_object())
 
         return context
 
@@ -603,64 +594,21 @@ class TesteResolucaoAtividade(DetailView):
         context['lista_questoes'] = {}
         for questao in questoes:
 
-            correta = Alternativa.objects.filter(
-                questao=questao,
-                is_correct=True,
-            ).all().order_by('?').first()
-            erradas = Alternativa.objects.filter(
-                questao=questao,
-                is_correct=False,
-            ).all().order_by('?')[:3]
-            alternativas = list()
-            for errada in erradas:
-                alternativas.append(errada)
-            alternativas.append(correta)
-            random.shuffle(alternativas)
-
             #  no template {questao.id} eh usado para name do input;
             # {questao.frase} para exibir a questao
             context['lista_questoes'].update(
                 {
                     f'{questao.id}': {
-                        f"{questao.frase}": alternativas,
+                        f"{questao.frase}": seleciona_alternativas(questao),
                     }
                 }
             )
-
         return context
 
     def post(self, *args, **kwargs):
-        questoes = Questao.objects.filter(
-            id__in=AtividadeQuestao.objects.filter(
-                atividade=self.get_object(),
-            ).values('questao_id')
-        )
-        certas = int(0)
-        for questao in questoes:
-            alternativa_entrada = self.request.POST.get(f'{questao.id}')
-            certo = Alternativa.objects.filter(
-                alternativa=alternativa_entrada,
-                questao=questao,
-                is_correct=True,
-            ).first()
-            if certo:
-                certas += 1
-        nota = round((certas * 100) / (questoes.count()), 2)
-        # abaixo eh regra de negocio
-        if nota >= 70.0:
-            EnvioAtividadeAula(
-                autor_id=self.request.session['usuario_logado']['usuario_id'],
-                atividade=self.get_object(),
-                aprovado=True,
-                nota=nota,
-            ).save()
-        else:
-            EnvioAtividadeAula(
-                autor_id=self.request.session['usuario_logado']['usuario_id'],
-                atividade=self.get_object(),
-                aprovado=False,
-                nota=nota,
-            ).save()
+        nota = checa_questoes(self.get_object(), self.request)
+        cria_atividade(self.get_object(), nota, self.request.session)
+
         return redirect('usuario:home')
 
 
@@ -671,7 +619,7 @@ class TesteUpdateAtividadeConcluida(DetailView):
     def get_context_data(self, **kwargs):
         context = super(TesteUpdateAtividadeConcluida,
                         self).get_context_data(**kwargs)
-        context['atividade'] = self.get_object()
+        context['atividade'] = self.get_object().atividade
         questoes = Questao.objects.filter(
             id__in=AtividadeQuestao.objects.filter(
                 atividade=self.get_object().atividade,
@@ -680,49 +628,21 @@ class TesteUpdateAtividadeConcluida(DetailView):
         context['lista_questoes'] = {}
         for questao in questoes:
 
-            correta = Alternativa.objects.filter(
-                questao=questao,
-                is_correct=True,
-            ).all().order_by('?').first()
-            erradas = Alternativa.objects.filter(
-                questao=questao,
-                is_correct=False,
-            ).all().order_by('?')[:3]
-            alternativas = list()
-            for errada in erradas:
-                alternativas.append(errada)
-            alternativas.append(correta)
-            random.shuffle(alternativas)
-
             #  no template {questao.id} eh usado para name do input;
             # {questao.frase} para exibir a questao
             context['lista_questoes'].update(
                 {
                     f'{questao.id}': {
-                        f"{questao.frase}": alternativas,
+                        f"{questao.frase}": seleciona_alternativas(questao),
                     }
                 }
             )
-
         return context
 
     def post(self, *args, **kwargs):
-        questoes = Questao.objects.filter(
-            id__in=AtividadeQuestao.objects.filter(
-                atividade=self.get_object().atividade,
-            ).values('questao_id')
-        )
-        certas = int(0)
-        for questao in questoes:
-            alternativa_entrada = self.request.POST.get(f'{questao.id}')
-            certo = Alternativa.objects.filter(
-                alternativa=alternativa_entrada,
-                questao=questao,
-                is_correct=True,
-            ).first()
-            if certo:
-                certas += 1
-        nota = round((certas * 100) / (questoes.count()), 2)
+
+        nota = checa_questoes(self.get_object().atividade, self.request)
+        print(nota)
         # abaixo eh regra de negocio
         if nota >= self.get_object().nota:
             EnvioAtividadeAula.objects.filter(
@@ -730,10 +650,97 @@ class TesteUpdateAtividadeConcluida(DetailView):
                 aprovado=True,
                 nota=nota
             )
+            if self.get_object().atividade.aula.is_licenced:
+                checa_nivel_lingua(
+                    self.get_object().atividade, self.request.session)
         else:
             print('deu errado =(')
             pass
+
         return redirect('usuario:home')
+
+
+# SERVICES
+def seleciona_alternativas(questao):
+    print(questao)
+    correta = Alternativa.objects.filter(
+        questao=questao,
+        is_correct=True,
+    ).all().order_by('?').first()
+    erradas = Alternativa.objects.filter(
+        questao=questao,
+        is_correct=False,
+    ).all().order_by('?')[:4]
+    alternativas = list()
+    for errada in erradas:
+        alternativas.append(errada)
+    alternativas.append(correta)
+    random.shuffle(alternativas)
+    return alternativas
+
+
+def checa_nivel_lingua(atividade, request):
+    print('checa nivel')
+    qtd_licenced = AtividadeAula.objects.filter(
+        aula__is_licenced=True,
+        aula__nivel=atividade.aula.nivel,
+        aula__lingua=atividade.aula.lingua,
+    ).count()
+    qtd_approved = EnvioAtividadeAula.objects.filter(
+        autor_id=request['usuario_logado']['usuario_id'],
+        aprovado=True,
+        atividade__aula__is_licenced=True,
+        atividade__aula__nivel=atividade.aula.nivel,
+        atividade__aula__lingua=atividade.aula.lingua,
+    ).count()
+    if qtd_licenced == qtd_approved:
+        nivel_usuario = UsuarioLingua.objects.filter(
+            usuario__id=request['usuario_logado']['usuario_id'],
+            lingua=atividade.aula.lingua
+        )
+        if nivel_usuario.first().nivel.valor_nivel < atividade.aula.nivel.valor_nivel:
+            nivel_usuario.update(
+                nivel=atividade.aula.nivel
+            )
+
+
+def cria_atividade(atividade, nota, request):
+    if nota >= 70.0:
+        EnvioAtividadeAula(
+            autor_id=request['usuario_logado']['usuario_id'],
+            atividade=atividade,
+            aprovado=True,
+            nota=nota,
+        ).save()
+        if atividade.aula.is_licenced:
+            checa_nivel_lingua(atividade, request)
+    else:
+        EnvioAtividadeAula(
+            autor_id=request['usuario_logado']['usuario_id'],
+            atividade=atividade,
+            aprovado=False,
+            nota=nota,
+        ).save()
+
+
+def checa_questoes(atividade, request):
+    questoes = Questao.objects.filter(
+        id__in=AtividadeQuestao.objects.filter(
+            atividade=atividade,
+        ).values('questao_id')
+    )
+    certas = int(0)
+    for questao in questoes:
+        alternativa_entrada = request.POST.get(f'{questao.id}')
+        certo = Alternativa.objects.filter(
+            alternativa=alternativa_entrada,
+            questao=questao,
+            is_correct=True,
+        ).first()
+        if certo:
+            certas += 1
+
+    return round((certas * 100) / (questoes.count()), 2)
 
 
 # class AulaView(SingleObjectMixin, View):

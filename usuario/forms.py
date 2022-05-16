@@ -59,7 +59,7 @@ class PessoaCadastro(forms.ModelForm):
             raise(forms.ValidationError(validation_errors))
 
 
-class (forms.ModelForm):
+class EnderecoCadastro(forms.ModelForm):
     class Meta:
         model = models.Endereco
         fields = (

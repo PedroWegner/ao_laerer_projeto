@@ -82,7 +82,10 @@ class UsuarioCadastroView(View):
         for lingua in Lingua.objects.all():
             UsuarioLingua(
                 usuario=usuario,
-                lingua=lingua
+                lingua=lingua,
+                nivel=NivelLingua.objects.filter(
+                    valor_nivel=0,
+                ).first()
             ).save()
 
         # aqui tem que redirecionar para a tela de login

@@ -32,26 +32,18 @@ class NivelLingua(models.Model):
 
 
 class UsuarioLingua(models.Model):
-    lingua = models.ForeignKey(Lingua, on_delete=models.DO_NOTHING)
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-    nivel = models.ForeignKey(NivelLingua, on_delete=models.DO_NOTHING)
+    lingua = models.ForeignKey(Lingua, null=True, on_delete=models.DO_NOTHING)
+    usuario = models.ForeignKey(Usuario, null=True, on_delete=models.CASCADE)
+    nivel = models.ForeignKey(NivelLingua, null=True,
+                              on_delete=models.DO_NOTHING)
+
+    def __str__(self) -> str:
+        return f'{self.usuario} - {self.lingua} - {self.nivel}'
 
 
 class Administrador(models.Model):
     pessoa = models.ForeignKey(Pessoa, on_delete=models.CASCADE)
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-
-
-class UsuarioLingua(models.Model):
-    usuario = models.ForeignKey(
-        Usuario, on_delete=models.CASCADE, null=True, blank=True)
-    lingua = models.ForeignKey(
-        Lingua, on_delete=models.CASCADE, null=True, blank=True)
-    nivel = models.ForeignKey(
-        NivelLingua, on_delete=models.CASCADE, null=True, blank=True)
-
-    def __str__(self) -> str:
-        return f'{self.usuario} - {self.lingua} - {self.nivel}'
 
 
 class ClassePalavra(models.Model):

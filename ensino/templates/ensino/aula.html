@@ -54,7 +54,13 @@
         {% if atividade_concluida %}
         <h4>Atividade já concluida</h4>
         <p>nota: {{ atividade_concluida.nota }}</p>
-        <p>Situação: {% if atividade_concluida %}aprovado{% else %}não aprovado{% endif %}</p>
+        <p>Situação:
+            {% if atividade_concluida >= 70 %}
+            aprovado
+            {% else %}
+            não aprovado
+            {% endif %}
+        </p>
         <a href="redo/atividade/{{ atividade_concluida.id }}">Refazer</a>
         {% else %}
         <p>{{atividade_aula}}</p>

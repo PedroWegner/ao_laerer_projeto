@@ -180,6 +180,12 @@ class PerfilUsuarioView(DetailView):
     model = Usuario
     object_context_name = 'usuario'
 
+    def get(self, *args, **kwargs):
+        if not 'usuario_logado' in self.request.session:
+            return redirect('usuario:login')
+
+        return super().get(*args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # if self.get_object().tipo_usuario.id == 1:
@@ -194,21 +200,19 @@ class PerfilUsuarioView(DetailView):
         context['aulas_concluidas'] = {}
         for lingua in Lingua.objects.all():
             context['aulas_concluidas'][f'{lingua}'] = {}
-            for nivel in NivelLingua.objects.all():
+            for nivel in NivelLingua.objects.all().exclude(valor_nivel=0):
                 context['aulas_concluidas'][f'{lingua}'].update(
                     {
                         f'{nivel}': Aula.objects.filter(
-                            id__in=Atividade.objects.filter(
-                                id__in=EnvioAtividadeAula.objects.filter(
-                                    autor=self.get_object(),
-                                    aprovado=True
-                                ).values('atividade_id')
-                            ).values('aula_id'),
-                            lingua=lingua,
-                            nivel=nivel,
-                        ).count()
+                            id__in=EnvioAtividadeAula.objects.filter(
+                                autor=self.get_object(),
+                                aprovado=True,
+                                atividade__aula__lingua=lingua,
+                                atividade__aula__nivel=nivel,
+                            ).values('atividade__aula_id')).count()
                     }
                 )
+
         print(context['aulas_concluidas'])
         context['postagens'] = Postagem.objects.filter(
             autor=self.get_object()

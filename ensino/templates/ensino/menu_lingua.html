@@ -6,23 +6,26 @@
 
 <div class="box-principal-blog">
     <div class="principal-box-lingua">
-        <p>{{ nivel_usuario }}</p>
         {% for nivel, aulas in niveis.items %}
-        {% if nivel_usuario >= nivel|convert_int %}
+        {% if nivel_usuario >= nivel.valor_nivel|convert_int %}
         <div class="nivel desbloqueado">
             {% else %}
             <div class="nivel bloqueado">
                 {% endif %}
-                <div class="nivel-licenciado">
-                    <h1>licenciadas</h1>
-                    <a href="{{nivel}}/nivel/{{lingua.id}}">Modulo {{ nivel }}</a>
-                </div>
+                <a class="nivel-licenciado" href="{{nivel.id}}/nivel/{{lingua.id}}">
+                    {% if lingua.lingua_img %}
+                    <img src="{{ lingua.lingua_img.url}}" alt="">
+                    {% endif %}
+                    Modulo {{ nivel }}
+                </a>
                 <div class="nivel-n-licenciado">
                     {% for aula in aulas %}
-                    <div class="nivel-aula">
-                        <p>{{value}}</p>
-                        <a href="/ensino/aula/{{ aula.id }}">{{ aula }}</a>
-                    </div>
+                    <a class="nivel-aula" href="/ensino/aula/{{ aula.id }}">
+                        {% if aula.img_aula %}
+                        <img src="{{ aula.img_aula.url }}" alt="">
+                        {% endif %}
+                        {{ aula }}
+                    </a>
                     {% endfor %}
                 </div>
 

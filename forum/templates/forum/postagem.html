@@ -46,7 +46,7 @@
                     <span>{{ comentario.autor.tipo_usuario }}</span>
                 </div>
                 <div class='postagem'>
-                    <span class="data-comentario">Postado em {{postagem.data_postagem}}</span>
+                    <span class="data-comentario">Postado em {{comentario.data_comentario}}</span>
                     <p>{{ comentario.conteudo_comentario|linebreaks }}</p>
                     {% if comentario.imagem_comentario %}
                     <img class="imagem-postagem" src="{{ comentario.imagem_comentario.url }}" alt="">

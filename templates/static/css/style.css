@@ -83,8 +83,9 @@ footer {
 /**/
 
 .usuario-img {
-    max-width: 65px;
-    max-height: 65px;
+    width: 65px;
+    height: 65px;
+    object-fit: cover;
     border-radius: 50%;
     cursor: pointer;
     overflow: hidden;
@@ -887,37 +888,6 @@ ul.drop-menu-usuario li:first-child {
     justify-content: space-between;
 }
 
-
-.principal-box-minhas-aulas {
-    display: grid;
-    grid-template-columns: 3.5fr 1fr;
-    gap: 25px;
-    padding-top: 60px;
-}
-
-.conteudo-meu-ensino {
-    display: grid;
-    gap: 25px;
-}
-
-.box-meu-ensino {
-    background-color: #171717;
-    display: grid;
-    grid-template-columns: 1fr;
-    padding: 25px 40px 25px 40px;
-}
-
-.box-gerenciar-aula {
-    display: flex;
-    width: 100%;
-    justify-content: space-around;
-    background-color: #636363;
-    border-radius: 25px;
-    margin-bottom: 30px;
-}
-
-
-
 .box-aula-professor {
     display: flex;
     flex-direction: column;
@@ -955,18 +925,48 @@ ul.drop-menu-usuario li:first-child {
     background-color: #2A2A2A;
     display: flex;
     flex-direction: column;
+    max-width: 300px;
+    min-width: 300px;
     align-items: center;
+}
+
+.nivel-licenciado img {
+    max-width: 100%;
 }
 
 .nivel-n-licenciado {
     background-color: #181818;
+    display: flex;
+    max-width: 100%;
+    overflow-x: auto;
+    gap: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
 
+}
+
+/* Track */
+.nivel-n-licenciado::-webkit-scrollbar-track {
+    background: #181818;
+}
+
+.nivel-n-licenciado::-webkit-scrollbar {
+    height: 5px;
 }
 
 .nivel-aula {
     display: flex;
     flex-direction: column;
+    gap: 7px;
     align-items: center;
+    max-width: 300px;
+    min-width: 300px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.nivel-aula img {
+    max-width: 100%;
 }
 
 .box-lingua {
@@ -1080,6 +1080,7 @@ ul.drop-menu-usuario li:first-child {
     flex-direction: column;
     background-color: #1C1C1C;
     align-items: center;
+    width: 100%;
 }
 
 .dado-autor p {
@@ -1118,7 +1119,9 @@ ul.drop-menu-usuario li:first-child {
 }
 
 .imagem-autor {
-    max-width: 50%;
+    max-width: 80px;
+    min-height: 80px;
+    object-fit: cover;
     border-radius: 50%;
     margin-top: 25px;
 }
@@ -1277,7 +1280,9 @@ ul.drop-menu-usuario li:first-child {
 }
 
 .user img {
-    max-width: 40%;
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
     border-radius: 50%;
 }
 
@@ -1400,6 +1405,52 @@ ul.drop-menu-usuario li:first-child {
 .box-principal-questao {
     color: white;
 }
+
+.bloqueado {
+    filter: grayscale(6);
+    pointer-events: none;
+}
+
+/**/
+.principal-box-minhas-aulas {
+    background-color: wheat;
+    width: 100%;
+    padding-top: 60px;
+    display: grid;
+    grid-template-columns: 3.5fr 1fr;
+    gap: 25px;
+}
+
+.meu-ensino-aux {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: darkblue;
+    width: 100%;
+}
+
+.meu-ensino {
+    display: grid;
+    gap: 20px;
+    background-color: khaki;
+}
+
+.meu-ensino a {
+    color: #0C0C0C;
+}
+
+.menu-ensino-nivel {
+    background-color: lightseagreen;
+    display: flex;
+    overflow-x: auto;
+}
+
+
+.meu-ensino-nivel {
+    display: grid;
+}
+
+/**/
 
 /**/
 @media screen and (max-width: 1450px) {

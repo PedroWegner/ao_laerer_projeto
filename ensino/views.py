@@ -49,20 +49,27 @@ class MenuLinguaView(DetailView):
     template_name = 'ensino/menu_lingua.html'
     model = Lingua
 
+    def get(self, *args, **kwargs):
+        if not 'usuario_logado' in self.request.session:
+            return redirect('usuario:login')
+
+        return super().get(*args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        niveis = NivelLingua.objects.all()
+        niveis = NivelLingua.objects.all().exclude(valor_nivel=0)
         context['niveis'] = {}
         for nivel in niveis:
             context['niveis'].update(
                 {
-                    f'{nivel.valor_nivel}': Aula.objects.filter(
+                    nivel: Aula.objects.filter(
                         lingua=self.get_object(),
                         nivel=nivel,
                         is_licenced=False
                     )
                 }
             )
+        print(context['niveis'])
         # para restringir aulas nas quais usuario podera acessar no template
         nivel_usuario = NivelLingua.objects.filter(
             id__in=UsuarioLingua.objects.filter(
@@ -70,12 +77,7 @@ class MenuLinguaView(DetailView):
                 lingua=self.get_object()
             ).values('nivel_id')
         ).first()
-
-        # dah pra altera aqui, ja que temos valor_nivel = 0
-        if nivel_usuario:
-            context['nivel_usuario'] = int(nivel_usuario.valor_nivel) + 1
-        else:
-            context['nivel_usuario'] = 1
+        context['nivel_usuario'] = int(nivel_usuario.valor_nivel) + 1
 
         return context
 
@@ -83,16 +85,25 @@ class MenuLinguaView(DetailView):
 class MenuLinguaNivelView(DetailView):
     template_name = 'ensino/modulo_nivel.html'
     model = NivelLingua
+    context_object_name = 'nivel'
+
+    def get(self, *args, **kwargs):
+        self.lingua = get_object_or_404(
+            Lingua, id=self.request.build_absolute_uri().split('/')[-2]
+        )
+        if not checa_nivel_aula_user(self.get_object(), self.request.session, self.lingua):
+            return redirect('usuario:home')
+
+        return super().get(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['aulas'] = Aula.objects.filter(
-            lingua=get_object_or_404(
-                Lingua, id=self.request.build_absolute_uri().split('/')[-2]
-            ),
+            lingua=self.lingua,
             nivel=self.get_object(),
             is_licenced=True
         )
+        context['lingua'] = self.lingua
 
         return context
 
@@ -250,6 +261,13 @@ class AtualizarAulaView(UpdateView):
     model = Aula
     form_class = AtualizarAulaForms
 
+    def get(self, *args, **kwargs):
+        if not 'usuario_logado' in self.request.session:
+            return redirect('usuario:login')
+        if not self.get_object().autor_aula.id == self.request.session['usuario_logado']['usuario_id']:
+            return redirect('usuario:home')
+        return super().get(*args, **kwargs)
+
     def get_success_url(self):
         return reverse('usuario:home')
 
@@ -277,6 +295,11 @@ class AulaView(DetailView):
     template_name = 'ensino/aula.html'
     model = Aula
     context_object_name = 'aula'
+
+    def get(self, *args, **kwargs):
+        if not checa_nivel_aula_user(self.get_object().nivel, self.request.session, self.get_object().lingua):
+            return redirect('usuario:home')
+        return super().get(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -332,12 +355,21 @@ class TesteMeuPainelAulasView(View):
                 usuario_id=self.request.session['usuario_logado']['usuario_id'],
             ).values('lingua_id')
         )
-        niveis = NivelLingua.objects.all()
+        niveis = NivelLingua.objects.all().exclude(valor_nivel=0)
+
         if self.request.session['usuario_logado']['is_licenced']:
             context['licenced_linguas'] = {}
+
         context['linguas'] = {}
+        context['lista_questoes'] = {}
+        # tentar fazer esse context ficar nulo caso nao tenha NENHUMA aula
         for lingua in linguas:
             context['linguas'].update(
+                {
+                    f'{lingua}': {}
+                }
+            )
+            context['lista_questoes'].update(
                 {
                     f'{lingua}': {}
                 }
@@ -351,6 +383,7 @@ class TesteMeuPainelAulasView(View):
             for nivel in niveis:
                 aulas = Aula.objects.filter(
                     lingua__lingua=lingua,
+                    autor_aula__id=self.request.session['usuario_logado']['usuario_id'],
                     nivel=nivel,
                     is_licenced=False
                 )
@@ -363,6 +396,7 @@ class TesteMeuPainelAulasView(View):
                 if 'licenced_linguas' in context:
                     aulas = Aula.objects.filter(
                         lingua__lingua=lingua,
+                        autor_aula__id=self.request.session['usuario_logado']['usuario_id'],
                         nivel=nivel,
                         is_licenced=True
                     )
@@ -372,6 +406,27 @@ class TesteMeuPainelAulasView(View):
                                 f'{nivel}': aulas
                             }
                         )
+                questoes = Questao.objects.filter(
+                    autor_id=self.request.session['usuario_logado']['usuario_id'],
+                    nivel=nivel,
+                    lingua=lingua,
+                )
+                if questoes:
+                    context['lista_questoes'][f'{lingua}'].update(
+                        {
+                            f'{nivel}': questoes
+                        }
+                    )
+
+            if not context['linguas'][f'{lingua}']:
+                del context['linguas'][f'{lingua}']
+            if not context['lista_questoes'][f'{lingua}']:
+                del context['lista_questoes'][f'{lingua}']
+
+            if 'licenced_linguas' in context:
+                if not context['licenced_linguas'][f'{lingua}']:
+                    del context['licenced_linguas'][f'{lingua}']
+
         return render(
             self.request, self.template_name, context
         )
@@ -388,7 +443,9 @@ class MeuPainelAulasView(ListView):
     def get(self, *args, **kwargs):
         if not 'usuario_logado' in self.request.session:
             return redirect('usuario:login')
-
+        print(Aula.objects.filter(
+            autor_aula=self.request.session['usuario_logado']['usuario_id']
+        ))
         return super().get(self, *args, **kwargs)
 
     def get_queryset(self):
@@ -661,6 +718,16 @@ class TesteUpdateAtividadeConcluida(DetailView):
 
 
 # SERVICES
+def checa_nivel_aula_user(nivel, request, lingua):
+    nivel_usuario = UsuarioLingua.objects.filter(
+        lingua=lingua,
+        usuario__id=request['usuario_logado']['usuario_id']
+    ).first()
+    if (nivel_usuario.nivel.valor_nivel + 1) < nivel.valor_nivel:
+        return False
+    return True
+
+
 def seleciona_alternativas(questao):
     print(questao)
     correta = Alternativa.objects.filter(

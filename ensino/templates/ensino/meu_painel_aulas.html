@@ -2,17 +2,16 @@
 
 {% block 'conteudo' %}
 <div class="principal-box-minhas-aulas">
-    <div class="conteudo-meu-ensino">
-        <div class='box-meu-ensino'>
-            <h1>aulas</h1>
+    <div class="meu-ensino">
+        <div>
+            <h1> Normais</h1>
             {% if linguas %}
-            <div>
-                <h1>aulas normais</h1>
+            <div class="meu-ensino-nivel">
                 {% for lingua, niveis in linguas.items %}
-                <p>{{lingua}}</p>
+                <h1>{{ lingua }}</h1>
                 {% for nivel, aulas in niveis.items %}
-                <div>
-                    <h2>{{ nivel }}</h2>
+                <h2>{{ nivel }}</h2>
+                <div class="menu-ensino-nivel">
                     {% for aula in aulas %}
                     <a href="minhas_aulas/aula/{{ aula.id }}">{{aula}}</a>
                     {% endfor %}
@@ -20,15 +19,19 @@
                 {% endfor %}
                 {% endfor %}
             </div>
+            {% else %}
+            <p>ainda sem aula normal</p>
             {% endif %}
+        </div>
+        <div>
+            <h1> Licenciadas</h1>
             {% if licenced_linguas %}
-            <div>
-                <h1>aulas licenciadas</h1>
+            <div class="meu-ensino-nivel">
                 {% for lingua, niveis in licenced_linguas.items %}
-                <p>{{lingua}}</p>
+                <h1>{{ lingua }}</h1>
                 {% for nivel, aulas in niveis.items %}
-                <div>
-                    <h2>{{ nivel }}</h2>
+                <h2>{{ nivel }}</h2>
+                <div class="menu-ensino-nivel">
                     {% for aula in aulas %}
                     <a href="minhas_aulas/aula/{{ aula.id }}">{{aula}}</a>
                     {% endfor %}
@@ -36,22 +39,36 @@
                 {% endfor %}
                 {% endfor %}
             </div>
+            {% else %}
+            <p>ainda sem aula licenciada</p>
             {% endif %}
         </div>
-        <div class="box-meu-ensino">
-            <h1>questões</h1>
+        <div>
+            <h1> questoes</h1>
+            {% if lista_questoes %}
+            <div class="meu-ensino-nivel">
+                {% for lingua, niveis in lista_questoes.items %}
+                <h1>{{ lingua }}</h1>
+                {% for nivel, questoes in niveis.items %}
+                <h2>{{ nivel }}</h2>
+                <div class="menu-ensino-nivel">
+                    {% for questao in questoes %}
+                    <p>{{ questao }}</p>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+                {% endfor %}
+            </div>
+            {% else %}
+            <p>ainda sem questão</p>
+            {% endif %}
         </div>
+
     </div>
-
-
-
-    <div class="box-gerenciar-aula">
+    <div class="meu-ensino-aux">
         <a class="btn-cadastro" href="{% url 'ensino:cadastro_aula' %}">CRIAR AULA</a>
     </div>
-    <div class="box-aula">
-        {% for aula in aulas %}
-        <a href="minhas_aulas/aula/{{ aula.id }}">{{ aula.aula }}</a>
-        {% endfor %}
-    </div>
+
+
 </div>
 {% endblock %}

@@ -44,6 +44,16 @@
             <p>{{ aula.conteudo }}</p>
             <a href="{{ aula.conteudo_download.url}}" target="_blank">Baixar conteúdo</a>
         </div>
+        <div class="box-conteudo">
+            <h2>Palavras</h2>
+            {% if not palavras_aula %}
+            <p>Não há palavras</p>
+            {% endif %}
+            {% for palavra, contexto in palavras_aula.items %}
+            <p>{{palavra}}</p>
+            <p>{{ contexto.contexto }}</p>
+            {% endfor %}
+        </div>
 
     </div>
     <!-- VIEW DO ALUNO -->

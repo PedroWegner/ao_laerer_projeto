@@ -14,11 +14,11 @@ urlpatterns = [
     #
     path('lingua/cadastro', views.LinguaCadastroView.as_view(),
          name='cadastro_lingua'),
-    path('minhas_aulas', views.TesteMeuPainelAulasView.as_view(),
+    path('meu_ensino', views.TesteMeuPainelAulasView.as_view(),
          name='minhas_aulas'),
     path('minhas_aulas/aula/<int:pk>',
          views.AtualizarAulaView.as_view(), name='atualizar_aula'),
-    path('lingua/<int:pk>/palavra/cadastro', views.CadastraPalavraView.as_view(),
+    path('meu_ensino/palavra/cadastro', views.CadastraPalavraView.as_view(),
          name='palavra_cadastro'),
     path('lingua/<int:pk>/dicionario',
          views.LinguaDicionarioView.as_view(), name='dicionario'),

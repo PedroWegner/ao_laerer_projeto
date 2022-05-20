@@ -1,3 +1,5 @@
+from ast import AugAssign
+from calendar import c
 from re import M
 from .models import EnvioAtividadeAula
 import random
@@ -14,7 +16,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from usuario.models import Usuario
 from .models import ClassePalavra, AtividadeAula, Alternativa, Contexto, Atividade, UsuarioLingua
-from .models import Lingua, AtividadeQuestao, Aula, NivelLingua, Palavra
+from .models import Lingua, AtividadeQuestao, Aula, NivelLingua, Palavra, AulaPalavra
 from .models import PalavraContexto, EnvioAtividade, Questao
 
 
@@ -108,22 +110,26 @@ class MenuLinguaNivelView(DetailView):
         return context
 
 
-class CadastraPalavraView(DetailView):
+class CadastraPalavraView(View):
     template_name = 'ensino/cadastro/cadastro_palavra.html'
-    model = Lingua
+    # model = Lingua
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = PalavraForms(
-            data=self.request.POST or None,
-        )
+    def setup(self, *args, **kwargs):
+        super().setup(*args, **kwargs)
 
-        return context
+        self.context = {
+            'form': PalavraForms(
+                data=self.request.POST or None,
+            ),
+        }
+
+        self.renderizar = render(
+            self.request, self.template_name, self.context)
 
     def get(self, *args, **kwargs):
         if not 'usuario_logado' in self.request.session:
             return redirect('usuario:login')
-        return super().get(self, *args, **kwargs)
+        return self.renderizar
 
     def post(self, *args, **kwargs):
         palavra = Palavra.objects.filter(
@@ -140,7 +146,9 @@ class CadastraPalavraView(DetailView):
         else:
             Palavra(
                 palavra=self.request.POST.get('palavra'),
-                lingua=self.get_object(),
+                lingua=Lingua.objects.filter(
+                    id=self.request.POST.get('lingua')
+                ).first(),
                 classe=ClassePalavra.objects.filter(
                     id=self.request.POST.get('classe')
                 ).first(),
@@ -338,7 +346,20 @@ class AulaView(DetailView):
             context['aulas'] = context['aulas'].filter(
                 is_licenced=False
             )[:10]
-
+        palavras_aulas = Palavra.objects.filter(
+            id__in=AulaPalavra.objects.filter(
+                aula=self.get_object()
+            ).values('palavra_id')
+        )
+        context['palavras_aula'] = {}
+        for palavra in palavras_aulas:
+            context['palavras_aula'].update(
+                {
+                    f'{palavra}': Contexto.objects.filter(
+                        palavracontexto__palavra=palavra
+                    ).order_by("?").first()
+                }
+            )
         return context
 
 
@@ -510,9 +531,8 @@ class TesteAdicionaPalavraAula(TemplateView, DetailView):
     model = Aula
 
     def get(self, *args, **kwargs):
-        formset = PalavraAulaForms(
-            queryset=Palavra.objects.none(),
-        )
+        formset = PalavraAulaForms()
+
         return self.render_to_response(
             {
                 'add_palavra': formset,
@@ -522,7 +542,7 @@ class TesteAdicionaPalavraAula(TemplateView, DetailView):
 
     def post(self, *args, **kwargs):
         formset = PalavraAulaForms(
-            data=self.request.POST,
+            data=self.request.POST
         )
         if formset.is_valid():
             forms = formset.save(commit=False)

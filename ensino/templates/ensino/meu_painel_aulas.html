@@ -8,15 +8,17 @@
             {% if linguas %}
             <div class="meu-ensino-nivel">
                 {% for lingua, niveis in linguas.items %}
-                <h1>{{ lingua }}</h1>
-                {% for nivel, aulas in niveis.items %}
-                <h2>{{ nivel }}</h2>
-                <div class="menu-ensino-nivel">
-                    {% for aula in aulas %}
-                    <a href="minhas_aulas/aula/{{ aula.id }}">{{aula}}</a>
+                <div class="meu-ensino-lingua">
+                    <h1>{{ lingua }}</h1>
+                    {% for nivel, aulas in niveis.items %}
+                    <h2>{{ nivel }}</h2>
+                    <div class="menu-ensino-nivel">
+                        {% for aula in aulas %}
+                        <a href="minhas_aulas/aula/{{ aula.id }}">{{aula}}</a>
+                        {% endfor %}
+                    </div>
                     {% endfor %}
                 </div>
-                {% endfor %}
                 {% endfor %}
             </div>
             {% else %}
@@ -28,15 +30,17 @@
             {% if licenced_linguas %}
             <div class="meu-ensino-nivel">
                 {% for lingua, niveis in licenced_linguas.items %}
-                <h1>{{ lingua }}</h1>
-                {% for nivel, aulas in niveis.items %}
-                <h2>{{ nivel }}</h2>
-                <div class="menu-ensino-nivel">
-                    {% for aula in aulas %}
-                    <a href="minhas_aulas/aula/{{ aula.id }}">{{aula}}</a>
+                <div class="meu-ensino-lingua">
+                    <h1>{{ lingua }}</h1>
+                    {% for nivel, aulas in niveis.items %}
+                    <h2>{{ nivel }}</h2>
+                    <div class="menu-ensino-nivel">
+                        {% for aula in aulas %}
+                        <a href="minhas_aulas/aula/{{ aula.id }}">{{aula}}</a>
+                        {% endfor %}
+                    </div>
                     {% endfor %}
                 </div>
-                {% endfor %}
                 {% endfor %}
             </div>
             {% else %}
@@ -65,9 +69,17 @@
         </div>
 
     </div>
-    <div class="meu-ensino-aux">
-        <a class="btn-cadastro" href="{% url 'ensino:cadastro_aula' %}">CRIAR AULA</a>
+    <div>
+        <div class="meu-ensino-aux">
+            <a class="btn-cadastro" href="{% url 'ensino:cadastro_aula' %}">CRIAR AULA</a>
+            <a class="btn-cadastro" href="{% url 'ensino:palavra_cadastro' %}">CRIAR PALAVRA</a>
+            <a class="btn-cadastro" href="{% url 'ensino:add_questao' %}">CRIAR QUESTAO</a>
+        </div>
+        <div>
+
+        </div>
     </div>
+
 
 
 </div>

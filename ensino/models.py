@@ -75,7 +75,7 @@ class Palavra(models.Model):
         Contexto, related_name='palavras', through='PalavraContexto')
 
     def __str__(self):
-        return self.palavra
+        return f'{self.palavra}_{self.lingua}'
 
 
 class PalavraContexto(models.Model):
@@ -100,7 +100,6 @@ class Aula(models.Model):
                               on_delete=models.DO_NOTHING)
     lingua = models.ForeignKey(
         Lingua, blank=True, null=True, on_delete=models.CASCADE)
-
     autor_aula = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING)
     aula_gravada = models.FileField(upload_to='aula/%Y/%m')
     img_aula = models.ImageField(

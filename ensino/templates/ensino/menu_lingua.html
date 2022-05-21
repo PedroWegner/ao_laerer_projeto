@@ -16,7 +16,7 @@
                     {% if lingua.lingua_img %}
                     <img src="{{ lingua.lingua_img.url}}" alt="">
                     {% endif %}
-                    Modulo {{ nivel }}
+                    <p>Modulo {{ nivel }}</p>
                 </a>
                 <div class="nivel-n-licenciado">
                     {% for aula in aulas %}
@@ -24,17 +24,13 @@
                         {% if aula.img_aula %}
                         <img src="{{ aula.img_aula.url }}" alt="">
                         {% endif %}
-                        {{ aula }}
+                        <p>{{ aula }}</p>
                     </a>
                     {% endfor %}
                 </div>
 
             </div>
             {% endfor %}
-        </div>
-        <div>
-            <h2>dicionario</h2>
-            <a href="{{ lingua.id }}/dicionario" class="btn-cadastro">dict</a>
         </div>
     </div>
 

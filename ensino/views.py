@@ -1,6 +1,3 @@
-from ast import AugAssign
-from calendar import c
-from re import M
 from .models import EnvioAtividadeAula
 import random
 from django.views.generic import TemplateView
@@ -280,8 +277,14 @@ class AtualizarAulaView(UpdateView):
         return reverse('usuario:home')
 
     def get_context_data(self, **kwargs):
-
-        return super().get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+        context['aula'] = self.get_object()
+        context['palavras_aula'] = Palavra.objects.filter(
+            id__in=AulaPalavra.objects.filter(
+                aula=self.get_object()
+            ).values('palavra_id')
+        )
+        return context
 
     def form_valid(self, form):
         att_aula = form.save(commit=False)

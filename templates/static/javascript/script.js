@@ -54,6 +54,17 @@ $('.btn-show').click(function () {
 
 // })
 
+$('.label-normais').click(function () {
+    $('.meu-ensino-normais').toggleClass('show')
+})
+
+$('.label-licenciadas').click(function () {
+    $('.meu-ensino-licenciadas').toggleClass('show')
+})
+
+$('.label-questoes').click(function () {
+    $('.meu-ensino-questoes').toggleClass('show')
+})
 
 $('.abre-usuario').click(function () {
     $('ul.drop-menu-usuario li').toggleClass('abre')

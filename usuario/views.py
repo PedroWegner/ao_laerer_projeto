@@ -1,5 +1,4 @@
 from ensino.models import *
-from dataclasses import is_dataclass
 from ensino.models import UsuarioLingua
 from forum.models import Noticia
 from django.http import HttpResponseRedirect

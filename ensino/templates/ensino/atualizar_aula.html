@@ -3,13 +3,6 @@
 {% block 'conteudo' %}
 <div class="box-aula-professor">
     <div class="box-principal-aula">
-        <div class="bem-vindo-label">
-            <p>Seja bem vindo {{ request.session.usuario_logado.nome}}{{request.session.usuario_logado.sobrenome }} !
-            </p>
-            <p>Você está na aula {{ aula }} </p>
-            <a href="{{ aula.id }}/add_palavra">adicionar palavras</a>
-            <a href="{{ aula.id }}/adiciona_atividade">Adicionar atividade</a>
-        </div>
         <div class="box-video-aula">
             <h2>{{ aula }}</h2>
             <div>
@@ -18,20 +11,31 @@
 
                 </video>
             </div>
-            <span>Professor: {{ aula.professor }}</span>
         </div>
 
         <div class="box-conteudo-aula">
             <div class="box-conteudo">
-                <h2>Contéudo da aula</h2>
+                <h2>Contéudo</h2>
                 <p>{{ aula.conteudo }}</p>
-            </div>
-            <div class="box-conteudo">
-                <h2>Baixe o conteúdo da aula</h2>
+                <h2>Baixe o conteúdo</h2>
                 <a href="{{ aula.conteudo_download.url}}" target="_blank">documento de {{ aula }}</a>
             </div>
+            <div class="box-conteudo">
+                <h2>Palavras</h2>
+                {% if not palavras_aula %}
+                <p>Não há palavras cadastradas</p>
+                {% endif %}
+                {% for palavra in palavras_aula%}
+                <p>{{palavra}}</p>
+                {% endfor %}
+                <a class='btn-cadastro' href="{{ aula.id }}/add_palavra">Adicionar palavras</a>
+            </div>
+        </div>
+        <div class="box-conteudo-aula">
+            <a class='btn-cadastro' href="{{ aula.id }}/adiciona_atividade">Adicionar atividade</a>
         </div>
     </div>
+
     <div class="principal-box-cad">
         <h1>
             Atualizar cadastro

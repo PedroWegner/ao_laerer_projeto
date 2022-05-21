@@ -4,17 +4,24 @@
 
 
 <div class="box-principal-blog" style="color:aliceblue;">
-    <form method="POST">
+    <form class="atividade-aula-form" method="POST">
         {% csrf_token %}
         {% for questao_id, questao in lista_questoes.items %}
-        {% for frase, alternativas in questao.items %}
-        <p>{{ frase }}</p>
-        {% for alternativa in alternativas %}
-        <input type="radio" name="{{ questao_id }}" id="alternativa-{{questao_id}}-{{alternativa}}"
-            value="{{alternativa}}">
-        <label for="alternativa-{{questao_id}}-{{alternativa}}">{{ alternativa }}</label>
-        {% endfor %}
-        {% endfor %}
+        <div class="atividade-aula-questao">
+            {% for frase, alternativas in questao.items %}
+            <p>{{ frase }}</p>
+            <div class="atividade-aula-respostas">
+                {% for alternativa in alternativas %}
+                <div>
+                    <input type="radio" name="{{ questao_id }}" id="alternativa-{{questao_id}}-{{alternativa}}"
+                        value="{{alternativa}}">
+                    <label for="alternativa-{{questao_id}}-{{alternativa}}">{{ alternativa }}</label>
+                </div>
+
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
         {% endfor %}
         <button type="submit">Resposta</button>
     </form>

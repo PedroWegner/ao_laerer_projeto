@@ -3,10 +3,13 @@
 {% block 'conteudo' %}
 <div class="principal-box-minhas-aulas">
     <div class="meu-ensino">
-        <div>
-            <h1> Normais</h1>
+        <div class="meu-ensino-unidade">
+            <div class="label-normais">
+                <h1>Aulas</h1>
+            </div>
+
             {% if linguas %}
-            <div class="meu-ensino-nivel">
+            <div class="meu-ensino-normais show">
                 {% for lingua, niveis in linguas.items %}
                 <div class="meu-ensino-lingua">
                     <h1>{{ lingua }}</h1>
@@ -14,7 +17,14 @@
                     <h2>{{ nivel }}</h2>
                     <div class="menu-ensino-nivel">
                         {% for aula in aulas %}
-                        <a href="minhas_aulas/aula/{{ aula.id }}">{{aula}}</a>
+                        <a href="minhas_aulas/aula/{{ aula.id }}">
+                            <div class="meu-ensino-aula">
+                                {% if aula.img_aula %}
+                                <img src="{{ aula.img_aula.url}}" alt="">
+                                {% endif %}
+                                <p>{{aula}}</p>
+                            </div>
+                        </a>
                         {% endfor %}
                     </div>
                     {% endfor %}
@@ -25,10 +35,12 @@
             <p>ainda sem aula normal</p>
             {% endif %}
         </div>
-        <div>
-            <h1> Licenciadas</h1>
+        <div class="meu-ensino-unidade">
+            <div class="label-licenciadas">
+                <h1>Aulas licenciadas</h1>
+            </div>
             {% if licenced_linguas %}
-            <div class="meu-ensino-nivel">
+            <div class="meu-ensino-licenciadas show">
                 {% for lingua, niveis in licenced_linguas.items %}
                 <div class="meu-ensino-lingua">
                     <h1>{{ lingua }}</h1>
@@ -36,7 +48,16 @@
                     <h2>{{ nivel }}</h2>
                     <div class="menu-ensino-nivel">
                         {% for aula in aulas %}
-                        <a href="minhas_aulas/aula/{{ aula.id }}">{{aula}}</a>
+                        <a href="minhas_aulas/aula/{{ aula.id }}">
+                            <div class="meu-ensino-aula">
+
+                                {% if aula.img_aula %}
+                                <img src="{{ aula.img_aula.url}}" alt="">
+                                {% endif %}
+                                <p>{{aula}}</p>
+
+                            </div>
+                        </a>
                         {% endfor %}
                     </div>
                     {% endfor %}
@@ -47,17 +68,25 @@
             <p>ainda sem aula licenciada</p>
             {% endif %}
         </div>
-        <div>
-            <h1> questoes</h1>
+        <div class="meu-ensino-unidade">
+            <div class="label-questoes">
+                <h1>Questões</h1>
+            </div>
+
             {% if lista_questoes %}
-            <div class="meu-ensino-nivel">
+            <div class="meu-ensino-questoes show">
                 {% for lingua, niveis in lista_questoes.items %}
                 <h1>{{ lingua }}</h1>
                 {% for nivel, questoes in niveis.items %}
                 <h2>{{ nivel }}</h2>
-                <div class="menu-ensino-nivel">
+                <div class="menu-ensino-questoes">
                     {% for questao in questoes %}
-                    <p>{{ questao }}</p>
+                    <div class="meu-ensino-questoes">
+                        <a href="">
+                            <p>{{ questao}}</p>
+                        </a>
+                    </div>
+
                     {% endfor %}
                 </div>
                 {% endfor %}

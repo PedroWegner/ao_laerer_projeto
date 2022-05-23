@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block 'titulo'%} Blog {% endblock %}
+{% block 'conteudo' %}
+
+
+<div class="box-principal-blog">
+    <h1>teste update questao</h1>
+
+    <form id="form-container" method="POST">
+        {% csrf_token %}
+
+        <div>
+            <label for="id_frase">Frase</label>
+            <input type="text" name="id_frase" id="id_frase" value="{{ questao.frase }}">
+        </div>
+        {% for alternativa in alternativas %}
+        <div class="alternativa-prontas">
+            <p>
+                <label for="id_{{alternativa.id}}_alternativa">Alternativa</label>
+                <input type="text" name="id_{{alternativa.id}}_alternativa" id="id_{{alternativa.id}}_alternativa"
+                    value="{{ alternativa.alternativa }}">
+            </p>
+            <p>
+                <label for="id_{{alternativa.id}}_is_correct">É correta</label>
+                {% if alternativa.is_correct%}
+                <input type="checkbox" name="id_{{alternativa.id}}_is_correct" id="id_{{alternativa.id}}_is_correct"
+                    checked="{{ alternativa.is_correct}}">
+                {% else %}
+                <input type="checkbox" name="id_{{alternativa.id}}_is_correct" id="id_{{alternativa.id}}_is_correct">
+                {% endif %}
+            </p>
+
+
+
+
+
+        </div>
+        {% endfor %}
+        <div class="alternativa">
+            <p>
+                <label for="id_alternativa_set-0-alternativa">Alternativa</label>
+                <input type="text" name="id_alternativa_set-0-alternativa" id="id_alternativa_set-0-alternativa">
+            </p>
+            <p>
+                <label for="id_alternativa_set-0-is_correct">É correta</label>
+                <input type="checkbox" name="id_alternativa_set-0-is_correct" id="id_alternativa_set-0-is_correct">
+            </p>
+
+
+        </div>
+        <button id="add-form" type="button">+</button>
+        <button type="submit">adicionar questao</button>
+
+    </form>
+
+
+</div>
+
+<script>
+    let alternativa_form = document.querySelectorAll(".alternativa")
+    let container = document.querySelector("#form-container")
+    let addButton = document.querySelector("#add-form")
+    let totalForms = document.querySelector("#id_alternativa_set-TOTAL_FORMS")
+
+    let formNum = alternativa_form.length - 1
+    addButton.addEventListener('click', addForm)
+
+    function addForm(e) {
+        e.preventDefault()
+        console.log(alternativa_form)
+        let newForm = alternativa_form[0].cloneNode(true)
+        let formRegex = RegExp(`alternativa_set-(\\d){1}-`, 'g')
+
+        formNum++
+        newForm.innerHTML = newForm.innerHTML.replace(formRegex, `alternativa_set-${formNum}-`)
+        container.insertBefore(newForm, addButton)
+
+        totalForms.setAttribute('value', `${formNum + 1}`)
+    }
+</script>
+
+{% endblock %}

@@ -1524,11 +1524,6 @@ ul.drop-menu-usuario li:first-child {
     gap: 25px;
 }
 
-.meu-ensino-unidade {
-    background-color: #171717;
-    padding-bottom: 30px;
-}
-
 .meu-ensino-aux {
     display: flex;
     flex-direction: column;
@@ -1557,9 +1552,9 @@ ul.drop-menu-usuario li:first-child {
 .meu-ensino-unidade {
     padding-left: 15px;
     padding-right: 15px;
+    background-color: #171717;
     color: white;
 }
-
 
 .menu-ensino-nivel {
     background-color: #1C1C1C;
@@ -1593,20 +1588,34 @@ ul.drop-menu-usuario li:first-child {
     background-color: #1C1C1C;
     display: flex;
     overflow-x: auto;
-    min-height: 60px;
-    max-height: 60px;
+    min-height: 100px;
+    max-height: 100px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    gap: 20px;
 }
 
-.menu-ensino-questoes a p {
+.questoes-ind {
+    min-width: 200px;
+    background-color: #2c2c22;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin: 0 auto
+}
+
+.questoes-ind a p {
+    text-align: center;
     color: white;
 }
+
 
 .meu-ensino-questoes {
     min-width: 100px;
     margin-top: 10px;
     margin-left: 10px;
     margin-bottom: 10px;
-    background-color: darkblue;
 }
 
 .meu-ensino-questoesa:last-child {
@@ -1626,6 +1635,7 @@ ul.drop-menu-usuario li:first-child {
 .meu-ensino-licenciadas,
 .meu-ensino-questoes {
     display: grid;
+    padding-bottom: 20px;
 }
 
 .meu-ensino-normais.show,
@@ -1664,6 +1674,8 @@ ul.drop-menu-usuario li:first-child {
 .meu-ensino-aula:hover>p {
     color: #6571E0;
 }
+
+
 
 /* ATIVIDADE AULA ARRUMADO */
 .atividade-aula-form {

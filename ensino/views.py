@@ -1,4 +1,3 @@
-from .models import EnvioAtividadeAula
 import random
 from django.views.generic import TemplateView
 from .forms import *
@@ -12,9 +11,9 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from usuario.models import Usuario
-from .models import ClassePalavra, AtividadeAula, Alternativa, Contexto, Atividade, UsuarioLingua
-from .models import Lingua, AtividadeQuestao, Aula, NivelLingua, Palavra, AulaPalavra
-from .models import PalavraContexto, EnvioAtividade, Questao
+from .models import ClassePalavra, AtividadeAula, Alternativa, Contexto, Atividade,\
+    UsuarioLingua, Lingua, AtividadeQuestao, Aula, NivelLingua, Palavra, \
+    AulaPalavra, PalavraContexto, EnvioAtividade, Questao, EnvioAtividadeAula
 
 
 class LinguaCadastroView(FormView):
@@ -561,9 +560,7 @@ class TesteCriaQuestao(TemplateView):
     template_name = 'ensino/teste_questao.html'
 
     def get(self, *args, **kwargs):
-        formset = AlternativasQuestaoFormset(
-            queryset=Palavra.objects.none(),
-        )
+        formset = AlternativasQuestaoFormset()
         form = QuestaoForms()
         return self.render_to_response(
             {
@@ -597,6 +594,76 @@ class TesteCriaQuestao(TemplateView):
                 'add_alternativa': formset,
             },
         )
+
+
+class TesteUpdateQuestao(DetailView):
+    template_name = 'ensino/teste_update_questao.html'
+    model = Questao
+
+    def setup(self, *args, **kwargs):
+        super().setup(*args, **kwargs)
+        self.context = {
+            'questao': self.get_object(),
+            'alternativas': Alternativa.objects.filter(
+                questao=self.get_object(),
+            ),
+            'form_alternativas': AlternativasFormFactory(),
+        }
+
+        self.renderizar = render(
+            self.request, self.template_name, self.context)
+
+    def get(self, *args, **kwargs):
+        return self.renderizar
+
+    def post(self, *args, **kwargs):
+        alternativas_salvas = Alternativa.objects.filter(
+            questao=self.get_object()
+        )
+
+        frase = self.request.POST.get('id_frase')
+        if not self.get_object().frase == frase:
+            Questao.objects.filter(
+                id=self.get_object().id
+            ).update(
+                frase=frase
+            )
+
+        for alternativa in alternativas_salvas:
+            up_alternativa = self.request.POST.get(
+                f'id_{alternativa.id}_alternativa')
+            if not alternativa.alternativa == up_alternativa:
+                Alternativa.objects.filter(
+                    questao=self.get_object(),
+                    id=alternativa.id,
+                ).update(
+                    alternativa=up_alternativa
+                )
+
+        # aqui sao as novas questoes
+        id_nov = 0
+        alt_nova = self.request.POST.get(
+            f'id_alternativa_set-{id_nov}-alternativa')
+
+        while alt_nova:
+            if self.request.POST.get(f'id_alternativa_set-{id_nov}-is_correct') == 'on':
+                Alternativa(
+                    questao=self.get_object(),
+                    alternativa=alt_nova,
+                    is_correct=True
+                ).save()
+            else:
+                Alternativa(
+                    questao=self.get_object(),
+                    alternativa=alt_nova,
+                    is_correct=False
+                ).save()
+            id_nov += 1
+            alt_nova = self.request.POST.get(
+                f'id_alternativa_set-{id_nov}-alternativa')
+
+        # preciso mudar aqui em baixo
+        return redirect(reverse_lazy('ensino:minhas_aulas'))
 
 
 class TesteResolucaoQuestao(DetailView):
@@ -752,7 +819,6 @@ def checa_nivel_aula_user(nivel, request, lingua):
 
 
 def seleciona_alternativas(questao):
-    print(questao)
     correta = Alternativa.objects.filter(
         questao=questao,
         is_correct=True,

@@ -81,9 +81,9 @@
                 <h2>{{ nivel }}</h2>
                 <div class="menu-ensino-questoes">
                     {% for questao in questoes %}
-                    <div class="meu-ensino-questoes">
-                        <a href="">
-                            <p>{{ questao}}</p>
+                    <div class="questoes-ind">
+                        <a href="questao-update/{{ questao.id }}">
+                            <p>{{ questao.frase }}</p>
                         </a>
                     </div>
 

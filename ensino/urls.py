@@ -40,4 +40,6 @@ urlpatterns = [
     path('questao/<int:pk>', views.TesteResolucaoQuestao.as_view()),
     path('minhas_aulas/aula/<int:pk>/adiciona_atividade',
          views.TesteAdicionaAtividadeAula.as_view()),
+    path('questao-update/<int:pk>',
+         views.TesteUpdateQuestao.as_view()),
 ]

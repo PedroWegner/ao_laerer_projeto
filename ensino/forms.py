@@ -123,3 +123,7 @@ AlternativasQuestaoFormset = inlineformset_factory(
     extra=1,
     can_delete=False
 )
+
+AlternativasFormFactory = modelformset_factory(
+    models.Alternativa, fields=('alternativa', 'is_correct'), extra=1,
+)

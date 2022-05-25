@@ -3,7 +3,7 @@
 {% block 'conteudo' %}
 
 
-<div class="box-principal-blog" style="color:aliceblue;">
+<div class="box-principal-blog">
     <form class="atividade-aula-form" method="POST">
         {% csrf_token %}
         {% for questao_id, questao in lista_questoes.items %}

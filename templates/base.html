@@ -18,7 +18,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;500;700&display=swap" rel="stylesheet">
 </head>
 
-<body class='site'>
+<body class='site dark'>
     <div class="content">
         <div class='fixed-nav-bar'>
             <ul class="nav-ul-comum">
@@ -36,7 +36,7 @@
                     <p class="abre-cadastro">
                         Cadastrar
                     </p>
-                    <ul class="drop-menu-cadastro">
+                    <ul class="drop-menu-cadastro high-dark">
                         <li>
                             
                             <a href="{% url 'ensino:cadastro_lingua' %}">Cadastrar língua</a>
@@ -51,8 +51,8 @@
                     <div class="abre-usuario">
                         <img class="usuario-img" src="{{ request.session.usuario_logado.img_usuario }}" alt="">
                     </div>    
-                    <ul class="drop-menu-usuario">
-                        
+                    <ul class="drop-menu-usuario high-dark">
+                        <li><p class='muda-tema'>Mudar tema</p></li>
                         <li><a href="{% url 'usuario:atualizar_dados' %}">Atualizar dados</a></li>
                         <li><a href="{% url 'usuario:atualizar_senha' %}">Atualizar senha</a></li>
                         <li><a href="/usuario/{{request.session.usuario_logado.usuario_id}}/atualizar">Atualizar usuario</a></li>

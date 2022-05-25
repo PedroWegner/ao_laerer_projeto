@@ -2,13 +2,13 @@
 {% block 'titulo'%} Cadastro de aula {% endblock %}
 {% block 'conteudo' %}
 <div class="principal-box-cad">
-    <h1>
+    <h2>
         Cadastrar lingua
-    </h1>
+    </h2>
     <div>
         <form class='principal-box-form' method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <div class="form-box">
+            <div class="form-box-1-col">
                 <div class="form-cadastro">
                     <h3>Aula</h3>
                     {{ form }}

@@ -29,40 +29,25 @@ $('.abre-cadastro').click(function () {
     $('ul.drop-menu-cadastro').toggleClass('abre')
 })
 
-$('.muda-tema').click(function () {
-    if (localStorage.getItem('claro') == 'false') {
-        document.documentElement.style.setProperty('--color-back', '#8B8B8C');
-        document.documentElement.style.setProperty('--color-low', '#fff');
-        document.documentElement.style.setProperty('--color-medium', '#c2c2c2');
-        document.documentElement.style.setProperty('--color-high', '#dcdcdc');
-        document.documentElement.style.setProperty('--font-color', '#232424');
-        localStorage.setItem('claro', 'true')
-    }
-    else {
-        document.documentElement.style.setProperty('--color-back', '#262626');
-        document.documentElement.style.setProperty('--color-low', '#373a3c');
-        document.documentElement.style.setProperty('--color-medium', '#222222');
-        document.documentElement.style.setProperty('--color-high', '#333');
-        document.documentElement.style.setProperty('--font-color', '#E8EBEC');
-        localStorage.setItem('claro', 'false')
-    }
+{
+    $('.muda-tema').click(function () {
+        $(':root').toggleClass('light')
+        if (localStorage.getItem('claro') == 'false') {
+            localStorage.setItem('claro', 'true')
+        }
+        else {
+            localStorage.setItem('claro', 'false')
+        }
 
-})
-window.onload = function () {
-    if (localStorage.getItem('claro') == 'true') {
-        document.documentElement.style.setProperty('--color-back', '#8B8B8C');
-        document.documentElement.style.setProperty('--color-low', '#fff');
-        document.documentElement.style.setProperty('--color-medium', '#c2c2c2');
-        document.documentElement.style.setProperty('--color-high', '#dcdcdc');
-        document.documentElement.style.setProperty('--font-color', '#232424');
+    })
 
-    }
-    else {
-        document.documentElement.style.setProperty('--color-back', '#262626');
-        document.documentElement.style.setProperty('--color-low', '#373a3c');
-        document.documentElement.style.setProperty('--color-medium', '#222222');
-        document.documentElement.style.setProperty('--color-high', '#333');
-        document.documentElement.style.setProperty('--font-color', '#E8EBEC');
-
+    window.onload = function () {
+        if (localStorage.getItem('claro') == 'true') {
+            document.querySelector(':root').classList.add('light')
+        }
+        else {
+            document.querySelector(':root').classList.remove('light')
+        }
     }
 }
+

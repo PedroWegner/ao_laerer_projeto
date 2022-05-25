@@ -24,9 +24,11 @@
             <ul class="nav-ul-comum">
                 <li>
                     <a href="{% url 'usuario:home' %}">HOME</a>
+                    {% if request.session.usuario_logado %}
                     <a href="{% url 'ensino:menu_linguas' %}">Línguas</a>
                     <a href="{% url 'forum:forum' %}">Forum</a>
                     <a href="{% url 'ensino:minhas_aulas' %}">Meu ensino</a>
+                    {% endif %}
                 </li>
             </ul>
             <ul class='nav-ul'>
@@ -37,11 +39,8 @@
                         Cadastrar
                     </p>
                     <ul class="drop-menu-cadastro high-dark">
-                        <li>
-                            
-                            <a href="{% url 'ensino:cadastro_lingua' %}">Cadastrar língua</a>
-                            <a href="{% url 'forum:cadastro_noticia' %}">Cadastrar notícia</a>
-                        </li>
+                        <li><a href="{% url 'ensino:cadastro_lingua' %}">Cadastrar língua</a></li>
+                        <li><a href="{% url 'forum:cadastro_noticia' %}">Cadastrar notícia</a></li> 
                     </ul>
                 </li>
                 {% endif %}

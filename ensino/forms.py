@@ -11,33 +11,6 @@ class LinguaCadastro(forms.ModelForm):
         fields = ('lingua', 'lingua_img')
 
 
-class AtividadePostagemForms(forms.ModelForm):
-    """ 
-    Formulario para postagem de atividades
-    """
-    class Meta:
-        model = models.Atividade
-        fields = ('atividade_doc', 'comentario')
-
-
-class AtividadeEnviadaForms(forms.ModelForm):
-    """
-    Formulario para envio de atividades
-    """
-    class Meta:
-        model = models.EnvioAtividade
-        fields = ('envio_atividade_doc', )
-
-# VERIFICAR FORMS ABAIXO
-
-
-class AtribuiNotaAtividadeForms(forms.ModelForm):
-    class Meta:
-        model = models.EnvioAtividade
-        fields = ('nota', )
-
-
-#
 class CriarAulaForms(forms.ModelForm):
     """
     Formulario para criacao de aula
@@ -46,15 +19,6 @@ class CriarAulaForms(forms.ModelForm):
         model = models.Aula
         fields = ('aula', 'conteudo', 'conteudo_download',
                   'nivel', 'lingua', 'aula_gravada')
-
-
-class CriarAtividadeForms(forms.ModelForm):
-    """
-    Formulario para a criacao de atividae, chamado na mesma view do form de aula
-    """
-    class Meta:
-        model = models.Atividade
-        fields = ('atividade_doc', 'comentario')
 
 
 class AtualizarAulaForms(forms.ModelForm):
@@ -78,13 +42,6 @@ class AtualizarAulaForms(forms.ModelForm):
             'conteudo_download',
             'aula_gravada',
         }
-
-
-class AtualizarAtividadeAluno(forms.ModelForm):
-    class Meta:
-        model = models.EnvioAtividade
-        fields = ('envio_atividade_doc', 'envio_definitivo',)
-
 # NOVOS CADASTROS
 
 # A PALAVRA FORMS CONSIGO FAZER COMO O DE QUESTAO, E AUMENTAR QUANTIDADE DE CONTEXTO

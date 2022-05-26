@@ -187,15 +187,6 @@ class PerfilUsuarioView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # if self.get_object().tipo_usuario.id == 1:
-        #     context['cursos_vinculados'] = ModuloMatriculaAluno.objects.filter(
-        #         aluno__usuario=self.get_object(),
-        #         aprovado=True
-        #     )
-        # else:
-        #     context['cursos_vinculados'] = ModuloVinculoProfessor.objects.filter(
-        #         professor__usuario=self.get_object(),
-        #     )
         context['aulas_concluidas'] = {}
         for lingua in Lingua.objects.all():
             context['aulas_concluidas'][f'{lingua}'] = {}

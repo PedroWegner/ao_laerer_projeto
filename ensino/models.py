@@ -86,6 +86,17 @@ class PalavraContexto(models.Model):
         return f'{self.palavra} - {self.contexto}'
 
 
+class ModuloLinguaNivel(models.Model):
+    lingua = models.ForeignKey(Lingua, on_delete=models.DO_NOTHING)
+    nivel = models.ForeignKey(NivelLingua, on_delete=models.DO_NOTHING)
+    descricao = models.TextField()
+    img_modulo = models.ImageField(
+        upload_to='img_modulo/%Y/%m', null=True, blank=True)
+
+    def __str__(self) -> str:
+        return f'Modulo {self.nivel}'
+
+
 class Aula(models.Model):
     """
     Tabela de aulas disponiveis no curso
@@ -107,6 +118,8 @@ class Aula(models.Model):
     palavra = models.ManyToManyField(
         Palavra, related_name='aulas', through="AulaPalavra")
     is_licenced = models.BooleanField(default=False)
+    modulo = models.ForeignKey(ModuloLinguaNivel, null=True,
+                               blank=True, default=None, on_delete=models.DO_NOTHING)
 
     def __str__(self) -> str:
         return self.aula
@@ -116,48 +129,9 @@ class AulaPalavra(models.Model):
     aula = models.ForeignKey(Aula, on_delete=models.CASCADE)
     palavra = models.ForeignKey(Palavra, on_delete=models.DO_NOTHING)
 
-
-class Atividade(models.Model):
-    """
-    Tabela para registrar atividades de aulas
-    """
-    aula = models.ForeignKey(
-        Aula, on_delete=models.CASCADE, related_name='atividade')
-    data_post = models.DateField(default=timezone.now)
-    autor = models.ForeignKey(
-        Usuario, on_delete=models.DO_NOTHING, null=True)
-    atividade_doc = models.FileField(
-        upload_to='atividade_postada/%Y/%m', verbose_name='Atividade')
-    comentario = models.TextField(blank=True, null=True)
-
-    def __str__(self) -> str:
-        return f'Atividade da aula {self.aula.aula}'
-
-
-class EnvioAtividade(models.Model):
-    """
-    Tabela para registrar envios de atividade
-    """
-    data_entrega = models.DateField(
-        default=timezone.now)  # I HAVE TO CHANGE IT
-    autor = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING, null=True)
-    atividade = models.ForeignKey(
-        Atividade, on_delete=models.DO_NOTHING, related_name='atividades_enviadas')
-    envio_atividade_doc = models.FileField(
-        upload_to='atividade_enviada/%Y/%m')
-    nota = models.FloatField(blank=True, null=True)
-    comentario = models.TextField(blank=True, null=True)
-    envio_definitivo = models.BooleanField(default=False)
-
-    def __str__(self) -> str:
-        return f'{self.atividade} enviada por {self.autor}'
-
-    class Meta:
-        verbose_name = 'Atividade enviada'
-        verbose_name_plural = 'Atividades enviadas'
-
-
 # teste nova atividade
+
+
 class Questao(models.Model):
     frase = models.CharField(max_length=255)
     autor = models.ForeignKey(

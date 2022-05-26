@@ -31,8 +31,8 @@
 
     <div class="box-modulo-painel">
         <div>
-            <img src="{{ lingua.lingua_img.url }}" style="max-width: 50%;" alt="">
-            <h1>{{ nivel }}</h1>
+            <img src="{{ modulo.img_modulo.url }}" style="max-width: 50%;" alt="">
+            <h1>{{ modulo }}</h1>
 
             <p></p>
         </div>
@@ -43,17 +43,7 @@
             {% endfor %}
         </div>
         <div>
-            <p>
-                Aliquam sagittis erat et rutrum tincidunt. Aenean dictum mattis
-                condimentum. Pellentesque tempus mauris sit amet ultrices ornare.
-                Suspendisse lorem velit, varius a condimentum vitae, auctor a sapien.
-                Nam nibh elit, ullamcorper eu lobortis non, dapibus eget lectus. Aenean
-                vulputate a lectus eget sagittis. Pellentesque vestibulum ante quis
-                nunc congue consequat. Morbi nisl tellus, efficitur nec ultricies in,
-                aliquet sit amet lectus. Proin eget faucibus enim. In hac habitasse
-                platea dictumst. Proin sit amet pellentesque mauris.
-                Duis laoreet lectus vitae tortor dictum, eu convallis turpis tempor. Fusce in ultricies nibh.
-            </p>
+            <p>{{ modulo.descricao }}</p>
         </div>
     </div>
 </div>

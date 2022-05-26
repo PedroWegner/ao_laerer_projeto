@@ -6,17 +6,23 @@
 
 <div class="box-principal-blog">
     <div class="principal-box-lingua">
+
         {% for nivel, aulas in niveis.items %}
         {% if nivel_usuario >= nivel.valor_nivel|convert_int %}
         <div class="nivel desbloqueado">
             {% else %}
             <div class="nivel bloqueado">
                 {% endif %}
-                <a class="nivel-licenciado" href="{{nivel.id}}/nivel/{{lingua.id}}">
-                    {% if lingua.lingua_img %}
-                    <img src="{{ lingua.lingua_img.url}}" alt="">
+                {% for modulo in modulos %}
+                {% if modulo.nivel == nivel %}
+                <a class="nivel-licenciado" href="modulo/{{modulo.id}}">
+                    {% if modulo.img_modulo %}
+                    <img src="{{ modulo.img_modulo.url}}" alt="">
                     {% endif %}
-                    <p>Modulo {{ nivel }}</p>
+
+                    <p>{{ modulo }}</p>
+                    {% endif %}
+                    {% endfor %}
                 </a>
                 <div class="nivel-n-licenciado">
                     {% for aula in aulas %}

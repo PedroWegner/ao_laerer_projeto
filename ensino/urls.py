@@ -6,12 +6,9 @@ app_name = 'ensino'
 urlpatterns = [
     path('', views.MenuLinguasView.as_view(), name='menu_linguas'),
     path('lingua/<int:pk>', views.MenuLinguaView.as_view(), name='menu_lingua'),
-    path('lingua/<int:pk>/nivel/<int>/', views.MenuLinguaNivelView.as_view()),
-    #
     path('aula/cadastro',
          views.AulaCadastroView.as_view(), name='cadastro_aula'),
     path('aula/<int:pk>', views.AulaView.as_view(), name='aula'),
-    #
     path('lingua/cadastro', views.LinguaCadastroView.as_view(),
          name='cadastro_lingua'),
     path('meu_ensino', views.TesteMeuPainelAulasView.as_view(),
@@ -23,23 +20,15 @@ urlpatterns = [
     path('lingua/<int:pk>/dicionario',
          views.LinguaDicionarioView.as_view(), name='dicionario'),
     path('lingua/palavra/<int:pk>/', views.PalavraView.as_view(), name='palavra'),
-    path('aula/atividade/cadastro/<int:pk>',
-         views.AtividadeUsuarioCadastroView.as_view(), name='enviar_atividade'),
-    path('aula/atividade/atualizar/<int:pk>',
-         views.AtividadeAlunoAtualizarView.as_view(), name='reenviar_atividade'),
-
-    # TESTES #
     path('minhas_aulas/aula/<int:pk>/add_palavra',
-         views.TesteAdicionaPalavraAula.as_view()),
-
-    path('aula/atividade/<int:pk>', views.TesteResolucaoAtividade.as_view()),
+         views.AdicionaPalavraAula.as_view()),
+    path('aula/atividade/<int:pk>', views.ResolucaoAtividade.as_view()),
     path('aula/redo/atividade/<int:pk>',
-         views.TesteUpdateAtividadeConcluida.as_view()),
-    path('criar_questao',
-         views.TesteCriaQuestao.as_view(), name='add_questao'),
-    path('questao/<int:pk>', views.TesteResolucaoQuestao.as_view()),
+         views.UpdateAtividadeConcluida.as_view()),
+    path('criar_questao', views.CriaQuestao.as_view(), name='add_questao'),
+    path('questao/<int:pk>', views.ResolucaoQuestao.as_view()),
     path('minhas_aulas/aula/<int:pk>/adiciona_atividade',
-         views.TesteAdicionaAtividadeAula.as_view()),
-    path('questao-update/<int:pk>',
-         views.TesteUpdateQuestao.as_view()),
+         views.AdicionaAtividadeAula.as_view()),
+    path('questao-update/<int:pk>', views.UpdateQuestao.as_view()),
+    path('lingua/modulo/<int:pk>', views.ModuloView.as_view()),
 ]

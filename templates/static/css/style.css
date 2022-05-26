@@ -642,6 +642,7 @@ ul.drop-menu-usuario li:first-child {
     width: 60%;
     display: flex;
     justify-content: space-between;
+    color: var(--font-color);
 }
 
 /* FIM HTML ATIVIDADE AULA */

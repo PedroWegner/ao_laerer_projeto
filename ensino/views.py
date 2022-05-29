@@ -1,3 +1,4 @@
+from typing import Dict, List
 import random
 from typing import List
 from django.views.generic import TemplateView
@@ -99,6 +100,14 @@ class ModuloView(DetailView):
             nivel=self.get_object().nivel,
             is_licenced=True
         )
+        palavras = Palavra.objects.filter(
+            id__in=AulaPalavra.objects.filter(
+                aula__id__in=Aula.objects.filter(
+                    modulo=self.get_object()
+                )
+            ).values('palavra_id').distinct().order_by('?')[:10])
+        context['palavras_modulo'] = get_palavracontexto(palavras)
+        print(context['palavras_modulo'])
         return context
 
 
@@ -319,15 +328,7 @@ class AulaView(DetailView):
                 aula=self.get_object()
             ).values('palavra_id')
         )
-        context['palavras_aula'] = {}
-        for palavra in palavras_aulas:
-            context['palavras_aula'].update(
-                {
-                    f'{palavra}': Contexto.objects.filter(
-                        palavracontexto__palavra=palavra
-                    ).order_by("?").first()
-                }
-            )
+        context['palavras_aula'] = get_palavracontexto(palavras_aulas)
         return context
 
 
@@ -812,3 +813,16 @@ def checa_questoes(atividade, request) -> float:
             certas += 1
 
     return round((certas * 100) / (questoes.count()), 2)
+
+
+def get_palavracontexto(palavras: List) -> Dict:
+    palavra_dict = {}
+    for palavra in palavras:
+        palavra_dict.update(
+            {
+                palavra: Contexto.objects.filter(
+                    palavracontexto__palavra=palavra
+                ).order_by('?').first()
+            }
+        )
+    return palavra_dict

@@ -13,7 +13,7 @@
         {% for aula in aulas %}
         <li>
             <div>
-                <a href="/ensino/aula/{{ aula.pk }}">{{ aula }}</a>
+                <a class='titulo-aula' href="/ensino/aula/{{ aula.pk }}">{{ aula }}</a>
                 <p class="nome-professor">{{ aula.autor }}</p>
             </div>
 
@@ -30,21 +30,47 @@
 <div class="principal-box-meu-painel">
 
     <div class="box-modulo-painel">
-        <div>
-            <img src="{{ modulo.img_modulo.url }}" style="max-width: 50%;" alt="">
-            <h1>{{ modulo }}</h1>
+        <div class="modulo-info">
+            <h2>{{ modulo }}</h2>
+            <p>{{ modulo.lingua }}</p>
+            <img src="{{ modulo.img_modulo.url }}" alt="">
+            <div class="box-conteudo-aula">
+                <div class="box-conteudo">
+                    <h2>Descrição</h2>
+                    <p>{{ modulo.descricao }}</p>
+                </div>
+                <div class="box-conteudo">
+                    <h2>Palavras</h2>
+                    {% if not palavras_modulo %}
+                    <p>Não há palavras</p>
+                    {% endif %}
+                    {% for palavra, contexto in palavras_modulo.items %}
+                    <a href="/ensino/lingua/palavra/{{palavra.id}}/">
+                        <p>{{palavra}}</p>
+                    </a>
 
-            <p></p>
+                    <p>{{ contexto.contexto }}</p>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
+
         <div>
-            <h1>aulas</h1>
-            {% for aula in aulas %}
-            <a href="/ensino/aula/{{ aula.id }}">{{ aula }}</a>
-            {% endfor %}
+            <h2>Aulas</h2>
+            <div class="modulo-aulas">
+                {% for aula in aulas %}
+                <a href="/ensino/aula/{{ aula.id }}">
+                    <div class="modulo-aula">
+                        {% if aula.img_aula %}
+                        <img src="{{ aula.img_aula.url}}" alt="">
+                        {% endif %}
+                        <p>{{aula}}</p>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
         </div>
-        <div>
-            <p>{{ modulo.descricao }}</p>
-        </div>
+
     </div>
 </div>
 {% endblock %}

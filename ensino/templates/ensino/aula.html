@@ -13,7 +13,7 @@
         {% for aula in aulas %}
         <li>
             <div>
-                <a href="/ensino/aula/{{ aula.pk }}">{{ aula }}</a>
+                <a class='titulo-aula' href="/ensino/aula/{{ aula.pk }}">{{ aula }}</a>
                 <p class="nome-professor">{{ aula.autor }}</p>
             </div>
 
@@ -27,7 +27,6 @@
 {% block 'conteudo' %}
 <div class="box-principal-aula">
     <div class="box-video-aula">
-
         <div>
             <h2>{{ aula }}</h2>
             <p>{{ aula.autor_aula }}</p>
@@ -42,7 +41,7 @@
         <div class="box-conteudo">
             <h2>Contéudo</h2>
             <p>{{ aula.conteudo }}</p>
-            <a href="{{ aula.conteudo_download.url}}" target="_blank">Baixar conteúdo</a>
+            <a class="btn-class" href="{{ aula.conteudo_download.url}}" target="_blank">Baixar conteúdo</a>
         </div>
         <div class="box-conteudo">
             <h2>Palavras</h2>
@@ -50,7 +49,9 @@
             <p>Não há palavras</p>
             {% endif %}
             {% for palavra, contexto in palavras_aula.items %}
-            <p>{{palavra}}</p>
+            <a href="/ensino/lingua/palavra/{{palavra.id}}/">
+                <p>{{palavra}}</p>
+            </a>
             <p>{{ contexto.contexto }}</p>
             {% endfor %}
         </div>

@@ -3,6 +3,7 @@ $('.btn-show').click(function () {
     $('.nav-bar-aula-aulas').toggleClass('show')
     $('.nome-professor').toggleClass('show')
     $('.titulo-modulo').toggleClass('show')
+    $('.titulo-aula').toggleClass('show')
     $('.nav-bar-aula-modulo span').toggleClass('move')
 })
 

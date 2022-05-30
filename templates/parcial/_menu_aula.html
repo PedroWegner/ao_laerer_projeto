@@ -1,0 +1,19 @@
+{% load static %}
+<div class="nav-bar-aula-modulo show">
+    <a class="titulo-modulo" href="/modulo/{{ modulo.pk}}">{{ modulo.modulo }}</a>
+    <span class="btn-show"><img src="{% static 'imgs/ponteiro_verde.png' %}" alt=""></span>
+</div>
+<div class="nav-bar-aula-aulas show">
+    <ul>
+
+        {% for aula in aulas %}
+        <li>
+            <div>
+                <a class='titulo-aula' href="/ensino/aula/{{ aula.pk }}">{{ aula }}</a>
+                <p class="nome-professor">{{ aula.autor }}</p>
+            </div>
+
+        </li>
+        {% endfor %}
+    </ul>
+</div>

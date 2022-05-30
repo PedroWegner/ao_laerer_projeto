@@ -107,7 +107,6 @@ class ModuloView(DetailView):
                 )
             ).values('palavra_id').distinct().order_by('?')[:10])
         context['palavras_modulo'] = get_palavracontexto(palavras)
-        print(context['palavras_modulo'])
         return context
 
 
@@ -433,9 +432,7 @@ class MeuPainelAulasView(ListView):
     def get(self, *args, **kwargs):
         if not 'usuario_logado' in self.request.session:
             return redirect('usuario:login')
-        print(Aula.objects.filter(
-            autor_aula=self.request.session['usuario_logado']['usuario_id']
-        ))
+
         return super().get(self, *args, **kwargs)
 
     def get_queryset(self):

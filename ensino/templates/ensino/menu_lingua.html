@@ -2,9 +2,12 @@
 {% load filters %}
 {% block 'titulo'%} Blog {% endblock %}
 {% block 'conteudo' %}
-
+{% block 'menu-lingua' %}
+{% include 'parcial/_menu_lingua.html' %}
+{% endblock %}
 
 <div class="box-principal-blog">
+
     <div class="principal-box-lingua">
 
         {% for nivel, aulas in niveis.items %}

@@ -4,7 +4,6 @@ from . import views
 app_name = 'forum'
 
 urlpatterns = [
-    path('', views.ForumView.as_view(), name='forum'),
     path('lingua/<int:pk>', views.ForumLinguaView.as_view(), name='forum_lingua'),
     path('lingua/postagem/registro/<int:pk>', views.PostagemRegistraView.as_view(),
          name='postagem_cadastro'),

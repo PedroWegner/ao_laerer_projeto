@@ -32,7 +32,7 @@
                 {% endfor %}
             </div>
             {% else %}
-            <p>ainda sem aula normal</p>
+            {% include 'parcial/_cadastre_aula.html' %}
             {% endif %}
         </div>
         <div class="meu-ensino-unidade">
@@ -65,7 +65,7 @@
                 {% endfor %}
             </div>
             {% else %}
-            <p>ainda sem aula licenciada</p>
+            {% include 'parcial/_cadastre_aula.html' %}
             {% endif %}
         </div>
         <div class="meu-ensino-unidade">

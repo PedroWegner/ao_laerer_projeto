@@ -13,15 +13,6 @@ from ensino.models import Lingua
 from .models import *
 
 
-# Create your views here.
-
-
-class ForumView(ListView):
-    template_name = 'forum/forum.html'
-    model = Lingua
-    context_object_name = 'linguas'
-
-
 class ForumLinguaView(DetailView):
     template_name = 'forum/forum_lingua.html'
     model = Lingua

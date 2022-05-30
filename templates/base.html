@@ -22,22 +22,17 @@
     <div class="content">
         <div class='fixed-nav-bar'>
             <ul class="nav-ul-comum">
-                <li>
-                    <a href="{% url 'usuario:home' %}">HOME</a>
-                    {% if request.session.usuario_logado %}
-                    <a href="{% url 'ensino:menu_linguas' %}">Línguas</a>
-                    <a href="{% url 'forum:forum' %}">Forum</a>
-                    <a href="{% url 'ensino:minhas_aulas' %}">Meu ensino</a>
-                    {% endif %}
-                </li>
+                <li><a href="{% url 'usuario:home' %}">Home</a></li>
+                {% if request.session.usuario_logado %}
+                <li><a href="{% url 'ensino:menu_linguas' %}">Línguas</a></li>
+                <li><a href="{% url 'ensino:minhas_aulas' %}">Meu ensino</a></li>
+                {% endif %}
             </ul>
             <ul class='nav-ul'>
                 
                 {% if request.session.usuario_logado.is_admin %}
                 <li>
-                    <p class="abre-cadastro">
-                        Cadastrar
-                    </p>
+                    <p class="abre-cadastro">Cadastrar</p>
                     <ul class="drop-menu-cadastro high-dark">
                         <li><a href="{% url 'ensino:cadastro_lingua' %}">Cadastrar língua</a></li>
                         <li><a href="{% url 'forum:cadastro_noticia' %}">Cadastrar notícia</a></li> 
@@ -67,16 +62,17 @@
     
         {% block 'nav-bar-aula' %}
         {% endblock %}
+        {% block 'menu-lingua' %}
+            {% endblock %}
     <div class="box-novo">
             {% block 'conteudo' %}
-    
+            
             {% endblock %}
     </div>
     
     </div>
    
 <footer>
-    <p>Oi</p>
 </footer>
 
     <script type="text/javascript" src="{% static 'javascript/script.js' %}"></script>

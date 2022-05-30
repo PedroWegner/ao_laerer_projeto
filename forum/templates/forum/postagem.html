@@ -57,15 +57,13 @@
         </div>
 
         <div class="box-fazer-comentario">
-            <div>
-                <form class="principal-box-form" method="POST" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <div class="form-cadastro">
-                        {{ form }}
-                    </div>
+            <form class='cad-postagem' method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-postagem">
+                    {{ form }}
                     <button class="btn-cadastro" type="submit">Cadastrar</button>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 

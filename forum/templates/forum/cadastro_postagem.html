@@ -3,15 +3,13 @@
 {% block 'conteudo' %}
 <div class="principal-box-postagem">
     <div class="principal-cad-postagem">
-        <div>
-            <form class="principal-box-form" method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="form-cadastro">
-                    {{ form }}
-                </div>
+        <form class="cad-postagem" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-postagem">
+                {{ form }}
                 <button class="btn-cadastro" type="submit">Cadastrar</button>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
 
     <div>
@@ -19,7 +17,7 @@
             <p>
                 Você está no blog de {{ lingua }}
             </p>
-            <a class="btn-cadastro" href="/blog/lingua/{{ lingua.id}}">Voltar ao blog</a>
+            <a class="btn-cadastro" href="/forum/lingua/{{ lingua.id}}">Voltar ao blog</a>
         </div>
         <div class="postagens-recentes">
             <h3>Ultimas publicações</h3>

@@ -125,6 +125,9 @@ class Palavra(models.Model):
         blank=True,
         null=True
     )
+    data_cadastro = models.DateField(
+        default=timezone.now
+    )
     contexto = models.ManyToManyField(
         Contexto,
         related_name='palavras',

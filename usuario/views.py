@@ -25,9 +25,7 @@ class HomeView(ListView):
     context_object_name = 'noticias'
 
     def get(self, *args, **kwargs):
-        if not 'usuario_logado' in self.request.session:
-            print('usuario deslogado')
-            return redirect('usuario:login')
+
         return super().get(self.request, *args, **kwargs)
 
 
@@ -153,7 +151,7 @@ class LoginView(FormView):
                 if usuario:
                     return redirect('usuario:home')
                 else:
-                    print('não sei') 
+                    print('não sei')
             else:
                 pass
                 return super().post(*args, **kwargs)

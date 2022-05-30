@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 {% block 'titulo' %}Blog - {{lingua}}{% endblock %}
 {% block 'conteudo' %}
+{% block 'menu-lingua' %}
+{% include 'parcial/_menu_lingua.html' %}
+{% endblock %}
 <div class="principal-box-postagem">
     <div class="box-postagens">
         {% for postagem in postagens %}

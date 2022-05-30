@@ -7,8 +7,6 @@
 
     <form method="POST">
         {% csrf_token %}
-
-
         {% for q in questoes_disponiveis %}
         <div class="questao">
             <label for="id-{{q.id}}">
@@ -16,10 +14,7 @@
             </label>
             <input type="checkbox" id="id-{{q.id}}" name="questoes" value="{{q.id}}">
         </div>
-
         {% endfor %}
-
-
         <button type="submit">Resposta</button>
     </form>
 

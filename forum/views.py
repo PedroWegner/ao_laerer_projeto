@@ -34,21 +34,24 @@ class PostagemRegistraView(FormView):
     template_name = 'forum/cadastro_postagem.html'
     form_class = PostagemForms
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['postagens_recentes'] = Postagem.objects.filter(
-            lingua=get_object_or_404(
-                Lingua, id=self.request.build_absolute_uri()[-1]
-            )
-        )[:5]
-        context['lingua'] = get_object_or_404(
+    def setup(self, *args, **kwargs) -> None:
+        super().setup(*args, **kwargs)
+        self.lingua = get_object_or_404(
             Lingua, id=self.request.build_absolute_uri()[-1]
         )
+
+    def get_context_data(self, **kwargs):
+        self.lingua = self.lingua
+        context = super().get_context_data(**kwargs)
+        context['postagens_recentes'] = Postagem.objects.filter(
+            lingua=self.lingua
+        )[:5]
+        context['lingua'] = self.lingua
 
         return context
 
     def get_success_url(self):
-        return reverse('forum:forum')
+        return reverse('forum:forum_lingua', kwargs={'pk': self.lingua.id})
 
     def get(self,  *args, **kwargs):
 

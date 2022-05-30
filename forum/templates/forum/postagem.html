@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 {% block 'titulo' %} {{ postagem.titulo_postagem }} | Blog {{ postagem.lingua }}{% endblock %}
 {% block 'conteudo' %}
+{% block 'menu-lingua' %}
+{% include 'parcial/_menu_lingua.html' %}
+{% endblock %}
 <div class="principal-box-postagem">
     <div>
         <div class="box-postagem">
@@ -24,7 +27,9 @@
                 <h2>{{ postagem.titulo_postagem }}</h2>
                 <span>Postado em {{postagem.data_postagem}}</span>
                 <p>{{ postagem.conteudo_postagem|linebreaks }}</p>
+                {% if postagem.imagem_postagem %}
                 <img class="imagem-postagem" src="{{ postagem.imagem_postagem.url }}" alt="">
+                {% endif %}
             </div>
         </div>
 
@@ -68,21 +73,7 @@
     </div>
 
     <div>
-        <div class="pergunta-publicacao">
-            <p>
-                Você está no blog de {{ postagem.lingua}}
-            </p>
-            <a class="btn-cadastro" href="registro/{{postagem.lingua.id}}">Publicar</a>
-        </div>
-        <div class="postagens-recentes">
-            <h3>Ultimas publicações</h3>
-            {% for postagem_recente in postagens_recentes %}
-            <a class="link-post-recent" href="{{ postagem_recente.id }}">{{ postagem_recente.titulo_postagem }}</a>
-            <p class="autor-post-recent">
-                Por {{ postagem_recente.autor.pessoa.nome }} {{ postagem_recente.autor.pessoa.sobrenome }}
-            </p>
-            {% endfor %}
-        </div>
+        {% include 'parcial/_menu_lateral_forum.html' %}
     </div>
 </div>
 {% endblock %}

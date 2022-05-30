@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 {% block 'titulo'%} Publicar | Blog{% endblock %}
 {% block 'conteudo' %}
+{% block 'menu-lingua' %}
+{% include 'parcial/_menu_lingua.html' %}
+{% endblock %}
 <div class="principal-box-postagem">
     <div class="principal-cad-postagem">
         <form class="cad-postagem" method="POST" enctype="multipart/form-data">
@@ -13,21 +16,7 @@
     </div>
 
     <div>
-        <div class="pergunta-publicacao">
-            <p>
-                Você está no blog de {{ lingua }}
-            </p>
-            <a class="btn-cadastro" href="/forum/lingua/{{ lingua.id}}">Voltar ao blog</a>
-        </div>
-        <div class="postagens-recentes">
-            <h3>Ultimas publicações</h3>
-            {% for postagem_recente in postagens_recentes %}
-            <a class="link-post-recent" href="{{ postagem_recente.id }}">{{ postagem_recente.titulo_postagem }}</a>
-            <p class="autor-post-recent">
-                Por {{ postagem_recente.autor.pessoa.nome }} {{ postagem_recente.autor.pessoa.sobrenome }}
-            </p>
-            {% endfor %}
-        </div>
+        {% include 'parcial/_menu_lateral_forum.html' %}
     </div>
 
 </div>

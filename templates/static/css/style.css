@@ -255,6 +255,7 @@ ul.drop-menu-usuario li:first-child {
     align-items: center;
     background-color: var(--color-high);
     margin-bottom: 25px;
+    border-radius: 5px;
 }
 
 .form-login {
@@ -268,6 +269,7 @@ ul.drop-menu-usuario li:first-child {
 
 .form-login input {
     width: 100%;
+    border-radius: 3px;
     background-color: var(--color-medium);
     border: 1px solid var(--color-border);
 }
@@ -290,6 +292,7 @@ ul.drop-menu-usuario li:first-child {
     align-items: center;
     justify-content: center;
     border: 1px solid var(--color-high);
+    border-radius: 5px;
 }
 
 .cadastro-box a:hover {
@@ -320,13 +323,14 @@ ul.drop-menu-usuario li:first-child {
 
 .pre-text-noticias {
     height: 180px;
-    color: #DCDCDC;
+    color: var(--font-color);
     margin-top: 0;
     background-color: var(--color-low);
+    border-radius: 0 0 5px 5px;
 }
 
 .box-noticias h2 p span {
-    color: #DCDCDC;
+    color: var(--blue-high);
 }
 
 .pre-text-noticias h2 {
@@ -353,6 +357,7 @@ ul.drop-menu-usuario li:first-child {
     max-height: 255px;
     width: 420px;
     object-fit: cover;
+    border-radius: 5px 5px 0 0;
 
 }
 
@@ -381,6 +386,8 @@ ul.drop-menu-usuario li:first-child {
 .menu-lingua-box a {
     position: relative;
     background-color: #0C0C0C;
+    border-radius: 5px;
+
 }
 
 .menu-lingua-box a h2 {
@@ -430,6 +437,7 @@ ul.drop-menu-usuario li:first-child {
     height: 100%;
     object-fit: cover;
     filter: opacity(60%);
+    border-radius: 5px;
 }
 
 /* FIM MENUS LINGUA */
@@ -448,6 +456,7 @@ ul.drop-menu-usuario li:first-child {
     grid-template-columns: 1fr 1fr 1fr;
     background-color: var(--color-high);
     width: 100%;
+    border-radius: 5px;
 }
 
 .menu-box-lingua a {
@@ -478,10 +487,11 @@ ul.drop-menu-usuario li:first-child {
 }
 
 .nivel-licenciado {
-    background-color: #2A2A2A;
+    background-color: var(--blue-high);
     max-width: 300px;
     min-width: 300px;
     position: relative;
+    border-radius: 5px;
 }
 
 .nivel-licenciado img,
@@ -491,6 +501,7 @@ ul.drop-menu-usuario li:first-child {
     height: 100%;
     object-fit: cover;
     filter: opacity(80%);
+    border-radius: 5px;
 }
 
 .nivel-licenciado p,
@@ -559,6 +570,7 @@ ul.drop-menu-usuario li:first-child {
     padding-left: 15px;
     padding-right: 15px;
     background-color: var(--color-high);
+    border-radius: 5px;
 }
 
 .nivel-n-licenciado::-webkit-scrollbar,
@@ -712,12 +724,14 @@ ul.drop-menu-usuario li:first-child {
 /* INICIO HTML ATIVIDADE AULA */
 .atividade-aula-form {
     width: 100%;
-    display: grid;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     gap: 20px;
 }
 
 .atividade-aula-questao {
-    background-color: #0C0C0C;
+    background-color: var(--color-high);
     width: 75%;
     margin: 0 auto;
     display: flex;
@@ -726,13 +740,69 @@ ul.drop-menu-usuario li:first-child {
     padding-top: 15px;
     padding-bottom: 20px;
     gap: 8px;
+    border-radius: 5px;
+}
+
+.atividade-aula-questao p {
+    font-size: 1.05em;
+    font-weight: 600;
+    margin-bottom: 25px;
+    margin-top: 10px;
 }
 
 .atividade-aula-respostas {
     width: 60%;
     display: flex;
     justify-content: space-between;
+    position: relative;
+}
+
+/* radio input */
+.label-alternativa {
+    font-size: 0.95rem;
+    font-weight: bold;
+    line-height: 1.1;
+    display: grid;
+    grid-template-columns: 1em auto;
     color: var(--font-color);
+    gap: 0.5em;
+}
+
+input[type="radio"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: var(--color-high);
+    margin: 0;
+    font: inherit;
+    color: currentColor;
+    width: 1.15em;
+    height: 1.15em;
+    border: 0.15em solid var(--color-border);
+    border-radius: 50%;
+    transform: translateY(-0.075em);
+    display: grid;
+    place-content: center;
+}
+
+input[type="radio"]::before {
+    content: "";
+    width: 0.65em;
+    height: 0.65em;
+    border-radius: 50%;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    box-shadow: inset 1em 1em var(--blue-low);
+    background-color: var(--color-high);
+}
+
+input[type="radio"]:checked::before {
+    transform: scale(1);
+}
+
+input[type="radio"]:focus {
+    transition: none;
+    border: 0.15em solid var(--color-border);
+    outline: max(2px, 0.15em) solid var(--blue-low);
 }
 
 /* FIM HTML ATIVIDADE AULA */
@@ -878,6 +948,7 @@ ul.drop-menu-usuario li:first-child {
     padding-left: 15px;
     padding-right: 15px;
     background-color: var(--color-high);
+    border-radius: 5px;
 }
 
 
@@ -935,6 +1006,7 @@ ul.drop-menu-usuario li:first-child {
     width: 100%;
     min-height: 300px;
     background-color: var(--color-high);
+    border-radius: 5px;
 }
 
 .meu-ensino-aux .btn-cadastro {
@@ -957,6 +1029,7 @@ ul.drop-menu-usuario li:first-child {
     padding-right: 15px;
     color: var(--font-color);
     background-color: var(--color-high);
+    border-radius: 5px;
 }
 
 
@@ -967,6 +1040,7 @@ ul.drop-menu-usuario li:first-child {
     min-height: 230px;
     max-height: 230px;
     background-color: var(--color-medium);
+    border-radius: 5px;
 }
 
 .menu-ensino-nivel a {
@@ -995,22 +1069,26 @@ ul.drop-menu-usuario li:first-child {
 .menu-ensino-questoes {
     display: flex;
     overflow-x: auto;
-    min-height: 100px;
-    max-height: 100px;
+    min-height: 125px;
+    max-height: 125px;
     padding-left: 20px;
     padding-right: 20px;
     padding-top: 6px;
     padding-bottom: 6px;
     gap: 20px;
     background-color: var(--color-medium);
+    border-radius: 5px;
 }
 
 .questoes-ind {
     min-width: 200px;
     background-color: var(--color-back);
+    border-radius: 5px;
     padding-left: 8px;
     padding-right: 8px;
-    margin: 0 auto
+    margin: 0 auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .questoes-ind a p {
@@ -1057,6 +1135,7 @@ ul.drop-menu-usuario li:first-child {
     width: auto;
     object-fit: cover;
     filter: opacity(80%);
+    border-radius: 5px;
 }
 
 .meu-ensino-aula {
@@ -1091,6 +1170,7 @@ ul.drop-menu-usuario li:first-child {
     display: flex;
     width: 100%;
     background-color: var(--color-high);
+    border-radius: 5px;
 }
 
 .user {
@@ -1101,6 +1181,7 @@ ul.drop-menu-usuario li:first-child {
     padding-bottom: 40px;
     min-width: 500px;
     background-color: var(--color-medium);
+    border-radius: 5px 0 0 5px;
 }
 
 .user img {
@@ -1138,6 +1219,7 @@ ul.drop-menu-usuario li:first-child {
     padding-top: 15px;
     padding-bottom: 15px;
     background-color: var(--color-high);
+    border-radius: 5px;
 }
 
 .postagens-user h3,
@@ -1174,7 +1256,7 @@ ul.drop-menu-usuario li:first-child {
     content: '';
     width: 120%;
     height: 2px;
-    background: #E4E4E4;
+    background: var(--blue-low);
     position: absolute;
     bottom: 0;
     left: 0;
@@ -1265,6 +1347,7 @@ ul.drop-menu-usuario li:first-child {
     grid-template-columns: 1fr;
     padding: 25px 40px 25px 40px;
     background-color: var(--color-high);
+    border-radius: 5px;
 }
 
 /* FIM HTML BLOG */
@@ -1289,6 +1372,7 @@ ul.drop-menu-usuario li:first-child {
     align-items: center;
     width: 100%;
     background-color: var(--color-medium);
+    border-radius: 5px 0 0 5px;
 }
 
 .dado-autor p {
@@ -1319,6 +1403,7 @@ ul.drop-menu-usuario li:first-child {
     display: flex;
     flex-direction: column;
     background-color: var(--color-high);
+    border-radius: 0 5px 5px 0;
 }
 
 .postagem h2 {
@@ -1369,7 +1454,7 @@ ul.drop-menu-usuario li:first-child {
     width: 100%;
     display: flex;
     flex-direction: column;
-
+    border-radius: 5px;
     background-color: var(--color-high);
 }
 
@@ -1390,6 +1475,7 @@ ul.drop-menu-usuario li:first-child {
     margin-top: 45px;
     padding: 20px 20px 20px 20px;
     background-color: var(--color-high);
+    border-radius: 5px;
 }
 
 .postagens-recentes h3 {
@@ -1404,7 +1490,7 @@ ul.drop-menu-usuario li:first-child {
     content: '';
     width: 100%;
     height: 1px;
-    background: #707070;
+    background: var(--blue-low);
     position: absolute;
     bottom: 0;
     left: 0;
@@ -1444,6 +1530,7 @@ ul.drop-menu-usuario li:first-child {
     max-width: 100%;
     background-color: var(--color-high);
     padding-bottom: 20px;
+    border-radius: 5px;
 }
 
 /* FIM HTML POSTAGEM */
@@ -1455,7 +1542,6 @@ ul.drop-menu-usuario li:first-child {
 
 
 .cad-postagem {
-    background-color: var(--color-high);
     width: 100%;
     height: 100%;
     display: flex;
@@ -1481,6 +1567,7 @@ ul.drop-menu-usuario li:first-child {
     width: 100%;
     background-color: var(--color-medium);
     resize: none;
+    border-radius: 3px;
 }
 
 /* FIM HTML CAD POSTAGEM */
@@ -1552,7 +1639,7 @@ ul.drop-menu-usuario li:first-child {
     padding: 20px;
     background-color: var(--blue-high);
     color: var(--font-image);
-    border-radius: 15px;
+    border-radius: 8px;
     text-align: center;
     font-weight: bold;
     border: none;

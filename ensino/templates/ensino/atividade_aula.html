@@ -12,18 +12,18 @@
             <p>{{ frase }}</p>
             <div class="atividade-aula-respostas">
                 {% for alternativa in alternativas %}
-                <div>
+                <label class="label-alternativa" for="alternativa-{{questao_id}}-{{alternativa}}">
                     <input type="radio" name="{{ questao_id }}" id="alternativa-{{questao_id}}-{{alternativa}}"
                         value="{{alternativa}}">
-                    <label for="alternativa-{{questao_id}}-{{alternativa}}">{{ alternativa }}</label>
-                </div>
+                    {{ alternativa }}</label>
+
 
                 {% endfor %}
             </div>
             {% endfor %}
         </div>
         {% endfor %}
-        <button type="submit">Resposta</button>
+        <button class='btn-cadastro' type="submit">Resposta</button>
     </form>
 
 

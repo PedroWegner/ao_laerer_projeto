@@ -471,7 +471,7 @@ class AdicionaPalavraAula(TemplateView, DetailView):
 
 
 class CriaQuestao(TemplateView):
-    template_name = 'ensino/cadastra_questao.html'
+    template_name = 'ensino/cadastro/cadastra_questao.html'
 
     def get(self, *args, **kwargs):
         formset = AlternativasQuestaoFormset()

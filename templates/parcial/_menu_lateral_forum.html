@@ -1,0 +1,25 @@
+<div class="pergunta-publicacao">
+    <p>
+        {% if postagem %}
+        Você está no blog de {{ postagem.lingua}}
+        {% else %}
+        Você está no blog de {{ lingua}}
+        {% endif %}
+    </p>
+    {% if postagem %}
+    <a class="btn-cadastro" href="/forum/lingua/postagem/registro/{{postagem.lingua.id}}">Publicar</a>
+    {% else %}
+    <a class="btn-cadastro" href="/forum/lingua/{{lingua.id}}">Voltar</a>
+    {% endif %}
+</div>
+<div class="postagens-recentes">
+    <h3>Ultimas publicações</h3>
+    {% for postagem_recente in postagens_recentes %}
+    <a class="link-post-recent" href="/forum/lingua/postagem/{{ postagem_recente.id }}">
+        {{ postagem_recente.titulo_postagem }}
+    </a>
+    <p class="autor-post-recent">
+        Por {{ postagem_recente.autor.pessoa.nome }} {{ postagem_recente.autor.pessoa.sobrenome }}
+    </p>
+    {% endfor %}
+</div>

@@ -1,11 +1,23 @@
 <div class="menu-box-lingua">
-    <a href="/ensino/lingua/{{ lingua.id }}">
-        <p>Aulas</p>
-    </a>
-    <a href="/forum/lingua/{{lingua.id}}">
-        <p>Forum</p>
-    </a>
-    <a href="{{ lingua.id }}/dicionario">
-        <p>Dicionário</p>
-    </a>
+    {% if postagem %}
+    <a href="/ensino/lingua/{{postagem.lingua.id}}">
+        {% else %}
+        <a href="/ensino/lingua/{{ lingua.id }}">
+            {%endif%}
+            <p>Aulas</p>
+        </a>
+        {% if postagem %}
+        <a href="/forum/lingua/{{postagem.lingua.id}}">
+            {% else %}
+            <a href="/forum/lingua/{{lingua.id}}">
+                {%endif%}
+                <p>Forum</p>
+            </a>
+            {% if postagem %}
+            <a href="/ensino/lingua/{{postagem.lingua.id}}/dicionario">
+                {% else %}
+                <a href="/ensino/lingua/{{ lingua.id }}/dicionario">
+                    {%endif%}
+                    <p>Dicionário</p>
+                </a>
 </div>

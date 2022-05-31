@@ -22,7 +22,7 @@
         <div class="box-conteudo">
             <h2>Contéudo</h2>
             <p>{{ aula.conteudo }}</p>
-            <a class="btn-class" href="{{ aula.conteudo_download.url}}" target="_blank">Baixar conteúdo</a>
+            <a class="btn-cadastro" href="{{ aula.conteudo_download.url}}" target="_blank">Baixar conteúdo</a>
         </div>
         <div class="box-conteudo">
             <h2>Palavras</h2>
@@ -33,7 +33,7 @@
             <a class="aula-palavra" href="/ensino/lingua/palavra/{{palavra.id}}/">
                 <p>{{palavra}}</p>
             </a>
-            <p class="aula-contexto">{{ contexto.contexto }}</p>
+            <span class="aula-contexto">{{ contexto.contexto }}</span>
             {% endfor %}
         </div>
 

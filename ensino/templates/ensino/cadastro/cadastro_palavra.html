@@ -2,14 +2,13 @@
 {% block 'titulo'%}Publicação de notícia{% endblock %}
 {% block 'conteudo' %}
 <div class="principal-box-cad">
-    <h2>
-        Cadastrar Palavra
-    </h2>
+
     <div>
-        <form class="principal-box-form" method="POST" enctype="multipart/form-data">
+        <form class="principal-box-form tam-form" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <div class="form-box">
-                <div class="form-cadastro form-publicar-noticia">
+            <div class="form-inputs ">
+                <h3>Nova palavra</h3>
+                <div class="form-inputs-div">
                     {{ form }}
                 </div>
             </div>

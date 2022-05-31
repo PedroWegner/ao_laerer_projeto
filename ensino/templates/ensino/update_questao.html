@@ -1,55 +1,64 @@
 {% extends 'base.html' %}
 {% block 'titulo'%} Blog {% endblock %}
 {% block 'conteudo' %}
-
-
 <div class="box-principal-blog">
-    <h1>teste update questao</h1>
-
-    <form id="form-container" method="POST">
+    <form class="form-inputs principal-box-form tam-form tam-questao" method="POST">
+        <h3>Nova questão</h3>
         {% csrf_token %}
+        <div class="form-inputs-div tam-q">
 
-        <div>
             <label for="id_frase">Frase</label>
             <input type="text" name="id_frase" id="id_frase" value="{{ questao.frase }}">
         </div>
-        {% for alternativa in alternativas %}
-        <div class="alternativa-prontas">
-            <p>
-                <label for="id_{{alternativa.id}}_alternativa">Alternativa</label>
-                <input type="text" name="id_{{alternativa.id}}_alternativa" id="id_{{alternativa.id}}_alternativa"
-                    value="{{ alternativa.alternativa }}">
-            </p>
-            <p>
-                <label for="id_{{alternativa.id}}_is_correct">É correta</label>
-                {% if alternativa.is_correct%}
-                <input type="checkbox" name="id_{{alternativa.id}}_is_correct" id="id_{{alternativa.id}}_is_correct"
-                    checked="{{ alternativa.is_correct}}">
-                {% else %}
-                <input type="checkbox" name="id_{{alternativa.id}}_is_correct" id="id_{{alternativa.id}}_is_correct">
-                {% endif %}
-            </p>
 
+        <div class="alternativas-btn">
+            <div class="alternativas-add">
+                {% for alternativa in alternativas %}
+                <div>
+                    <p>
+                        <label for="id_{{alternativa.id}}_alternativa">Alternativa</label>
+                        <input type="text" name="id_{{alternativa.id}}_alternativa"
+                            id="id_{{alternativa.id}}_alternativa" value="{{ alternativa.alternativa }}">
+                    </p>
+                    <p>
+                        <label for="id_{{alternativa.id}}_is_correct">É correta</label>
+                        {% if alternativa.is_correct%}
+                        <input type="checkbox" name="id_{{alternativa.id}}_is_correct"
+                            id="id_{{alternativa.id}}_is_correct" checked="{{ alternativa.is_correct}}">
+                        {% else %}
+                        <input type="checkbox" name="id_{{alternativa.id}}_is_correct"
+                            id="id_{{alternativa.id}}_is_correct">
+                        {% endif %}
+                    </p>
+                </div>
 
-
-
-
+                {% endfor %}
+            </div>
         </div>
-        {% endfor %}
-        <div class="alternativa">
-            <p>
-                <label for="id_alternativa_set-0-alternativa">Alternativa</label>
-                <input type="text" name="id_alternativa_set-0-alternativa" id="id_alternativa_set-0-alternativa">
-            </p>
-            <p>
-                <label for="id_alternativa_set-0-is_correct">É correta</label>
-                <input type="checkbox" name="id_alternativa_set-0-is_correct" id="id_alternativa_set-0-is_correct">
-            </p>
+        <div class="alternativas-btn">
+            <h3>Adicionar novas respostas</h3>
+            <div id="form-container" class="alternativas-add">
+                <div class="alternativa">
+                    <p>
+                        <label for="id_alternativa_set-0-alternativa">Alternativa</label>
+                        <input type="text" name="id_alternativa_set-0-alternativa"
+                            id="id_alternativa_set-0-alternativa">
+                    </p>
+                    <p>
+                        <label for="id_alternativa_set-0-is_correct">É correta</label>
+                        <input type="checkbox" name="id_alternativa_set-0-is_correct"
+                            id="id_alternativa_set-0-is_correct">
+                    </p>
+                </div>
+                <div id="hidden-div"></div>
+            </div>
 
 
+            <p class="btn-add" id="add-form">+</p>
         </div>
-        <button id="add-form" type="button">+</button>
-        <button type="submit">adicionar questao</button>
+        <div>
+            <button class="btn-cadastro" type="submit">adicionar questao</button>
+        </div>
 
     </form>
 
@@ -60,6 +69,7 @@
     let alternativa_form = document.querySelectorAll(".alternativa")
     let container = document.querySelector("#form-container")
     let addButton = document.querySelector("#add-form")
+    let hiddenDiv = document.querySelector("#hidden-div")
     let totalForms = document.querySelector("#id_alternativa_set-TOTAL_FORMS")
 
     let formNum = alternativa_form.length - 1
@@ -67,13 +77,13 @@
 
     function addForm(e) {
         e.preventDefault()
-        console.log(alternativa_form)
+
         let newForm = alternativa_form[0].cloneNode(true)
         let formRegex = RegExp(`alternativa_set-(\\d){1}-`, 'g')
 
         formNum++
         newForm.innerHTML = newForm.innerHTML.replace(formRegex, `alternativa_set-${formNum}-`)
-        container.insertBefore(newForm, addButton)
+        container.insertBefore(newForm, hiddenDiv)
 
         totalForms.setAttribute('value', `${formNum + 1}`)
     }

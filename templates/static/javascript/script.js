@@ -1,7 +1,7 @@
 $('.btn-show').click(function () {
     $('.nav-bar-aula-modulo').toggleClass('show')
     $('.nav-bar-aula-aulas').toggleClass('show')
-    $('.nome-professor').toggleClass('show')
+    $('.nome-autor').toggleClass('show')
     $('.titulo-modulo').toggleClass('show')
     $('.titulo-aula').toggleClass('show')
     $('.nav-bar-aula-modulo span').toggleClass('move')
@@ -10,14 +10,17 @@ $('.btn-show').click(function () {
 
 $('.label-normais').click(function () {
     $('.meu-ensino-normais').toggleClass('show')
+    $('.label-normais span').toggleClass('move')
 })
 
 $('.label-licenciadas').click(function () {
     $('.meu-ensino-licenciadas').toggleClass('show')
+    $('.label-licenciadas span').toggleClass('move')
 })
 
 $('.label-questoes').click(function () {
     $('.meu-ensino-questoes').toggleClass('show')
+    $('.label-questoes span').toggleClass('move')
 })
 
 $('.abre-usuario').click(function () {

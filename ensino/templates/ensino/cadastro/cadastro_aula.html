@@ -2,22 +2,22 @@
 {% block 'titulo'%} Cadastro de aula {% endblock %}
 {% block 'conteudo' %}
 <div class="principal-box-cad">
-    <h2>
-        Cadastrar aula
-    </h2>
+
     <div>
-        <form class='principal-box-form' method="POST" enctype="multipart/form-data">
+        <form class='principal-box-form tam-form' method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <div class="form-box">
-                <div class="form-cadastro">
-                    <h3>Aula</h3>
+            <div class="form-inputs">
+                <h3>Nova aula</h3>
+                <div class="form-inputs-div">
                     {{ criar_aula }}
                     {% if request.session.usuario_logado.is_licenced %}
                     <label for="id_is_licened">Aula licenciada</label>
                     <input type="checkbox" id='id_is_licened' name="is_licenced">
                     {% endif %}
                 </div>
+
             </div>
+
             <button class="btn-cadastro" type="submit">Cadastrar</button>
         </form>
     </div>

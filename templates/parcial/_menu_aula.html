@@ -1,16 +1,16 @@
 {% load static %}
 <div class="nav-bar-aula-modulo show">
     <a class="titulo-modulo" href="/modulo/{{ modulo.pk}}">{{ modulo.modulo }}</a>
-    <span class="btn-show"><img src="{% static 'imgs/ponteiro_verde.png' %}" alt=""></span>
+    <span class="btn-show"><img src="{% static 'imgs/ponteiro_roxo_direita.png' %}" alt=""></span>
 </div>
 <div class="nav-bar-aula-aulas show">
     <ul>
 
         {% for aula in aulas %}
         <li>
-            <div>
+            <div class="aula-ind">
                 <a class='titulo-aula' href="/ensino/aula/{{ aula.pk }}">{{ aula }}</a>
-                <p class="nome-professor">{{ aula.autor }}</p>
+                <p class="nome-autor">{{ aula.autor_aula }}</p>
             </div>
 
         </li>

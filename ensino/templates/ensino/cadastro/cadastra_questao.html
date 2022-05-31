@@ -4,21 +4,32 @@
 
 
 <div class="box-principal-blog">
-    <h1>teste add questao</h1>
-    <form id="form-container" method="POST">
+    <form class="form-inputs principal-box-form tam-form tam-questao" method="POST">
+        <h3>Nova questão</h3>
         {% csrf_token %}
         {{ add_alternativa.management_form }}
-        {{ add_questao }}
-        {% for form_alternativa in add_alternativa %}
-        <div class="alternativa">
+        <div class="form-inputs-div tam-q">
 
-            {{ form_alternativa.as_p }}
-
+            {{ add_questao }}
         </div>
-        {% endfor %}
 
-        <button id="add-form" type="button">+</button>
-        <button type="submit">adicionar questao</button>
+        <div class="alternativas-btn">
+            <div id="form-container" class="alternativas-add">
+                {% for form_alternativa in add_alternativa %}
+                <div class="alternativa">
+                    {{ form_alternativa.as_p }}
+                </div>
+                {% endfor %}
+
+                <div id="hidden-div"></div>
+            </div>
+
+
+            <p class="btn-add" id="add-form">+</p>
+        </div>
+        <div>
+            <button class="btn-cadastro" type="submit">adicionar questao</button>
+        </div>
 
     </form>
 
@@ -29,6 +40,7 @@
     let alternativa_form = document.querySelectorAll(".alternativa")
     let container = document.querySelector("#form-container")
     let addButton = document.querySelector("#add-form")
+    let hiddenDiv = document.querySelector("#hidden-div")
     let totalForms = document.querySelector("#id_alternativa_set-TOTAL_FORMS")
 
     let formNum = alternativa_form.length - 1
@@ -39,11 +51,10 @@
 
         let newForm = alternativa_form[0].cloneNode(true)
         let formRegex = RegExp(`alternativa_set-(\\d){1}-`, 'g')
-        console.log(formRegex)
 
         formNum++
         newForm.innerHTML = newForm.innerHTML.replace(formRegex, `alternativa_set-${formNum}-`)
-        container.insertBefore(newForm, addButton)
+        container.insertBefore(newForm, hiddenDiv)
 
         totalForms.setAttribute('value', `${formNum + 1}`)
     }

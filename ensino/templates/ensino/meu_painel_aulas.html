@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block 'conteudo' %}
 <div class="principal-box-minhas-aulas">
@@ -6,6 +7,7 @@
         <div class="meu-ensino-unidade">
             <div class="label-normais">
                 <h1>Aulas</h1>
+                <span class="btn-show"><img src="{% static 'imgs/ponteiro_roxo_baixo.png' %}" alt=""></span>
             </div>
 
             {% if linguas %}
@@ -38,6 +40,7 @@
         <div class="meu-ensino-unidade">
             <div class="label-licenciadas">
                 <h1>Aulas licenciadas</h1>
+                <span class="btn-show"><img src="{% static 'imgs/ponteiro_roxo_baixo.png' %}" alt=""></span>
             </div>
             {% if licenced_linguas %}
             <div class="meu-ensino-licenciadas show">
@@ -71,6 +74,7 @@
         <div class="meu-ensino-unidade">
             <div class="label-questoes">
                 <h1>Questões</h1>
+                <span class="btn-show"><img src="{% static 'imgs/ponteiro_roxo_baixo.png' %}" alt=""></span>
             </div>
 
             {% if lista_questoes %}

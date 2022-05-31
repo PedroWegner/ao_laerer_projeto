@@ -17,8 +17,7 @@
             <div class="box-conteudo">
                 <h2>Contéudo</h2>
                 <p>{{ aula.conteudo }}</p>
-                <h2>Baixe o conteúdo</h2>
-                <a href="{{ aula.conteudo_download.url}}" target="_blank">documento de {{ aula }}</a>
+                <a class="btn-cadastro" href="{{ aula.conteudo_download.url}}" target="_blank">Baixar conteúdo</a>
             </div>
             <div class="box-conteudo">
                 <h2>Palavras</h2>
@@ -26,7 +25,9 @@
                 <p>Não há palavras cadastradas</p>
                 {% endif %}
                 {% for palavra in palavras_aula%}
-                <p>{{palavra}}</p>
+                <a class="aula-palavra" href="/ensino/lingua/palavra/{{palavra.id}}/">
+                    <p>{{palavra}}</p>
+                </a>
                 {% endfor %}
                 <a class='btn-cadastro' href="{{ aula.id }}/add_palavra">Adicionar palavras</a>
             </div>
@@ -36,22 +37,17 @@
         </div>
     </div>
 
-    <div class="principal-box-cad">
-        <h1>
-            Atualizar cadastro
-        </h1>
-        <div>
-            <form class="principal-box-form" method="POST">
-                {% csrf_token %}
-                <div class="form-box">
-                    <div class="form-cadastro">
-                        <h3>Atualizar aula</h3>
-                        {{ form }}
-                    </div>
+    <div class="principal-box-atualiza-aula">
+        <form class="principal-box-form" method="POST">
+            {% csrf_token %}
+            <div class="form-inputs">
+                <div class="form-inputs-div">
+                    <h3>Atualizar aula</h3>
+                    {{ form }}
                 </div>
-                <button class="btn-cadastro" type="submit">Atualizar</button>
-            </form>
-        </div>
+            </div>
+            <button class="btn-cadastro" type="submit">Atualizar</button>
+        </form>
     </div>
 </div>
 {% endblock %}

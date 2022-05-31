@@ -50,11 +50,11 @@
                         <li><a href="{% url 'usuario:atualizar_dados' %}">Atualizar dados</a></li>
                         <li><a href="{% url 'usuario:atualizar_senha' %}">Atualizar senha</a></li>
                         <li><a href="/usuario/{{request.session.usuario_logado.usuario_id}}/atualizar">Atualizar usuario</a></li>
-                        <li><a href="{% url 'usuario:logout' %}">LOGOUT</a></li>
+                        <li><a href="{% url 'usuario:logout' %}">Logout</a></li>
                         
                     </ul>
                     {% else %}
-                    <a href="{% url 'usuario:login' %}">LOGIN</a>
+                    <a href="{% url 'usuario:login' %}">Login</a>
                     {% endif %}
                 </li>
             </ul>

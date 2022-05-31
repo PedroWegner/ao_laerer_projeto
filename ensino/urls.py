@@ -20,8 +20,8 @@ urlpatterns = [
     path('lingua/<int:pk>/dicionario',
          views.LinguaDicionarioView.as_view(), name='dicionario'),
     path('lingua/palavra/<int:pk>/', views.PalavraView.as_view(), name='palavra'),
-    path('minhas_aulas/aula/<int:pk>/add_palavra',
-         views.AdicionaPalavraAula.as_view(), name='palavra_aula'),
+    #     path('minhas_aulas/aula/<int:pk>/add_palavra',
+    #          views.AdicionaPalavraAula.as_view(), name='palavra_aula'),
     path('aula/atividade/<int:pk>', views.ResolucaoAtividade.as_view()),
     path('aula/redo/atividade/<int:pk>',
          views.UpdateAtividadeConcluida.as_view()),
@@ -31,6 +31,6 @@ urlpatterns = [
          views.AdicionaAtividadeAula.as_view()),
     path('questao-update/<int:pk>', views.UpdateQuestao.as_view()),
     path('lingua/modulo/<int:pk>', views.ModuloView.as_view()),
-    #
-    path('busca/<int:pk>/', views.BuscaView.as_view(), name='busca')
+    path('busca/<int:pk>/', views.BuscaView.as_view(), name='busca'),
+    path('minhas_aulas/aula/<int:pk>/add_palavra', views.AddPalavra.as_view())
 ]

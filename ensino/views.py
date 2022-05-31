@@ -4,6 +4,7 @@ from typing import Dict, List
 import random
 from typing import List
 from django.views.generic import TemplateView
+from pkg_resources import working_set
 from .forms import *
 from django.http import HttpResponseRedirect
 from django.views import View
@@ -441,33 +442,40 @@ class MeuPainelAulasView(ListView):
         return queryset
 
 
-class AdicionaPalavraAula(TemplateView, DetailView):
+class AddPalavra(DetailView):
     template_name = 'ensino/cadastro/cadastra_palavra_aula.html'
     model = Aula
 
-    def get(self, *args, **kwargs):
-        formset = PalavraAulaForms(queryset=Palavra.objects.none())
-        return self.render_to_response(
-            {
-                'add_palavra': formset,
-                'aula': self.get_object(),
-            },
-        )
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['palavras_disponiveis'] = Palavra.objects.filter(
+            lingua=self.get_object().lingua,
+            nivel=self.get_object().nivel,
+        ).exclude(id__in=AulaPalavra.objects.filter(
+            aula=self.get_object()
+        ).values('palavra_id'))
+        return context
 
     def post(self, *args, **kwargs):
-        formset = PalavraAulaForms(
-            data=self.request.POST
-        )
-        if formset.is_valid():
-            forms = formset.save(commit=False)
-            for form in forms:
-                form.aula = self.get_object()
-                form.save()
-            if not self.get_object().atividade.first():
-                return redirect(f'/ensino/minhas_aulas/aula/{self.get_object().id}/adiciona_atividade')
-            return redirect((f'/ensino/aula/{self.get_object().id}'))
+        working = True
+        word = 0
 
-        return self.render_to_response({'add_palavra': formset})
+        while working:
+            palavra = Palavra.objects.filter(
+                id=self.request.POST.get(f'form-{word}-palavra')
+            ).first()
+            if not palavra:
+                working = False
+            else:
+                AulaPalavra(
+                    palavra=palavra,
+                    aula=self.get_object(),
+                ).save()
+                word += 1
+
+        if not self.get_object().atividade.first():
+            return redirect(f'/ensino/minhas_aulas/aula/{self.get_object().id}/adiciona_atividade')
+        return redirect((f'/ensino/aula/{self.get_object().id}'))
 
 
 class CriaQuestao(TemplateView):

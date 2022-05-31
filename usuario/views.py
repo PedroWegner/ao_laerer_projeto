@@ -1,6 +1,9 @@
+from .models import *
 from ensino.models import *
-from ensino.models import UsuarioLingua
 from forum.models import Noticia
+from forum.models import Conversa, ConversaUsuario, Mensagem, Postagem, Comentario
+from forum.forms import MensagemForms
+from .forms import *
 from django.http import HttpResponseRedirect
 from django.views import View
 from django.views.generic.list import ListView
@@ -9,10 +12,6 @@ from django.views.generic import FormView
 from django.views.generic.detail import DetailView
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from .forms import *
-from .models import *
-from forum.models import Conversa, ConversaUsuario, Mensagem, Postagem, Comentario
-from forum.forms import MensagemForms
 import bcrypt
 
 
@@ -42,13 +41,9 @@ class UsuarioCadastroView(View):
             'pessoa_cadastro': PessoaCadastro(
                 data=self.request.POST or None,
             ),
-            'endereco_cadastro': EnderecoCadastro(
-                data=self.request.POST or None,
-            ),
         }
         self.usuario_cadastro = self.context['usuario_cadastro']
         self.pessoa_cadastro = self.context['pessoa_cadastro']
-        self.endereco_cadastro = self.context['endereco_cadastro']
 
         self.renderizar = render(
             self.request, self.template_name, self.context
@@ -61,21 +56,16 @@ class UsuarioCadastroView(View):
         return self.renderizar
 
     def post(self, *args, **kwargs):
-        if not self.pessoa_cadastro.is_valid() or not self.endereco_cadastro.is_valid():
+        if not self.pessoa_cadastro.is_valid():
             return self.renderizar
 
-        # cadastra endereco
-        endereco = self.endereco_cadastro.save()
-        # cadastra pessoa
-        pessoa = self.pessoa_cadastro.save(commit=False)
-        pessoa.endereco = endereco
-        pessoa.save()
-        # cadastra usuario
+        # person
+        pessoa = self.pessoa_cadastro.save()
+        # user
         usuario = self.usuario_cadastro.save(commit=False)
         usuario.pessoa = pessoa
         usuario.save()
 
-        # PRECISO TESTAR ISSO
         for lingua in Lingua.objects.all():
             UsuarioLingua(
                 usuario=usuario,
@@ -145,7 +135,6 @@ class LoginView(FormView):
                         'is_licenced': usuario.is_licenced,
                     }
                 )
-
                 self.request.session.save()
 
                 if usuario:
@@ -280,8 +269,6 @@ class IniciaConversa(DetailView):
 
         return redirect(reverse('usuario:conversa', kwargs={'pk': conversa.id}))
 
-        return redirect('forum:forum')  # PRECISO ALTERAR AQUI!!!!
-
 
 class DadosAtualizarView(View):
     template_name = 'usuario/atualizar_dados.html'
@@ -293,13 +280,9 @@ class DadosAtualizarView(View):
             'atualizar_pessoa': AtualizarPessoa(
                 data=self.request.POST or None,
             ),
-            'atualizar_endereco': AtualizarEndereco(
-                data=self.request.POST or None,
-            ),
         }
 
         self.atualizar_pessoa = self.context['atualizar_pessoa']
-        self.atualizar_endereco = self.context['atualizar_endereco']
         self.renderizar = render(
             self.request, self.template_name, self.context
         )
@@ -317,32 +300,6 @@ class DadosAtualizarView(View):
             nome=self.atualizar_pessoa.cleaned_data.get('nome') or pessoa.nome,
             sobrenome=self.atualizar_pessoa.cleaned_data.get(
                 'sobrenome') or pessoa.sobrenome,
-            celular=self.atualizar_pessoa.cleaned_data.get(
-                'celular') or pessoa.celular,
-            estado_civil=self.atualizar_pessoa.cleaned_data.get(
-                'estado_civil') or pessoa.estado_civil,
-            genero=self.atualizar_pessoa.cleaned_data.get(
-                'genero') or pessoa.genero,
-        )
-        endereco = Endereco.objects.filter(
-            id=pessoa.endereco.id
-        ).first()
-        Endereco.objects.filter(
-            id=endereco.id).update(
-                rua=self.atualizar_endereco.cleaned_data.get(
-                    'rua') or endereco.rua,
-                numero=self.atualizar_endereco.cleaned_data.get(
-                    'numero') or endereco.numero,
-                bairro=self.atualizar_endereco.cleaned_data.get(
-                    'bairro') or endereco.bairro,
-                cep=self.atualizar_endereco.cleaned_data.get(
-                    'cep') or endereco.cep,
-                cidade=self.atualizar_endereco.cleaned_data.get(
-                    'cidade') or endereco.cidade,
-                estado=self.atualizar_endereco.cleaned_data.get(
-                    'estado') or endereco.estado,
-                tipo_endereco=self.atualizar_endereco.cleaned_data.get(
-                    'tipo_endereco') or endereco.tipo_endereco,
         )
         return self.renderizar
 

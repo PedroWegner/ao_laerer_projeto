@@ -39,54 +39,7 @@ class PessoaCadastro(forms.ModelForm):
             'nome',
             'sobrenome',
             'data_nascimento',
-            'cpf',
-            'celular',
-            'estado_civil',
-            'genero',
         )
-
-    def clean(self, *args, **kwargs):
-        data = self.data
-        cleaned = self.cleaned_data
-        validation_errors = {
-
-        }
-
-        if not valida_cpf(cleaned.get('cpf')):
-            validation_errors['cpf'] = 'CPF inválido'
-
-        if validation_errors:
-            raise(forms.ValidationError(validation_errors))
-
-
-class EnderecoCadastro(forms.ModelForm):
-    class Meta:
-        model = models.Endereco
-        fields = (
-            'rua',
-            'numero',
-            'bairro',
-            'cep',
-            'cidade',
-            'estado',
-            'tipo_endereco',
-        )
-
-    def clean(self, *args, **kwargs):
-        data = self.data
-        cleaned = self.cleaned_data
-        validation_errors = {
-
-        }
-
-        cep = cleaned.get('cep')
-        cep = re.sub(r'[^0-9]', '', cep)
-
-        if len(cep) > 8 or len(cep) < 8:
-            validation_errors['cep'] = "CEP inválido"
-
-        if validation_errors:
-            raise(forms.ValidationError(validation_errors))
 
 
 class AtualizarPessoa(forms.ModelForm):
@@ -101,64 +54,12 @@ class AtualizarPessoa(forms.ModelForm):
         fields = (
             'nome',
             'sobrenome',
-            'celular',
-            'estado_civil',
-            'genero',
         )
 
         unrequired = (
             'nome',
             'sobrenome',
-            'celular',
-            'estado_civil',
-            'genero',
         )
-
-
-class AtualizarEndereco(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        for field in self.Meta.unrequired:
-            self.fields[field].required = False
-
-    class Meta:
-        model = models.Endereco
-        fields = (
-            'rua',
-            'numero',
-            'bairro',
-            'cep',
-            'cidade',
-            'estado',
-            'tipo_endereco',
-        )
-        unrequired = (
-            'rua',
-            'numero',
-            'bairro',
-            'cep',
-            'cidade',
-            'estado',
-            'tipo_endereco',
-        )
-
-    def clean(self, *args, **kwargs):
-        data = self.data
-        cleaned = self.cleaned_data
-        validation_errors = {
-
-        }
-
-        cep = cleaned.get('cep')
-        if cep:
-            cep = re.sub(r'[^0-9]', '', cep)
-
-            if len(cep) > 8 or len(cep) < 8:
-                validation_errors['cep'] = "CEP inválido"
-
-            if validation_errors:
-                raise(forms.ValidationError(validation_errors))
 
 
 class AtualizarUsuario(forms.ModelForm):

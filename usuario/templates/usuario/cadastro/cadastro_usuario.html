@@ -10,17 +10,14 @@
             {% csrf_token %}
             <div class="form-box">
                 <div class="form-cadastro">
-                    <h3>Usuario</h3>
-                    {{ usuario_cadastro }}
-                </div>
-                <div class="form-cadastro">
                     <h3>Dados pessoais</h3>
                     {{ pessoa_cadastro }}
                 </div>
                 <div class="form-cadastro">
-                    <h3>Endereço</h3>
-                    {{ endereco_cadastro }}
+                    <h3>Usuario</h3>
+                    {{ usuario_cadastro }}
                 </div>
+
             </div>
             <button class="btn-cadastro" type="submit">Cadastrar</button>
         </form>

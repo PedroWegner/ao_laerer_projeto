@@ -1791,7 +1791,8 @@ input[type="radio"]:focus {
     align-items: center;
     margin: 0 auto;
     margin-bottom: 60px;
-    padding: 20px 0 30px 0;
+    padding: 20px 15px 30px 15px;
+    background-color: var(--color-high);
 }
 
 .form-cadastro {
@@ -1820,6 +1821,8 @@ input[type="radio"]:focus {
     grid-template-columns: 1fr 1fr;
     gap: 30px;
     width: 100%;
+    background-color: var(--color-high);
+    border-radius: 5px;
 }
 
 .form-box textarea {
@@ -1834,7 +1837,7 @@ input[type="radio"]:focus {
 .form-cadastro select {
     background-color: var(--color-medium);
     border-radius: 5px;
-    border: 2px solid var(--color-low);
+    border: 1px solid var(--color-border);
     padding: 5px 15px 5px 15px;
     color: var(--font-color);
 }

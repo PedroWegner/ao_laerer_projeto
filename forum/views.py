@@ -36,6 +36,7 @@ class PostagemRegistraView(FormView):
 
     def setup(self, *args, **kwargs) -> None:
         super().setup(*args, **kwargs)
+        self.postagem = None
         self.lingua = get_object_or_404(
             Lingua, id=self.request.build_absolute_uri()[-1]
         )
@@ -49,9 +50,6 @@ class PostagemRegistraView(FormView):
         context['lingua'] = self.lingua
 
         return context
-
-    def get_success_url(self):
-        return reverse('forum:forum_lingua', kwargs={'pk': self.lingua.id})
 
     def get(self,  *args, **kwargs):
 
@@ -69,7 +67,11 @@ class PostagemRegistraView(FormView):
             Lingua, id=self.request.build_absolute_uri()[-1]
         )
         postagem.save()
+        self.postagem = postagem.id
         return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('forum:postagem', kwargs={'pk': self.postagem})
 
 
 class PostagemView(DetailView):

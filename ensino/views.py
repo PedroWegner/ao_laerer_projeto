@@ -1,3 +1,5 @@
+import re
+from django.db.models import Q
 from typing import Dict, List
 import random
 from typing import List
@@ -177,10 +179,7 @@ class LinguaDicionarioView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['palavras'] = Palavra.objects.filter(
-            lingua=self.get_object()
-        )
-
+        context['recent_words'] = get_recent_word(self.get_object())
         return context
 
 
@@ -243,7 +242,7 @@ class AulaCadastroView(View):
 
         aula.save()
 
-        return redirect('usuario:home')
+        return redirect(f'/ensino/minhas_aulas/aula/{aula.id}/add_palavra')
 
 
 class AtualizarAulaView(UpdateView):
@@ -443,12 +442,11 @@ class MeuPainelAulasView(ListView):
 
 
 class AdicionaPalavraAula(TemplateView, DetailView):
-    template_name = 'ensino/cadastra_palavra_aula.html'
+    template_name = 'ensino/cadastro/cadastra_palavra_aula.html'
     model = Aula
 
     def get(self, *args, **kwargs):
-        formset = PalavraAulaForms()
-
+        formset = PalavraAulaForms(queryset=Palavra.objects.none())
         return self.render_to_response(
             {
                 'add_palavra': formset,
@@ -465,7 +463,9 @@ class AdicionaPalavraAula(TemplateView, DetailView):
             for form in forms:
                 form.aula = self.get_object()
                 form.save()
-            return redirect(reverse_lazy('usuario:home'))
+            if not self.get_object().atividade.first():
+                return redirect(f'/ensino/minhas_aulas/aula/{self.get_object().id}/adiciona_atividade')
+            return redirect((f'/ensino/aula/{self.get_object().id}'))
 
         return self.render_to_response({'add_palavra': formset})
 
@@ -638,7 +638,7 @@ class AdicionaAtividadeAula(DetailView):
                 atividade=atividade,
                 questao=questao,
             ).save()
-        return redirect('usuario:home')
+        return redirect(f'/ensino/aula/{self.get_object().id}')
 
 
 class ResolucaoAtividade(DetailView):
@@ -672,7 +672,7 @@ class ResolucaoAtividade(DetailView):
         nota = checa_questoes(self.get_object(), self.request)
         cria_atividade(self.get_object(), nota, self.request.session)
 
-        return redirect('usuario:home')
+        return redirect(f'/ensino/aula/{self.get_object().aula.id}')
 
 
 class UpdateAtividadeConcluida(DetailView):
@@ -718,10 +718,57 @@ class UpdateAtividadeConcluida(DetailView):
         else:
             pass
 
-        return redirect('usuario:home')
+        return redirect(f'/ensino/aula/{self.get_object().atividade.aula.id}')
+
+
+class BuscaView(DetailView):
+    template_name = 'ensino/busca.html'
+    model = Lingua
+
+    def setup(self, *args, **kwargs):
+        super().setup(*args, **kwargs)
+        self.palavra_e = self.request.GET.get('palavra')
+        self.palavra = Palavra.objects.filter(
+            palavra=self.palavra_e
+        ).first()
+
+        self.context = {
+            'palavra_e': self.palavra_e,
+            'palavras': Palavra.objects.filter(
+                Q(palavra=self.palavra_e) |
+                Q(palavra__icontains=f'{self.palavra_e[:3]}'),
+                lingua=self.get_object()
+            ).distinct()[:6],
+            'recent_words': get_recent_word(self.get_object()),
+            'lingua': self.get_object(),
+        }
+        self.renderizar = render(
+            self.request, self.template_name, self.context
+        )
+
+    def get(self, *args, **kwargs):
+        if self.palavra:
+            return redirect(
+                f'/ensino/lingua/palavra/{self.palavra.id}/')
+        return self.renderizar
 
 
 # SERVICES
+
+
+def get_recent_word(lingua) -> Dict:
+    return Palavra.objects.filter(
+        lingua=lingua
+    ).order_by('data_cadastro')[:5]
+
+
+def get_similar_level_word(lingua, nivel) -> Dict:
+    return Palavra.objects.filter(
+        lingua=lingua,
+        nivel=nivel
+    ).order_by('?')[:5]
+
+
 def checa_nivel_aula_user(nivel, request, lingua):
     nivel_usuario = UsuarioLingua.objects.filter(
         lingua=lingua,

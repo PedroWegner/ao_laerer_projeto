@@ -284,7 +284,8 @@ class Alternativa(models.Model):
 class AtividadeAula(models.Model):
     aula = models.ForeignKey(
         Aula,
-        on_delete=models.DO_NOTHING
+        on_delete=models.DO_NOTHING,
+        related_name='atividade'
     )
     questao = models.ManyToManyField(
         Questao,

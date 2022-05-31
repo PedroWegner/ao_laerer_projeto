@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block 'titulo'%}Publicação de notícia{% endblock %}
+{% block 'conteudo' %}
+{% block 'menu-lingua' %}
+{% include 'parcial/_menu_lingua.html' %}
+{% endblock %}
+<div class="principal-box-dict">
+    <div class="dict-box-grande">
+        <p class="aviso-nao-encontrado">Não foi achado resultado com '{{palavra_e}}'</p>
+        {% if palavras %}
+        <p class="aviso">Talvez alguma palavra abaixo seja a que você procura:</p>
+        <ul>
+            {% for palavra in palavras %}
+            <li>
+                <a class='aula-palavra' href="/ensino/lingua/palavra/{{palavra.id}}/">
+                    <p>{{ palavra}}</p>
+                </a>
+
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div class="dict-box-pequena">
+        {% include 'parcial/_recent_words.html' %}
+    </div>
+</div>
+
+{% endblock %}

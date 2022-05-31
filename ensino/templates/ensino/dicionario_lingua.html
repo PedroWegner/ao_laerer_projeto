@@ -5,16 +5,13 @@
 {% include 'parcial/_menu_lingua.html' %}
 {% endblock %}
 <div class="principal-box-dict">
-    <div>
-        <h2>
-            dict de {{lingua}}
-        </h2>
-        {% for palavra in palavras %}
-        <a href="/ensino/lingua/palavra/{{ palavra.id }}">{{ palavra }}</a>
-        {% endfor %}
+    <div class="dict-box-grande dict">
+        <form method="GET" action="/ensino/busca/{{lingua.id}}/">
+            <input type="search" value="" id="search-input" placeholder="pesquise aqui" name="palavra">
+        </form>
     </div>
-    <div>
-
+    <div class="dict-box-pequena">
+        {% include 'parcial/_recent_words.html' %}
     </div>
 </div>
 

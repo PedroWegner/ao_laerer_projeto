@@ -9,6 +9,7 @@
     --color-medium: #222222;
     --color-high: #333;
     --font-color: #E8EBEC;
+    --sec-font-color: #c2c3c3;
     --blue-low: #6571E0;
     --blue-high: #2F4894;
     --font-image: #E8EBEC;
@@ -22,6 +23,7 @@
     --color-medium: #c2c2c2;
     --color-high: #dcdcdc;
     --font-color: #232424;
+    --sec-font-color: #1b1c1c;
     --shadow-color: #a9a9a9;
     --color-border: #7c7c7c;
 }
@@ -279,7 +281,9 @@ ul.drop-menu-usuario li:first-child {
 }
 
 .form-login input:active,
-.form-login input:focus {
+.form-login input:focus,
+.dict form input:active,
+.dict form input:focus {
     box-shadow: 0 0 0 0;
     outline: 0;
     border-color: var(--blue-high);
@@ -661,6 +665,7 @@ ul.drop-menu-usuario li:first-child {
 
 .box-conteudo-aula {
     display: grid;
+    gap: 30px;
     grid-template-columns: 1.5fr 1fr;
 }
 
@@ -716,6 +721,25 @@ ul.drop-menu-usuario li:first-child {
     display: flex;
     flex-direction: column;
     margin: 0 auto;
+}
+
+.aula-palavra {
+    max-width: fit-content;
+}
+
+.aula-palavra p {
+    font-size: 1em;
+    color: var(--blue-high);
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.aula-palavra:hover>p {
+    color: var(--blue-low);
+}
+
+.aula-contexto {
+    margin: 0 0 0 15px;
 }
 
 /* FIM HTML AULA */
@@ -1626,12 +1650,107 @@ input[type="radio"]:focus {
     padding-top: 60px;
 }
 
-.principal-box-dict div {
-    background-color: var(--color-low);
+.dict {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dict form input {
+    background-color: var(--color-medium);
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+    padding: 6px;
+    width: 450px;
+    color: var(--font-color)
 }
 
 /* FIM HTML DICIONARIO */
+/* INICIO HTML BUSCA */
+.dict-box-pequena,
+.dict-box-grande {
+    background-color: var(--color-high);
+    padding-bottom: 15px;
+}
 
+.aviso-nao-encontrado {
+    color: var(--blue-high);
+    font-weight: 600;
+    font-size: 1.3em;
+    margin-left: 20px;
+}
+
+.aviso {
+    margin-left: 20px;
+}
+
+
+/* FIM HTML BUSCA */
+/* INICIO HTML PALAVRA */
+.palavra-box-geral {
+    display: grid;
+    grid-template-columns: 3.5fr 1fr;
+    gap: 20px;
+}
+
+.sub-menu-palavra,
+.palavra-box {
+    background-color: var(--color-high);
+    padding-left: 25px;
+    border-radius: 5px;
+}
+
+.palavra {
+    font-size: 1.5em;
+    color: var(--blue-high);
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.palavra span {
+    font-size: 0.55em;
+}
+
+.escrita-fonetica {
+    margin: 0;
+    font-size: 1.1em;
+    color: var(--sec-font-color);
+}
+
+.palavra-significado span {
+    border: 2px solid var(--blue-low);
+    padding-left: 5px;
+    padding-right: 5px;
+    border-radius: 15px;
+    color: var(--blue-high);
+    font-weight: 600;
+    font-size: 0.9em;
+}
+
+.palavra-conteudo {
+    margin-bottom: 35px;
+}
+
+.palavra-conteudo::after {
+    display: block;
+    content: '';
+    width: 90%;
+    height: 2px;
+    background: var(--blue-low);
+    margin-top: 3px;
+    transition: 0.5s;
+}
+
+.palavra-contexto {
+    margin-bottom: 25px;
+}
+
+.palavra-contexto ul li {
+    list-style: circle;
+    color: var(--blue-low);
+}
+
+/* FIM HTML PALAVRA */
 /* JA ALTERADO /\ */
 /* cad geral */
 .btn-cadastro {

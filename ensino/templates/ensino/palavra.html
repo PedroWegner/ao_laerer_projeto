@@ -1,20 +1,34 @@
 {% extends 'base.html' %}
 {% block 'titulo'%}Publicação de notícia{% endblock %}
 {% block 'conteudo' %}
-<div class="principal-box-cad">
-    <h2>
-        dict de {{palavra.lingua}}
-    </h2>
-    <div>
-        <p>{{ palavra }}</p>
-        <p>{{ palavra.significado }}</p>
+{% block 'menu-lingua' %}
+{% include 'parcial/_menu_lingua.html' %}
+{% endblock %}
+<div class="principal-box-postagem">
+    <div class="palavra-box">
+        <div class="palavra-conteudo">
+            <p class="palavra">{{ palavra }} <span>{{ palavra.classe }}</span></p>
+            {% if palavra.escrita_fonetica %}
+            <p class="escrita-fonetica">{{ palavra.escrita_fonetica }}</p>
+            {% endif %}
+            <p class="palavra-significado"><span>{{ palavra.nivel }}</span> {{ palavra.significado }}</p>
+        </div>
+        <div class="palavra-contexto">
+            {% for contexto in contextos %}
+            <ul>
+                <li>
+                    <p>{{ contexto.contexto }}</p>
+                </li>
+            </ul>
+            {% endfor %}
+        </div>
     </div>
-    <div>
-        <h3>contextos</h3>
-        {% for contexto in contextos %}
-        <p>{{ contexto.contexto }}</p>
-        {% endfor %}
+    <div class='sub-menu-palavra'>
+        <p>submenu</p>
     </div>
+
+
+
 </div>
 
 {% endblock %}

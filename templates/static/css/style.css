@@ -279,6 +279,8 @@ ul.drop-menu-usuario li:first-child {
     border-radius: 3px;
     background-color: var(--color-medium);
     border: 1px solid var(--color-border);
+    color: var(--font-color);
+    padding: 6px;
 }
 
 .form-login label {
@@ -1484,8 +1486,8 @@ input[type="radio"]:focus {
 }
 
 .imagem-autor {
-    max-width: 80px;
-    min-height: 80px;
+    width: 80px;
+    height: 80px;
     object-fit: cover;
     border-radius: 50%;
     margin-top: 25px;
@@ -1631,13 +1633,37 @@ input[type="radio"]:focus {
     color: var(--font-color);
 }
 
+.form-postagem label {
+    color: var(--thr-font-color);
+    font-weight: 600;
+    margin-bottom: 4px;
+    margin-top: 6px;
+
+}
+
 .form-postagem input,
 .form-postagem textarea {
-    width: 100%;
-    background-color: var(--color-medium);
-    resize: none;
+    padding: 6px;
     border-radius: 3px;
+    background-color: var(--color-medium);
+    border: 1px solid var(--color-border);
+    color: var(--font-color);
+    width: 100%;
+    font-weight: 600;
+    font-family: 'Nunito';
+    resize: none;
 }
+
+.form-postagem input:focus,
+.form-postagem input:active,
+.form-postagem textarea:focus,
+.form-postagem textarea:active {
+    outline: 0;
+    border-radius: 5px;
+    border-color: var(--thr-font-color);
+    box-shadow: 0 0 0 1px var(--hover-font-color);
+}
+
 
 /* FIM HTML CAD POSTAGEM */
 /* INICIO HTML NOTICIA */
@@ -2023,6 +2049,44 @@ input[type="radio"]:focus {
 .box-principal-questao {
     color: var(--font-color);
 }
+
+
+/* INICIO ATUALIZA IMG */
+.atualiza-imagem {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 50px;
+    align-content: space-between;
+}
+
+.atualiza-imagem div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.atualiza-imagem img {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-top: 20px;
+}
+
+.atualiza-imagem img:hover {
+    box-shadow: 0 0 0 3px var(--color-medium), 0 0 0 7px var(--thr-font-color);
+}
+
+.atualiza-imagem img:last-child {
+    cursor: pointer;
+}
+
+.atualiza-imagem input {
+    display: none;
+}
+
+/* FIM ATUALIZA IMG */
 
 @media screen and (max-width: 1450px) {
     .box-modulo p {

@@ -1,3 +1,10 @@
+from django.core.files.storage import default_storage
+from django.conf import settings
+from django.core.files.base import ContentFile
+from PIL import Image
+import shutil
+from datetime import date
+import os
 from .models import *
 from ensino.models import *
 from forum.models import Noticia
@@ -350,3 +357,43 @@ class UsuarioAtualizarView(UpdateView):
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
+
+
+class TesteAtualizaFotoView(View):
+    template_name = 'usuario/teste_atualiza_foto.html'
+
+    def setup(self, *args, **kwargs) -> None:
+        super().setup(*args, **kwargs)
+        self.renderizar = render(
+            self.request, self.template_name
+        )
+
+    def get(self, *args, **kwargs):
+        if not 'usuario_logado' in self.request.session:
+            return redirect('usuario:login')
+        return self.renderizar
+
+    def post(self, *args, **kwargs):
+
+        # project_dir = os.path.dirname(os.path.abspath("top_level_file.txt"))
+        ano = date.today().strftime("%Y")
+        mes = date.today().strftime("%m")
+
+        img = self.request.FILES.get('asgnmnt_file')
+        if not img:
+            return self.renderizar
+        path = default_storage.save(
+            rf"img_perfis\{ano}\{mes}\{img}", ContentFile(img.read()))
+        os.path.join(settings.MEDIA_ROOT, path)
+
+        usuario = Usuario.objects.filter(
+            id=self.request.session['usuario_logado']['usuario_id']
+        ).update(
+            img_usuario=path
+        )
+        usuario = get_object_or_404(Usuario,
+                                    id=self.request.session['usuario_logado']['usuario_id'])
+        self.request.session['usuario_logado']['img_usuario'] = usuario.img_usuario.url
+        self.request.session.save()
+
+        return redirect('usuario:home')

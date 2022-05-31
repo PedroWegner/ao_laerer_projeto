@@ -20,4 +20,7 @@ urlpatterns = [
          name='atualizar_senha'),
     path('usuario/<int:pk>/atualizar', views.UsuarioAtualizarView.as_view(),
          name='atualizar_usuario'),
+    #
+    path('teste/<int:pk>/atualizar',
+         views.TesteAtualizaFotoView.as_view(), name='teste')
 ]

@@ -1976,7 +1976,10 @@ input[type="radio"]:focus {
 
 .form-inputs input,
 .form-inputs textarea,
-.form-inputs select {
+.form-inputs select,
+.form-update input,
+.form-update textarea,
+.form-update select {
     padding: 6px;
     border-radius: 3px;
     background-color: var(--color-medium);
@@ -2001,7 +2004,9 @@ input[type="radio"]:focus {
 }
 
 .form-inputs label,
-.form-inputs h3 {
+.form-inputs h3,
+.form-update label,
+.form-update h3 {
 
     color: var(--thr-font-color);
     font-weight: 600;
@@ -2051,13 +2056,33 @@ input[type="radio"]:focus {
 }
 
 
-/* INICIO ATUALIZA IMG */
+/* INICIO ATUALIZA PERSON */
+.form-update {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+}
+
 .atualiza-imagem {
-    width: 100%;
+    margin: 0 auto;
     display: flex;
-    flex-direction: row;
-    gap: 50px;
-    align-content: space-between;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    background-color: var(--color-medium);
+    border-radius: 5px 0 0 5px;
+}
+
+.atualiza-dados {
+    padding: 0 25px 25px 25px;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-high);
+    border-radius: 0 5px 5px 0;
+}
+
+.atualiza-dados div:first-child,
+.atualiza-imagem div:first-child {
+    margin-top: 25px;
 }
 
 .atualiza-imagem div {
@@ -2086,7 +2111,7 @@ input[type="radio"]:focus {
     display: none;
 }
 
-/* FIM ATUALIZA IMG */
+/* FIM ATUALIZA PERSON */
 
 @media screen and (max-width: 1450px) {
     .box-modulo p {

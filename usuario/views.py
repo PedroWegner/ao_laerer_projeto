@@ -277,12 +277,11 @@ class IniciaConversa(DetailView):
         return redirect(reverse('usuario:conversa', kwargs={'pk': conversa.id}))
 
 
-class DadosAtualizarView(View):
-    template_name = 'usuario/atualizar_dados.html'
+class UpdateInformacoesView(View):
+    template_name = 'usuario/update_infos.html'
 
     def setup(self, *args, **kwargs):
         super().setup(*args, **kwargs)
-
         self.context = {
             'atualizar_pessoa': AtualizarPessoa(
                 data=self.request.POST or None,
@@ -291,109 +290,88 @@ class DadosAtualizarView(View):
 
         self.atualizar_pessoa = self.context['atualizar_pessoa']
         self.renderizar = render(
-            self.request, self.template_name, self.context
-        )
+            self.request, self.template_name, self.context)
 
     def get(self, *args, **kwargs):
-        if not 'usuario_logado' in self.request.session:
-            return redirect('usuario:login')
+
         return self.renderizar
 
     def post(self, *args, **kwargs):
-        pessoa = Pessoa.objects.filter(
-            id=self.request.session['usuario_logado']['pessoa_id']).first()
-        Pessoa.objects.filter(
-            id=self.request.session['usuario_logado']['pessoa_id']).update(
-            nome=self.atualizar_pessoa.cleaned_data.get('nome') or pessoa.nome,
-            sobrenome=self.atualizar_pessoa.cleaned_data.get(
-                'sobrenome') or pessoa.sobrenome,
-        )
+        # Person update
+        nome = self.request.POST.get('nome')
+        sobrenome = self.request.POST.get('sobrenome')
+        id_pessoa = self.request.session['usuario_logado']['pessoa_id']
+        person_update = update_person(
+            self.request.session, nome, sobrenome, id_pessoa)
+        # Img update
+        img = self.request.FILES.get('asgnmnt_file')
+        img_update = update_img(self.request.session, img)
+        # Password update
+        pass_1 = self.request.POST.get('senha_antiga_1')
+        pass_2 = self.request.POST.get('senha_antiga_2')
+        new_pass = self.request.POST.get('senha')
+        password_update = update_password(
+            self.request.session, pass_1, pass_2, new_pass)
+
+        if password_update:
+            return redirect('usuario:logout')
+        if img_update or person_update:
+            return redirect('usuario:home')
         return self.renderizar
 
 
-class SenhaAtualizarView(View):
-    template_name = 'usuario/atualizar_senha.html'
-
-    def setup(self, *args, **kwargs):
-        super().setup(*args, **kwargs)
-
-        self.renderizar = render(
-            self.request, self.template_name)
-
-    def get(self, *args, **kwargs):
-        if not 'usuario_logado' in self.request.session:
-            return redirect('usuario:login')
-        return self.renderizar
-
-    def post(self, *args, **kwargs):
-        senha_antiga_1 = self.request.POST.get('senha_antiga_1')
-        senha_antiga_2 = self.request.POST.get('senha_antiga_2')
-        senha = self.request.POST.get('senha')
-
-        if senha_antiga_1 != senha_antiga_2:
-            print('Aqui preciso levantar algum chamado falando que não deu certo')
-            return self.renderizar
-
-        if bcrypt.checkpw(senha_antiga_1.encode('utf-8'), self.request.session['usuario_logado']['senha'].encode('utf-8')):
+# SERVICES
+def update_password(request, pass_1, pass_2, new_pass):
+    if not pass_1 or not pass_2:
+        return False
+    if pass_1 == pass_2 and new_pass:
+        if bcrypt.checkpw(pass_1.encode('utf-8'), request['usuario_logado']['senha'].encode('utf-8')):
 
             Usuario.objects.filter(
-                id=self.request.session['usuario_logado']['usuario_id']
+                id=request['usuario_logado']['usuario_id']
             ).update(
-                senha=str(bcrypt.hashpw(senha.encode(
+                senha=str(bcrypt.hashpw(new_pass.encode(
                     'utf-8'), bcrypt.gensalt()))[2:-1]
             )
-            return redirect('usuario:logout')
-        return self.renderizar
+            return True
+        return False
 
 
-class UsuarioAtualizarView(UpdateView):
-    template_name = 'usuario/atualizar_usuario.html'
-    model = Usuario
-    form_class = AtualizarUsuario
+def update_person(request, nome, sobrenome, id_pessoa):
+    pessoa = Pessoa.objects.filter(
+        id=id_pessoa).first()
+    Pessoa.objects.filter(
+        id=id_pessoa).update(
+        nome=nome or pessoa.nome,
+        sobrenome=sobrenome or pessoa.sobrenome,
+    )
+    if sobrenome:
+        request['usuario_logado']['sobrenome'] = sobrenome
+    if nome:
+        request['usuario_logado']['nome'] = nome
 
-    def get_success_url(self):
-        return reverse('usuario:home')
-
-    def form_valid(self, form):
-        form.save()
-        return super().form_valid(form)
+    if nome or sobrenome:
+        request.save()
+        return True
+    return False
 
 
-class TesteAtualizaFotoView(View):
-    template_name = 'usuario/teste_atualiza_foto.html'
-
-    def setup(self, *args, **kwargs) -> None:
-        super().setup(*args, **kwargs)
-        self.renderizar = render(
-            self.request, self.template_name
-        )
-
-    def get(self, *args, **kwargs):
-        if not 'usuario_logado' in self.request.session:
-            return redirect('usuario:login')
-        return self.renderizar
-
-    def post(self, *args, **kwargs):
-
-        # project_dir = os.path.dirname(os.path.abspath("top_level_file.txt"))
-        ano = date.today().strftime("%Y")
-        mes = date.today().strftime("%m")
-
-        img = self.request.FILES.get('asgnmnt_file')
-        if not img:
-            return self.renderizar
+def update_img(request, img):
+    ano = date.today().strftime("%Y")
+    mes = date.today().strftime("%m")
+    if img:
         path = default_storage.save(
             rf"img_perfis\{ano}\{mes}\{img}", ContentFile(img.read()))
         os.path.join(settings.MEDIA_ROOT, path)
 
         usuario = Usuario.objects.filter(
-            id=self.request.session['usuario_logado']['usuario_id']
+            id=request['usuario_logado']['usuario_id']
         ).update(
             img_usuario=path
         )
         usuario = get_object_or_404(Usuario,
-                                    id=self.request.session['usuario_logado']['usuario_id'])
-        self.request.session['usuario_logado']['img_usuario'] = usuario.img_usuario.url
-        self.request.session.save()
-
-        return redirect('usuario:home')
+                                    id=request['usuario_logado']['usuario_id'])
+        request['usuario_logado']['img_usuario'] = usuario.img_usuario.url
+        request.save()
+        return True
+    return False

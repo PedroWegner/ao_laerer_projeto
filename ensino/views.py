@@ -1,10 +1,9 @@
-import re
+from django.contrib import messages
 from django.db.models import Q
 from typing import Dict, List
 import random
 from typing import List
 from django.views.generic import TemplateView
-from pkg_resources import working_set
 from .forms import *
 from django.http import HttpResponseRedirect
 from django.views import View
@@ -135,41 +134,58 @@ class CadastraPalavraView(View):
         return self.renderizar
 
     def post(self, *args, **kwargs):
-        palavra = Palavra.objects.filter(
+        palavra_bd = Palavra.objects.filter(
             palavra=self.request.POST.get('palavra')
         ).first()
-        if palavra:
+        palavra = self.request.POST.get('palavra')
+        contexto = self.request.POST.get('contexto')
+        lingua = self.request.POST.get('lingua')
+        significado = self.request.POST.get('significado')
+        classe_mor = self.request.POST.get('classe')
+        nivel = self.request.POST.get('nivel')
+        escrita_fonetica = self.request.POST.get('escrita_fonetica')
+        if palavra_bd:
             Contexto(
-                contexto=self.request.POST.get('contexto')).save()
+                contexto=contexto).save()
             contexto = Contexto.objects.filter(
-                contexto=self.request.POST.get('contexto')
+                contexto=contexto
             ).first()
-            palavra.contexto.add(contexto)
+            palavra_bd.contexto.add(contexto)
+            messages.add_message(
+                self.request,
+                messages.SUCCESS,
+                "Palavra já existe, contexto att"
+            )
             return HttpResponseRedirect(self.request.path_info)
         else:
             Palavra(
-                palavra=self.request.POST.get('palavra'),
+                palavra=palavra,
                 lingua=Lingua.objects.filter(
-                    id=self.request.POST.get('lingua')
+                    id=lingua
                 ).first(),
                 classe=ClassePalavra.objects.filter(
-                    id=self.request.POST.get('classe')
+                    id=classe_mor
                 ).first(),
-                significado=self.request.POST.get('significado'),
+                significado=significado,
                 nivel=NivelLingua.objects.filter(
-                    id=self.request.POST.get('nivel')
+                    id=nivel
                 ).first(),
-                escrita_fonetica=self.request.POST.get('escrita_fonetica')
+                escrita_fonetica=escrita_fonetica
             ).save()
             Contexto(
-                contexto=self.request.POST.get('contexto')
+                contexto=contexto
             ).save()
             Palavra.objects.filter(
-                palavra=self.request.POST.get('palavra')
+                palavra=palavra
             ).first().contexto.add(
                 Contexto.objects.filter(
-                    contexto=self.request.POST.get('contexto')
+                    contexto=contexto
                 ).first()
+            )
+            messages.add_message(
+                self.request,
+                messages.SUCCESS,
+                "Palavra adicionada"
             )
             return HttpResponseRedirect(self.request.path_info)
 
@@ -196,6 +212,7 @@ class PalavraView(DetailView):
                 palavra=self.get_object()
             ).values('contexto_id')
         )
+        context['recent_words'] = get_recent_word(self.get_object().lingua)
 
         return context
 
@@ -242,7 +259,7 @@ class AulaCadastroView(View):
             aula.is_licenced = self.request.POST.get('is_licenced') == 'on'
 
         aula.save()
-
+        send_message_success(self.request, "Aula adicionada")
         return redirect(f'/ensino/minhas_aulas/aula/{aula.id}/add_palavra')
 
 
@@ -473,8 +490,10 @@ class AddPalavra(DetailView):
                 ).save()
                 word += 1
 
+        send_message_success(self.request, "Palavras adicionadas à aula")
         if not self.get_object().atividade.first():
             return redirect(f'/ensino/minhas_aulas/aula/{self.get_object().id}/adiciona_atividade')
+
         return redirect((f'/ensino/aula/{self.get_object().id}'))
 
 
@@ -646,6 +665,7 @@ class AdicionaAtividadeAula(DetailView):
                 atividade=atividade,
                 questao=questao,
             ).save()
+        send_message_success(self.request, "Atividade adicionada à aula")
         return redirect(f'/ensino/aula/{self.get_object().id}')
 
 
@@ -679,8 +699,16 @@ class ResolucaoAtividade(DetailView):
     def post(self, *args, **kwargs):
         nota = checa_questoes(self.get_object(), self.request)
         cria_atividade(self.get_object(), nota, self.request.session)
+        send_message_grade(self.request, nota)
 
         return redirect(f'/ensino/aula/{self.get_object().aula.id}')
+
+
+def send_message_grade(request, grade):
+    if grade < 70.0:
+        send_message_error(request, f"Sua nota foi: {grade}")
+    else:
+        send_message_success(request, f"Sua nota foi: {grade}")
 
 
 class UpdateAtividadeConcluida(DetailView):
@@ -725,6 +753,7 @@ class UpdateAtividadeConcluida(DetailView):
                     self.get_object().atividade, self.request.session)
         else:
             pass
+        send_message_grade(self.request, nota)
 
         return redirect(f'/ensino/aula/{self.get_object().atividade.aula.id}')
 
@@ -762,6 +791,20 @@ class BuscaView(DetailView):
 
 
 # SERVICES
+def send_message_success(request, message: str) -> None:
+    messages.add_message(
+        request,
+        messages.SUCCESS,
+        message
+    )
+
+
+def send_message_error(request, message: str) -> None:
+    messages.add_message(
+        request,
+        messages.ERROR,
+        message
+    )
 
 
 def get_recent_word(lingua) -> Dict:

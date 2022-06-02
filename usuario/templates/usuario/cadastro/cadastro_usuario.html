@@ -2,19 +2,16 @@
 {% block 'titulo'%}Cadastro de professor{% endblock %}
 {% block 'conteudo' %}
 <div class="principal-box-cad">
-    <h2>
-        Cadastro
-    </h2>
+
     <div>
         <form class='principal-box-form' method="POST">
             {% csrf_token %}
             <div class="form-box">
+
                 <div class="form-cadastro">
-                    <h3>Dados pessoais</h3>
                     {{ pessoa_cadastro }}
                 </div>
                 <div class="form-cadastro">
-                    <h3>Usuario</h3>
                     {{ usuario_cadastro }}
                 </div>
 

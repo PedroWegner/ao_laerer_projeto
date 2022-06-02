@@ -1,8 +1,7 @@
+from django.contrib import messages
 from django.core.files.storage import default_storage
 from django.conf import settings
 from django.core.files.base import ContentFile
-from PIL import Image
-import shutil
 from datetime import date
 import os
 from .models import *
@@ -14,8 +13,6 @@ from .forms import *
 from django.http import HttpResponseRedirect
 from django.views import View
 from django.views.generic.list import ListView
-from django.views.generic.edit import UpdateView
-from django.views.generic import FormView
 from django.views.generic.detail import DetailView
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
@@ -58,7 +55,7 @@ class UsuarioCadastroView(View):
 
     def get(self, *args, **kwargs):
         if 'usuario_logado' in self.request.session:
-            print('não pode estar aqui')
+            return redirect('usuario:home')
 
         return self.renderizar
 
@@ -86,12 +83,21 @@ class UsuarioCadastroView(View):
         return redirect('usuario:home')
 
 
-class LoginView(FormView):
+class LoginView(View):
     """
     View de login geral
     """
     template_name = 'usuario/login.html'
-    form_class = UsuarioLogin
+
+    def setup(self, *args, **kwargs):
+        super().setup(*args, **kwargs)
+        self.context = {
+            'form': UsuarioLogin(
+                data=self.request.POST or None
+            )
+        }
+        self.renderizar = render(
+            self.request, self.template_name, self.context)
 
     def get(self, *args, **kwargs):
         """
@@ -101,7 +107,7 @@ class LoginView(FormView):
         if 'usuario_logado' in self.request.session:
             return redirect('usuario:home')
 
-        return super().get(*args, **kwargs)
+        return self.renderizar
 
     def get_success_url(self):
         return reverse('usuario:home')
@@ -145,16 +151,21 @@ class LoginView(FormView):
                 self.request.session.save()
 
                 if usuario:
+                    print('dada')
                     return redirect('usuario:home')
-                else:
-                    print('não sei')
             else:
-                pass
-                return super().post(*args, **kwargs)
+                messages.add_message(
+                    self.request, messages.ERROR, 'Senha inválida')
+                self.renderizar = render(
+                    self.request, self.template_name, self.context)
+                return self.renderizar
         except Exception as e:
-            print(f"Usuario não existe: {e}")
+            messages.add_message(
+                self.request, messages.ERROR, 'Usuário não existe')
+            self.renderizar = render(
+                self.request, self.template_name, self.context)
 
-        return super().post(*args, **kwargs)
+        return self.renderizar
 
 
 class LogoutView(View):
@@ -282,13 +293,8 @@ class UpdateInformacoesView(View):
 
     def setup(self, *args, **kwargs):
         super().setup(*args, **kwargs)
-        self.context = {
-            'atualizar_pessoa': AtualizarPessoa(
-                data=self.request.POST or None,
-            ),
-        }
+        self.context = {}
 
-        self.atualizar_pessoa = self.context['atualizar_pessoa']
         self.renderizar = render(
             self.request, self.template_name, self.context)
 
@@ -297,6 +303,25 @@ class UpdateInformacoesView(View):
         return self.renderizar
 
     def post(self, *args, **kwargs):
+        # password update
+        pass_1 = self.request.POST.get('senha_antiga_1')
+        pass_2 = self.request.POST.get('senha_antiga_2')
+        new_pass = self.request.POST.get('senha')
+        password_update = update_password(
+            self.request.session, pass_1, pass_2, new_pass)
+
+        if not password_update:
+            messages.add_message(
+                self.request,
+                messages.ERROR,
+                'Senhas não conferem'
+            )
+            self.renderizar = render(
+                self.request,
+                self.template_name,
+                self.context
+            )
+            return self.renderizar
         # Person update
         nome = self.request.POST.get('nome')
         sobrenome = self.request.POST.get('sobrenome')
@@ -306,16 +331,20 @@ class UpdateInformacoesView(View):
         # Img update
         img = self.request.FILES.get('asgnmnt_file')
         img_update = update_img(self.request.session, img)
-        # Password update
-        pass_1 = self.request.POST.get('senha_antiga_1')
-        pass_2 = self.request.POST.get('senha_antiga_2')
-        new_pass = self.request.POST.get('senha')
-        password_update = update_password(
-            self.request.session, pass_1, pass_2, new_pass)
 
         if password_update:
+            messages.add_message(
+                self.request,
+                messages.SUCCESS,
+                "Senha atualizada."
+            )
             return redirect('usuario:logout')
         if img_update or person_update:
+            messages.add_message(
+                self.request,
+                messages.SUCCESS,
+                "Dados atualizados"
+            )
             return redirect('usuario:home')
         return self.renderizar
 

@@ -262,14 +262,21 @@ class ConversaView(DetailView):
         return context
 
     def post(self, *args, **kwargs):
+        ano = date.today().strftime("%Y")
+        mes = date.today().strftime("%m")
+        img = self.request.FILES.get('asgnmnt_file')
+        if img:
+            path = default_storage.save(
+                rf"chat\{ano}\{mes}\{img}", ContentFile(img.read()))
+            os.path.join(settings.MEDIA_ROOT, path)
+
         Mensagem(
             conversa=self.get_object(),
             autor=get_object_or_404(
                 Usuario, id=self.request.session['usuario_logado']['usuario_id'],
             ),
             texto=self.request.POST.get('texto'),
-            imagem_mensagem=self.request.FILES.get(
-                'imagem_comentario') or None,
+            imagem_mensagem=path or None,
         ).save()
         return HttpResponseRedirect(self.request.path_info)
 
@@ -310,18 +317,18 @@ class UpdateInformacoesView(View):
         password_update = update_password(
             self.request.session, pass_1, pass_2, new_pass)
 
-        if not password_update:
-            messages.add_message(
-                self.request,
-                messages.ERROR,
-                'Senhas não conferem'
-            )
-            self.renderizar = render(
-                self.request,
-                self.template_name,
-                self.context
-            )
-            return self.renderizar
+        # if not password_update:
+        #     messages.add_message(
+        #         self.request,
+        #         messages.ERROR,
+        #         'Senhas não conferem'
+        #     )
+        #     self.renderizar = render(
+        #         self.request,
+        #         self.template_name,
+        #         self.context
+        #     )
+        #     return self.renderizar
         # Person update
         nome = self.request.POST.get('nome')
         sobrenome = self.request.POST.get('sobrenome')

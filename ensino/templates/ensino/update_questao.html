@@ -14,7 +14,7 @@
         <div class="alternativas-btn">
             <div class="alternativas-add">
                 {% for alternativa in alternativas %}
-                <div>
+                <div id="alternativePreEx">
                     <p>
                         <label for="id_{{alternativa.id}}_alternativa">Alternativa</label>
                         <input type="text" name="id_{{alternativa.id}}_alternativa"
@@ -35,6 +35,7 @@
                 {% endfor %}
             </div>
         </div>
+        {% if validated_form %}
         <div class="alternativas-btn">
             <h3>Adicionar novas respostas</h3>
             <div id="form-container" class="alternativas-add">
@@ -56,6 +57,7 @@
 
             <p class="btn-add" id="add-form">+</p>
         </div>
+        {% endif %}
         <div>
             <button class="btn-cadastro" type="submit">adicionar questao</button>
         </div>
@@ -70,23 +72,29 @@
     let container = document.querySelector("#form-container")
     let addButton = document.querySelector("#add-form")
     let hiddenDiv = document.querySelector("#hidden-div")
-    let totalForms = document.querySelector("#id_alternativa_set-TOTAL_FORMS")
+    let alternativePre = document.querySelectorAll('#alternativePreEx')
 
     let formNum = alternativa_form.length - 1
     addButton.addEventListener('click', addForm)
 
+    function removeAddButton() {
+        if (formNum + alternativePre.length == 7) {
+            addButton.remove()
+        }
+    }
+    removeAddButton()
     function addForm(e) {
         e.preventDefault()
-
         let newForm = alternativa_form[0].cloneNode(true)
         let formRegex = RegExp(`alternativa_set-(\\d){1}-`, 'g')
 
         formNum++
         newForm.innerHTML = newForm.innerHTML.replace(formRegex, `alternativa_set-${formNum}-`)
         container.insertBefore(newForm, hiddenDiv)
+        removeAddButton()
 
-        totalForms.setAttribute('value', `${formNum + 1}`)
     }
+
 </script>
 
 {% endblock %}

@@ -22,16 +22,22 @@ $('.label-questoes').click(function () {
     $('.meu-ensino-questoes').toggleClass('show')
     $('.label-questoes span').toggleClass('move')
 })
+{
+    $('.abre-usuario').click(function () {
+        $('ul.drop-menu-usuario li').toggleClass('abre')
+        $('ul.drop-menu-usuario').toggleClass('abre')
+    })
 
-$('.abre-usuario').click(function () {
-    $('ul.drop-menu-usuario li').toggleClass('abre')
-    $('ul.drop-menu-usuario').toggleClass('abre')
-})
-
-$('.abre-cadastro').click(function () {
-    $('ul.drop-menu-cadastro li').toggleClass('abre')
-    $('ul.drop-menu-cadastro').toggleClass('abre')
-})
+    $('.abre-cadastro').click(function () {
+        $('ul.drop-menu-cadastro li').toggleClass('abre')
+        $('ul.drop-menu-cadastro').toggleClass('abre')
+    })
+}
+{
+    $('.fecha-aviso').click(function () {
+        $('#aviso').remove()
+    })
+}
 
 {
     $('.muda-tema').click(function () {

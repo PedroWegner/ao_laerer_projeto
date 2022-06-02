@@ -1,16 +1,16 @@
 {% if messages %}
 {% for message in messages %}
 {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
-<div class="aviso error">
+<div class="aviso error" id="aviso">
+    <p class="fecha-aviso">x</p>
     <p>{{ message }}</p>
 </div>
 {% endif %}
 {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
-<div class="aviso success">
+<div class="aviso success" id="aviso">
+    <p class="fecha-aviso">x</p>
     <p>{{ message }}</p>
 </div>
 {% endif %}
-
-
 {% endfor %}
 {% endif %}

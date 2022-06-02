@@ -1,3 +1,4 @@
+from cProfile import label
 from .models import *
 from dataclasses import fields
 from tkinter import Widget
@@ -24,9 +25,14 @@ class ComentarioForms(forms.ModelForm):
 
 
 class MensagemForms(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(MensagemForms, self).__init__(*args, **kwargs)
+        self.label_suffix = ''
+        self.fields['texto'].label = ""
+
     class Meta:
         model = Mensagem
-        fields = ('texto', 'imagem_mensagem')
+        fields = ('texto',)
 
 
 class PublicarNoticiaForms(forms.ModelForm):

@@ -59,15 +59,47 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
+}
+
+.aviso p {
+    color: var(--color-back-image);
+    font-weight: 600;
+}
+
+.fecha-aviso {
+    align-self: flex-start;
+    position: absolute;
+    margin-top: 7px;
+    cursor: pointer;
+    left: 88%;
+
 }
 
 .error {
-    background-color: purple;
+    background-color: #E64132;
+}
+
+.error .fecha-aviso {
+    color: #EA837A;
+}
+
+.error .fecha-aviso:hover {
+    color: #661D16;
 }
 
 .success {
-    background-color: green;
+    background-color: #84E04F;
 }
+
+.success .fecha-aviso {
+    color: #B3E695;
+}
+
+.success .fecha-aviso:hover {
+    color: #396122;
+}
+
 
 /* */
 /* GERAL */
@@ -118,6 +150,32 @@ footer {
     background-color: var(--thr-font-color);
 }
 
+
+input,
+textarea,
+select {
+    padding: 6px;
+    border-radius: 3px;
+    background-color: var(--color-medium);
+    border: 1px solid var(--color-border);
+    color: var(--font-color);
+    font-weight: 600;
+    font-family: 'Nunito';
+    resize: none;
+}
+
+input:focus,
+input:active,
+textarea:active,
+textarea:focus,
+select:focus,
+select:active {
+    box-shadow: 0 0 0 0;
+    outline: 0;
+    border-radius: 5px;
+    border-color: var(--thr-font-color);
+    box-shadow: 0 0 0 1px var(--hover-font-color);
+}
 
 /**/
 
@@ -300,10 +358,6 @@ ul.drop-menu-usuario li:first-child {
 .form-login label {
     align-self: flex-start;
     font-size: 1em;
-    /* color: var(--thr-font-color);
-    font-weight: 600;
-    margin-bottom: 4px;
-    margin-top: 6px; */
 }
 
 .form-login input:active,
@@ -1297,16 +1351,79 @@ ul.drop-menu-usuario li:first-child {
 /* FIM HTML PERFIL USUARIO */
 
 /* INICIO HTML MENSAGEM */
+.btn-conversa {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--font-image);
+    text-align: center;
+    font-weight: bold;
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
+
+}
+
 .box-mensagens {
     width: 100%;
-    max-height: 600px;
+    min-height: 450px;
+    max-height: 450px;
     overflow: auto;
     display: flex;
     flex-direction: column;
     padding-top: 30px;
     padding-bottom: 30px;
-    margin-bottom: 15px;
+    border-radius: 5px 5px 0 0;
+
     background-color: var(--color-high);
+}
+
+.textarea-mensagem {
+    border-radius: 0 0 0 5px;
+}
+
+.textarea-mensagem:focus {
+    border-radius: 0 0 0 5px;
+    box-shadow: none;
+}
+
+.box-mensagem-btn {
+    display: flex;
+    flex-direction: column;
+}
+
+.box-mensagem-btn input {
+    display: none;
+}
+
+.box-mensagem-btn a {
+    background-color: var(--hover-font-color);
+}
+
+.box-mensagem-btn button {
+    border-radius: 0 0 5px 0;
+    background-color: var(--thr-font-color);
+}
+
+.box-mensagem-btn button:hover {
+    background-color: var(--hover-font-color);
+}
+
+.box-escreve-msg {
+    display: flex;
+    align-items: center;
+    margin-bottom: 60px;
+    width: 100%;
+    margin: 0 auto;
+    border-radius: 5px;
+    background-color: var(--color-high);
+}
+
+.box-mensagem {
+    display: grid;
+    grid-template-columns: 4.5fr 1fr;
+    width: 100%;
 }
 
 .autor {
@@ -1782,6 +1899,8 @@ ul.drop-menu-usuario li:first-child {
 /* FIM HTML PALAVRA */
 /* JA ALTERADO /\ */
 /* cad geral */
+
+
 .btn-cadastro {
     width: 200px;
     padding: 20px;
@@ -1880,31 +1999,7 @@ ul.drop-menu-usuario li:first-child {
 
 /* forms */
 /*.form-cadastro*/
-input,
-textarea,
-select {
-    padding: 6px;
-    border-radius: 3px;
-    background-color: var(--color-medium);
-    border: 1px solid var(--color-border);
-    color: var(--font-color);
-    font-weight: 600;
-    font-family: 'Nunito';
-    resize: none;
-}
 
-input:focus,
-input:active,
-textarea:active,
-textarea:focus,
-select:focus,
-select:active {
-    box-shadow: 0 0 0 0;
-    outline: 0;
-    border-radius: 5px;
-    border-color: var(--thr-font-color);
-    box-shadow: 0 0 0 1px var(--hover-font-color);
-}
 
 /* INICIO CAD HTML */
 .tam-form {

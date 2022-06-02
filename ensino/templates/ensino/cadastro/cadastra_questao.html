@@ -57,6 +57,9 @@
         container.insertBefore(newForm, hiddenDiv)
 
         totalForms.setAttribute('value', `${formNum + 1}`)
+        if (formNum == 7) {
+            addButton.remove()
+        }
     }
 </script>
 

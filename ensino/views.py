@@ -1,8 +1,6 @@
-from django.contrib import messages
+from utils.services_ensino import *
+from utils.send_messages import send_message_success, send_message_error
 from django.db.models import Q
-from typing import Dict, List
-import random
-from typing import List
 from django.views.generic import TemplateView
 from .forms import *
 from django.http import HttpResponseRedirect
@@ -37,6 +35,7 @@ class LinguaCadastroView(FormView):
 
     def form_valid(self, form):
         form.save()
+        send_message_success(self.request, "Língua adicionada")
         return super().form_valid(form)
 
 
@@ -151,11 +150,7 @@ class CadastraPalavraView(View):
                 contexto=contexto
             ).first()
             palavra_bd.contexto.add(contexto)
-            messages.add_message(
-                self.request,
-                messages.SUCCESS,
-                "Palavra já existe, contexto att"
-            )
+            send_message_success(self.request, "Contexto adicionado.")
             return HttpResponseRedirect(self.request.path_info)
         else:
             Palavra(
@@ -182,11 +177,7 @@ class CadastraPalavraView(View):
                     contexto=contexto
                 ).first()
             )
-            messages.add_message(
-                self.request,
-                messages.SUCCESS,
-                "Palavra adicionada"
-            )
+            send_message_success(self.request, "Palavra adicionada")
             return HttpResponseRedirect(self.request.path_info)
 
 
@@ -297,7 +288,7 @@ class AtualizarAulaView(UpdateView):
         att_aula.conteudo = form.cleaned_data.get(
             'conteudo') or self.get_object().conteudo
         form.save()
-
+        send_message_success(self.request, "Aula atualizada")
         return super().form_valid(form)
 
 
@@ -527,6 +518,8 @@ class CriaQuestao(TemplateView):
             for alternativa in alternativas:
                 alternativa.questao = questao
                 alternativa.save()
+
+            send_message_success(self.request, 'Questão cadastrada')
             return redirect(reverse_lazy('usuario:home'))
 
         return self.render_to_response(
@@ -548,13 +541,20 @@ class UpdateQuestao(DetailView):
             'alternativas': Alternativa.objects.filter(
                 questao=self.get_object(),
             ),
-            'form_alternativas': AlternativasFormFactory(),
         }
+        self.context.update(
+            {
+                'validated_form': False if self.context['alternativas'].count() >= 8 else True
+            }
+        )
 
         self.renderizar = render(
             self.request, self.template_name, self.context)
 
     def get(self, *args, **kwargs):
+        print(self.context['alternativas'])
+        print(self.context['alternativas'].count())
+        print(self.context['validated_form'])
         return self.renderizar
 
     def post(self, *args, **kwargs):
@@ -602,7 +602,7 @@ class UpdateQuestao(DetailView):
             id_nov += 1
             alt_nova = self.request.POST.get(
                 f'id_alternativa_set-{id_nov}-alternativa')
-
+        send_message_success(self.request, "Questão atualizada")
         # preciso mudar aqui em baixo
         return redirect(reverse_lazy('ensino:minhas_aulas'))
 
@@ -704,13 +704,6 @@ class ResolucaoAtividade(DetailView):
         return redirect(f'/ensino/aula/{self.get_object().aula.id}')
 
 
-def send_message_grade(request, grade):
-    if grade < 70.0:
-        send_message_error(request, f"Sua nota foi: {grade}")
-    else:
-        send_message_success(request, f"Sua nota foi: {grade}")
-
-
 class UpdateAtividadeConcluida(DetailView):
     template_name = 'ensino/atividade_aula.html'
     model = EnvioAtividadeAula
@@ -791,133 +784,3 @@ class BuscaView(DetailView):
 
 
 # SERVICES
-def send_message_success(request, message: str) -> None:
-    messages.add_message(
-        request,
-        messages.SUCCESS,
-        message
-    )
-
-
-def send_message_error(request, message: str) -> None:
-    messages.add_message(
-        request,
-        messages.ERROR,
-        message
-    )
-
-
-def get_recent_word(lingua) -> Dict:
-    return Palavra.objects.filter(
-        lingua=lingua
-    ).order_by('data_cadastro')[:5]
-
-
-def get_similar_level_word(lingua, nivel) -> Dict:
-    return Palavra.objects.filter(
-        lingua=lingua,
-        nivel=nivel
-    ).order_by('?')[:5]
-
-
-def checa_nivel_aula_user(nivel, request, lingua):
-    nivel_usuario = UsuarioLingua.objects.filter(
-        lingua=lingua,
-        usuario__id=request['usuario_logado']['usuario_id']
-    ).first()
-    if (nivel_usuario.nivel.valor_nivel + 1) < nivel.valor_nivel:
-        return False
-    return True
-
-
-def seleciona_alternativas(questao) -> List:
-    correta = Alternativa.objects.filter(
-        questao=questao,
-        is_correct=True,
-    ).all().order_by('?').first()
-    erradas = Alternativa.objects.filter(
-        questao=questao,
-        is_correct=False,
-    ).all().order_by('?')[:4]
-    alternativas = list()
-    for errada in erradas:
-        alternativas.append(errada)
-    alternativas.append(correta)
-    random.shuffle(alternativas)
-    return alternativas
-
-
-def checa_nivel_lingua(atividade, request) -> None:
-    qtd_licenced = AtividadeAula.objects.filter(
-        aula__is_licenced=True,
-        aula__nivel=atividade.aula.nivel,
-        aula__lingua=atividade.aula.lingua,
-    ).count()
-    qtd_approved = EnvioAtividadeAula.objects.filter(
-        autor_id=request['usuario_logado']['usuario_id'],
-        aprovado=True,
-        atividade__aula__is_licenced=True,
-        atividade__aula__nivel=atividade.aula.nivel,
-        atividade__aula__lingua=atividade.aula.lingua,
-    ).count()
-    if qtd_licenced == qtd_approved:
-        nivel_usuario = UsuarioLingua.objects.filter(
-            usuario__id=request['usuario_logado']['usuario_id'],
-            lingua=atividade.aula.lingua
-        )
-        if nivel_usuario.first().nivel.valor_nivel < atividade.aula.nivel.valor_nivel:
-            nivel_usuario.update(
-                nivel=atividade.aula.nivel
-            )
-
-
-def cria_atividade(atividade, nota, request) -> None:
-    if nota >= 70.0:
-        EnvioAtividadeAula(
-            autor_id=request['usuario_logado']['usuario_id'],
-            atividade=atividade,
-            aprovado=True,
-            nota=nota,
-        ).save()
-        if atividade.aula.is_licenced:
-            checa_nivel_lingua(atividade, request)
-    else:
-        EnvioAtividadeAula(
-            autor_id=request['usuario_logado']['usuario_id'],
-            atividade=atividade,
-            aprovado=False,
-            nota=nota,
-        ).save()
-
-
-def checa_questoes(atividade, request) -> float:
-    questoes = Questao.objects.filter(
-        id__in=AtividadeQuestao.objects.filter(
-            atividade=atividade,
-        ).values('questao_id')
-    )
-    certas = int(0)
-    for questao in questoes:
-        alternativa_entrada = request.POST.get(f'{questao.id}')
-        certo = Alternativa.objects.filter(
-            alternativa=alternativa_entrada,
-            questao=questao,
-            is_correct=True,
-        ).first()
-        if certo:
-            certas += 1
-
-    return round((certas * 100) / (questoes.count()), 2)
-
-
-def get_palavracontexto(palavras: List) -> Dict:
-    palavra_dict = {}
-    for palavra in palavras:
-        palavra_dict.update(
-            {
-                palavra: Contexto.objects.filter(
-                    palavracontexto__palavra=palavra
-                ).order_by('?').first()
-            }
-        )
-    return palavra_dict

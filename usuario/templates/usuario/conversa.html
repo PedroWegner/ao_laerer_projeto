@@ -7,27 +7,44 @@
 
         {% if mensagem.autor.id == request.session.usuario_logado.usuario_id %}
         <div class="autor">
-            {% else %}
-            <div class="coautor">
-
-                {% endif %}
-                <p>{{mensagem.texto|linebreaks }}</p>
-                <p>{{ mensagem.autor }} - {{ mensagem.data_envio}}</p>
-
-            </div>
-            {% endfor %}
+            <p>{{mensagem.texto|linebreaks }}</p>
+            {% if mensagem.imagem_mensagem %}
+            <img src="{{ mensagem.imagem_mensagem.url}}" alt="">
+            {% endif %}
+            <p>{{ mensagem.autor }} - {{ mensagem.data_envio}}</p>
         </div>
-        <div class="principal-cad-postagem">
-            <div>
-                <form class="principal-box-form" method="POST" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <div class="form-cadastro">
-                        {{ form }}
-                    </div>
-                    <button class="btn-cadastro" type="submit">Cadastrar</button>
-                </form>
-            </div>
+        {% else %}
+        <div class="coautor">
+
+
+            <p>{{mensagem.texto|linebreaks }}</p>
+            <p>{{ mensagem.autor }} - {{ mensagem.data_envio}}</p>
+
         </div>
+        {% endif %}
+        {% endfor %}
     </div>
+    <form class="box-escreve-msg " method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="box-mensagem">
+            <textarea class='textarea-mensagem' name="texto" cols="40" rows="10" required="" id="id_texto"></textarea>
+            <div class='box-mensagem-btn'>
+                <input type="file" name="asgnmnt_file" id="asgnmnt_file" onchange="fileSelected(this)">
+                <a class="btn-conversa" onclick="passFileUrl()">Imagem</a>
+                <button class="btn-conversa" type="submit">Cadastrar</button>
+            </div>
 
-    {% endblock %}
+        </div>
+    </form>
+
+</div>
+<script>
+    function passFileUrl() {
+        document.getElementById('asgnmnt_file').click();
+    }
+
+    function fileSelected(inputData) {
+        document.getElementById('asgnmnt_file_img').src = window.URL.createObjectURL(inputData.files[0])
+    }
+</script>
+{% endblock %}

@@ -22,10 +22,10 @@ class ForumLinguaView(DetailView):
         context = super().get_context_data(**kwargs)
         context['postagens'] = Postagem.objects.filter(
             lingua=self.get_object()
-        ).all
+        ).order_by('-ultima_atualizacao').all()
         context['postagens_recentes'] = Postagem.objects.filter(
             lingua=self.get_object()
-        )[:5]
+        ).order_by('data_postagem')[:5]
 
         return context
 
@@ -104,6 +104,11 @@ class PostagemView(DetailView):
             imagem_comentario=self.request.FILES.get(
                 'imagem_comentario') or None,
         ).save()
+        Postagem.objects.filter(
+            id=self.get_object().id
+        ).update(
+            ultima_atualizacao=timezone.now()
+        )
         return HttpResponseRedirect(self.request.path_info)
 
 

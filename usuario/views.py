@@ -1,3 +1,4 @@
+from django.forms.models import model_to_dict
 from django.contrib import messages
 from django.core.files.storage import default_storage
 from django.conf import settings
@@ -245,8 +246,12 @@ class ConversaView(DetailView):
             usuario_id=self.request.session['usuario_logado']['usuario_id'],
             conversa_id=self.get_object(),
         )
+        print(checagem)
         if not checagem:
             return redirect('usuario:home')
+        checagem.update(
+            ultimo_acesso=timezone.now()
+        )
         return super().get(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -258,7 +263,9 @@ class ConversaView(DetailView):
         context['mensagens'] = Mensagem.objects.filter(
             conversa=self.get_object()
         )
-
+        context['coautor'] = ConversaUsuario.objects.filter(
+            conversa=self.get_object()
+        ).exclude(usuario_id=self.request.session['usuario_logado']['usuario_id']).first()
         return context
 
     def post(self, *args, **kwargs):

@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db import models
 from ensino.models import Lingua
 from usuario.models import Usuario
@@ -23,6 +24,7 @@ class Postagem(models.Model):
     data_postagem = models.DateField(default=timezone.now)
     autor = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING)
     lingua = models.ForeignKey(Lingua, on_delete=models.DO_NOTHING)
+    ultima_atualizacao = models.DateField(default='2002-02-02')
 
     def __str__(self) -> str:
         return f'{self.titulo_postagem} por {self.autor}'
@@ -50,13 +52,7 @@ class Conversa(models.Model):
 class ConversaUsuario(models.Model):
     conversa = models.ForeignKey(Conversa, on_delete=models.CASCADE)
     usuario = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING)
-    """
-    context['conversar'] = get_object_or_404 (
-        Conversa, 
-        usuario_1_id=self.request.session['usuario_logado']['usuario_id'] 
-    )
-
-    """
+    ultimo_acesso = models.DateField(default=timezone.now)
 
     def __str__(self) -> str:
         return f'{self.conversa.id} - {self.usuario}'

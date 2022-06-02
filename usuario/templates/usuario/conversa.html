@@ -2,24 +2,34 @@
 {% block 'titulo'%} Blog {% endblock %}
 {% block 'conteudo' %}
 <div class="box-principal-blog">
+    <div class="info-coautor">
+        <div>
+            <a href="/perfil/{{coautor.usuario.id}}">
+                <p>{{ coautor.usuario}}</p>
+            </a>
+            <span> {{ coautor.ultimo_acesso }}</span>
+        </div>
+        {% if coautor.usuario.img_usuario %}
+        <a href="/perfil/{{coautor.usuario.id}}">
+            <img class="coautor-img" src="{{ coautor.usuario.img_usuario.url}}" alt="">
+        </a>
+
+        {% endif %}
+    </div>
     <div class="box-mensagens">
         {% for mensagem in mensagens %}
-
         {% if mensagem.autor.id == request.session.usuario_logado.usuario_id %}
-        <div class="autor">
+        <div class="menssagem autor">
             <p>{{mensagem.texto|linebreaks }}</p>
             {% if mensagem.imagem_mensagem %}
-            <img src="{{ mensagem.imagem_mensagem.url}}" alt="">
+            <img class="box-mensagem-imagem" src="{{ mensagem.imagem_mensagem.url}}" alt="">
             {% endif %}
-            <p>{{ mensagem.autor }} - {{ mensagem.data_envio}}</p>
+            <span>{{ mensagem.data_envio}}</span>
         </div>
         {% else %}
-        <div class="coautor">
-
-
+        <div class="menssagem coautor">
             <p>{{mensagem.texto|linebreaks }}</p>
-            <p>{{ mensagem.autor }} - {{ mensagem.data_envio}}</p>
-
+            <span>{{ mensagem.data_envio}}</span>
         </div>
         {% endif %}
         {% endfor %}
@@ -27,7 +37,7 @@
     <form class="box-escreve-msg " method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="box-mensagem">
-            <textarea class='textarea-mensagem' name="texto" cols="40" rows="10" required="" id="id_texto"></textarea>
+            <textarea class='textarea-mensagem' name="texto" required="" id="id_texto"></textarea>
             <div class='box-mensagem-btn'>
                 <input type="file" name="asgnmnt_file" id="asgnmnt_file" onchange="fileSelected(this)">
                 <a class="btn-conversa" onclick="passFileUrl()">Imagem</a>

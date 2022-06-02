@@ -180,11 +180,6 @@ class Aula(models.Model):
         max_length=250
     )
     conteudo = models.TextField()
-    conteudo_download = models.FileField(
-        upload_to='conteudo_aula/%Y/%m',
-        blank=True,
-        null=True
-    )
     data_post = models.DateField(
         default=timezone.now
     )

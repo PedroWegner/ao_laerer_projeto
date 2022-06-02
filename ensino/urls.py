@@ -12,7 +12,7 @@ urlpatterns = [
     path('lingua/cadastro', views.LinguaCadastroView.as_view(),
          name='cadastro_lingua'),
     path('meu_ensino', views.TesteMeuPainelAulasView.as_view(),
-         name='minhas_aulas'),
+         name='meu_ensino'),
     path('minhas_aulas/aula/<int:pk>',
          views.AtualizarAulaView.as_view(), name='atualizar_aula'),
     path('meu_ensino/palavra/cadastro', views.CadastraPalavraView.as_view(),

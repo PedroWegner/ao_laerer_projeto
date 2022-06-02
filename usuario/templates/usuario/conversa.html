@@ -39,7 +39,8 @@
         <div class="box-mensagem">
             <textarea class='textarea-mensagem' name="texto" required="" id="id_texto"></textarea>
             <div class='box-mensagem-btn'>
-                <input type="file" name="asgnmnt_file" id="asgnmnt_file" onchange="fileSelected(this)">
+                <input class="input-none" type="file" name="asgnmnt_file" id="asgnmnt_file"
+                    onchange="fileSelected(this)">
                 <a class="btn-conversa" onclick="passFileUrl()">Imagem</a>
                 <button class="btn-conversa" type="submit">Cadastrar</button>
             </div>
@@ -52,7 +53,6 @@
     function passFileUrl() {
         document.getElementById('asgnmnt_file').click();
     }
-
     function fileSelected(inputData) {
         document.getElementById('asgnmnt_file_img').src = window.URL.createObjectURL(inputData.files[0])
     }

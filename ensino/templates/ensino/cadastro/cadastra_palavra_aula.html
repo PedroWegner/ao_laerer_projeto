@@ -1,25 +1,33 @@
 {% extends 'base.html' %}
 {% block 'titulo'%} Blog {% endblock %}
 {% block 'conteudo' %}
-
-
 <div class="box-principal-blog">
-    <h1>teste add palavra em aula</h1>
-    <form id="form-container" method="POST">
-        {% csrf_token %}
-        <div class="palavra-form">
-            <label for="id_form-0-palavra">Palavra:</label>
-            <select name="form-0-palavra" id="id_form-0-palavra">
-                <option value="">---------</option>
-                {% for palavra in palavras_disponiveis %}
-                <option value="{{palavra.id}}">{{palavra}}</option>
-                {% endfor %}
-            </select>
+    <div class="add-palavra-aula">
+        <div class="palavra-cadastrada">
+            <h3>Palavras já cadastradas</h3>
+            {% if palavras_ja_add %}
+            {% for palavra in palavras_ja_add %}
+            <p>{{ palavra }}</p>
+            {% endfor %}
+            {% endif %}
         </div>
-        <button id="add-form" type="button">+</button>
-        <button type="submit">add palavra</button>
+        <form class="form-cadastra-palavra" id="form-container" method="POST">
+            {% csrf_token %}
+            <h3>Cadastre novas palavras</h3>
+            <div class="palavra-form">
+                <label for="id_form-0-palavra">Palavra:</label>
+                <select name="form-0-palavra" id="id_form-0-palavra">
+                    <option value="">---------</option>
+                    {% for palavra in palavras_disponiveis %}
+                    <option value="{{palavra.id}}">{{palavra}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button class='btn-add' id="add-form" type="button">+</button>
+            <button type="submit">add palavra</button>
+        </form>
+    </div>
 
-    </form>
 
 
 </div>
@@ -28,11 +36,14 @@
     let palavra_form = document.querySelectorAll(".palavra-form")
     let container = document.querySelector("#form-container")
     let addButton = document.querySelector("#add-form")
-    let totalForms = document.querySelector("#id_form-TOTAL_FORMS")
-
+    let qtdPalavra = document.querySelectorAll(".palavra-cadastrada p").length
     let formNum = palavra_form.length - 1
     addButton.addEventListener('click', addForm)
-
+    function delBtn() {
+        if (formNum + qtdPalavra == 19) {
+            addButton.remove()
+        }
+    }
     function addForm(e) {
         e.preventDefault()
 
@@ -42,11 +53,7 @@
         formNum++
         newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNum}-`)
         container.insertBefore(newForm, addButton)
-
-        totalForms.setAttribute('value', `${formNum + 1}`)
-        if (formNum == 19) {
-            addButton.disabled = true
-        }
+        delBtn()
     }
 </script>
 

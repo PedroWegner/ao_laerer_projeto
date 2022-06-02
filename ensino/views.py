@@ -1,3 +1,8 @@
+import os
+from django.core.files.base import ContentFile
+from django.conf import settings
+from django.core.files.storage import default_storage
+from datetime import date
 from utils.services_ensino import *
 from utils.send_messages import send_message_success, send_message_error
 from django.db.models import Q
@@ -254,13 +259,12 @@ class AulaCadastroView(View):
         return redirect(f'/ensino/minhas_aulas/aula/{aula.id}/add_palavra')
 
 
-class AtualizarAulaView(UpdateView):
+class AtualizarAulaView(DetailView):
     """
     View para atualizacao de aula
     """
     template_name = 'ensino/atualizar_aula.html'
     model = Aula
-    form_class = AtualizarAulaForms
 
     def get(self, *args, **kwargs):
         if not 'usuario_logado' in self.request.session:
@@ -269,8 +273,8 @@ class AtualizarAulaView(UpdateView):
             return redirect('usuario:home')
         return super().get(*args, **kwargs)
 
-    def get_success_url(self):
-        return reverse('usuario:home')
+    # def get_success_url(self):
+    #     return reverse('usuario:home')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -280,16 +284,78 @@ class AtualizarAulaView(UpdateView):
                 aula=self.get_object()
             ).values('palavra_id')
         )
+        context['tem_atividade'] = AtividadeAula.objects.filter(
+            aula=self.get_object()
+        ).first()
         return context
 
-    def form_valid(self, form):
-        att_aula = form.save(commit=False)
-        att_aula.aula = form.cleaned_data.get('aula') or self.get_object().aula
-        att_aula.conteudo = form.cleaned_data.get(
-            'conteudo') or self.get_object().conteudo
-        form.save()
+    def post(self, *args, **kwargs):
+        ano = date.today().strftime("%Y")
+        mes = date.today().strftime("%m")
+        class_img = self.request.FILES.get('class-image')
+        class_video = self.request.FILES.get('class-video')
+        if class_img:
+            img_path = default_storage.save(
+                rf"img_aula\{ano}\{mes}\{class_img}", ContentFile(
+                    class_img.read())
+            )
+            os.path.join(settings.MEDIA_ROOT, img_path)
+        if class_video:
+            video_path = default_storage.save(
+                rf'aula\{ano}\{mes}\{class_video}', ContentFile(
+                    class_video.read())
+            )
+            os.path.join(settings.MEDIA_ROOT, video_path)
+        Aula.objects.filter(
+            id=self.get_object().id
+        ).update(
+            aula_gravada=video_path or None,
+            img_aula=img_path or None,
+        )
         send_message_success(self.request, "Aula atualizada")
-        return super().form_valid(form)
+        return redirect('ensino:meu_ensino')
+
+    # def form_valid(self, form):
+   #     return super().form_valid(form)
+# class AtualizarAulaView(UpdateView):
+#     """
+#     View para atualizacao de aula
+#     """
+#     template_name = 'ensino/atualizar_aula.html'
+#     model = Aula
+#     form_class = AtualizarAulaForms
+
+#     def get(self, *args, **kwargs):
+#         if not 'usuario_logado' in self.request.session:
+#             return redirect('usuario:login')
+#         if not self.get_object().autor_aula.id == self.request.session['usuario_logado']['usuario_id']:
+#             return redirect('usuario:home')
+#         return super().get(*args, **kwargs)
+
+#     def get_success_url(self):
+#         return reverse('usuario:home')
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['aula'] = self.get_object()
+#         context['palavras_aula'] = Palavra.objects.filter(
+#             id__in=AulaPalavra.objects.filter(
+#                 aula=self.get_object()
+#             ).values('palavra_id')
+#         )
+#         context['tem_atividade'] = AtividadeAula.objects.filter(
+#             aula=self.get_object()
+#         ).first()
+#         return context
+
+#     def form_valid(self, form):
+#         att_aula = form.save(commit=False)
+#         att_aula.aula = form.cleaned_data.get('aula') or self.get_object().aula
+#         att_aula.conteudo = form.cleaned_data.get(
+#             'conteudo') or self.get_object().conteudo
+#         form.save()
+#         send_message_success(self.request, "Aula atualizada")
+#         return super().form_valid(form)
 
 
 class AulaView(DetailView):
@@ -456,12 +522,18 @@ class AddPalavra(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['palavras_ja_add'] = Palavra.objects.filter(
+            id__in=AulaPalavra.objects.filter(
+                aula=self.get_object()
+            ).values('palavra_id')
+        )
         context['palavras_disponiveis'] = Palavra.objects.filter(
             lingua=self.get_object().lingua,
             nivel=self.get_object().nivel,
         ).exclude(id__in=AulaPalavra.objects.filter(
             aula=self.get_object()
         ).values('palavra_id'))
+        print(context['palavras_ja_add'])
         return context
 
     def post(self, *args, **kwargs):

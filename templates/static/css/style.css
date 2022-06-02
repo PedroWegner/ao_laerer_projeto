@@ -177,6 +177,10 @@ select:active {
     box-shadow: 0 0 0 1px var(--hover-font-color);
 }
 
+.input-none {
+    display: none;
+}
+
 /**/
 
 .usuario-img {
@@ -1435,9 +1439,9 @@ ul.drop-menu-usuario li:first-child {
     flex-direction: column;
 }
 
-.box-mensagem-btn input {
+/* .box-mensagem-btn input {
     display: none;
-}
+} */
 
 .box-mensagem-btn a {
     background-color: var(--hover-font-color);
@@ -2208,9 +2212,9 @@ label {
     cursor: pointer;
 }
 
-.atualiza-imagem input {
+/* .atualiza-imagem input {
     display: none;
-}
+} */
 
 .atualiza-dados h3::after {
     display: block;
@@ -2311,6 +2315,96 @@ input[type="radio"]:focus {
 
 /* FIM HTML ATIVIDADE AULA */
 
+/**/
+.box-att-aula {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 0 auto;
+    border-radius: 5px;
+}
+
+.form-aula {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+}
+
+.midia-aula,
+.conteudo-aula {
+    display: flex;
+    flex-direction: column;
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+.midia-aula {
+    background-color: var(--color-medium);
+    border-radius: 5px 0 0 5px;
+    align-items: center;
+}
+
+.conteudo-aula {
+    background-color: var(--color-high);
+    padding-left: 30px;
+    padding-right: 30px;
+    border-radius: 0 5px 5px 0;
+}
+
+.midia-aula img {
+    max-width: 45%;
+    margin-bottom: 25px;
+    border-radius: 5px;
+    box-shadow: none;
+
+}
+
+.midia-aula video {
+    max-width: 50%;
+    border-radius: 5px;
+    box-shadow: none;
+}
+
+.midia-aula img:hover,
+.midia-aula video:hover {
+    box-shadow: 0 0 0 2px var(--color-medium), 0 0 0 5px var(--thr-font-color);
+    cursor: pointer;
+
+}
+
+/**/
+/**/
+.add-palavra-aula {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.palavra-cadastrada,
+.form-cadastra-palavra {
+    padding: 25px;
+}
+
+.palavra-cadastrada h3,
+.form-cadastra-palavra h3 {
+    color: var(--thr-font-color);
+    font-weight: 600;
+    margin-bottom: 4px;
+    margin-top: 6px;
+}
+
+.palavra-cadastrada {
+    background-color: var(--color-medium);
+    border-radius: 5px 0 0 5px;
+}
+
+.form-cadastra-palavra {
+    background-color: var(--color-low);
+    border-radius: 0 5px 5px 0;
+}
+
+/**/
 @media screen and (max-width: 1450px) {
     .box-modulo p {
         max-width: 100%;

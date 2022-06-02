@@ -28,7 +28,7 @@ class CriarAulaForms(forms.ModelForm):
 
     class Meta:
         model = models.Aula
-        fields = ('aula', 'conteudo', 'conteudo_download',
+        fields = ('aula', 'conteudo',
                   'nivel', 'lingua', 'aula_gravada')
         widgets = {
             'aula': forms.TextInput(attrs={'placeholder': "Here comes class' name"}),
@@ -36,27 +36,27 @@ class CriarAulaForms(forms.ModelForm):
         }
 
 
-class AtualizarAulaForms(forms.ModelForm):
-    """
-    Formulario para atualizacao de aula
-    """
+# class AtualizarAulaForms(forms.ModelForm):
+#     """
+#     Formulario para atualizacao de aula
+#     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.label_suffix = ""
-        for field in self.Meta.unrequired:
-            self.fields[field].required = False
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.label_suffix = ""
+#         for field in self.Meta.unrequired:
+#             self.fields[field].required = False
 
-    class Meta:
-        model = models.Aula
-        fields = ('aula', 'conteudo', 'conteudo_download', 'aula_gravada')
+#     class Meta:
+#         model = models.Aula
+#         fields = ('aula', 'conteudo', 'conteudo_download', 'aula_gravada')
 
-        unrequired = {
-            'aula',
-            'conteudo',
-            'conteudo_download',
-            'aula_gravada',
-        }
+#         unrequired = {
+#             'aula',
+#             'conteudo',
+#             'conteudo_download',
+#             'aula_gravada',
+#         }
 # NOVOS CADASTROS
 
 # A PALAVRA FORMS CONSIGO FAZER COMO O DE QUESTAO, E AUMENTAR QUANTIDADE DE CONTEXTO

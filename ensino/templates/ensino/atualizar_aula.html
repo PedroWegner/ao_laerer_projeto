@@ -2,22 +2,40 @@
 
 {% block 'conteudo' %}
 <div class="box-aula-professor">
+    <div class="principal-box-atualiza-aula">
+        <form class="box-att-aula" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-aula">
+                <div class="midia-aula">
+                    <input class="input-none" type="file" name="class-image" id="class-image"
+                        onchange="fileSelected(this)">
+                    <img class="x" src="{{ aula.img_aula.url }}" id="image-class-btn" alt="">
+                    <input class="input-none" type="file" name="class-video" id="class-video">
+                    <video class="x" controls="controls" autoplay="autoplay" id="class-video-btn">
+                        <source src="{{ aula.aula_gravada.url}}" id='video' type="video/mp4">
+                    </video>
+                </div>
+                <div class="conteudo-aula">
+                    <h3>Atualizar aula</h3>
+                    <label for="id_aula">Aula</label>
+                    <input type="text" name="aula" value="{{aula.aula}}" maxlength="250" id="id_aula">
+                    <label for="id_conteudo">Conteudo</label>
+                    <textarea name="conteudo" cols="40" rows="10" id="id_conteudo">{{aula.conteudo}}</textarea>
+                    <button class="btn-cadastro" type="submit">Atualizar</button>
+                </div>
+            </div>
+        </form>
+    </div>
     <div class="box-principal-aula">
         <div class="box-video-aula">
             <h2>{{ aula }}</h2>
             <div>
-                <video controls="controls" autoplay="autoplay">
-                    <source src="{{ aula.aula_gravada.url}}" type="video/mp4">
 
-                </video>
             </div>
         </div>
 
         <div class="box-conteudo-aula">
             <div class="box-conteudo">
-                <h2>Contéudo</h2>
-                <p>{{ aula.conteudo }}</p>
-                <a class="btn-cadastro" href="{{ aula.conteudo_download.url}}" target="_blank">Baixar conteúdo</a>
             </div>
             <div class="box-conteudo">
                 <h2>Palavras</h2>
@@ -33,21 +51,31 @@
             </div>
         </div>
         <div class="box-conteudo-aula">
+            {% if not tem_atividade %}
             <a class='btn-cadastro' href="{{ aula.id }}/adiciona_atividade">Adicionar atividade</a>
+            {% endif %}
         </div>
     </div>
-
-    <div class="principal-box-atualiza-aula">
-        <form class="principal-box-form" method="POST">
-            {% csrf_token %}
-            <div class="form-inputs">
-                <div class="form-inputs-div">
-                    <h3>Atualizar aula</h3>
-                    {{ form }}
-                </div>
-            </div>
-            <button class="btn-cadastro" type="submit">Atualizar</button>
-        </form>
-    </div>
 </div>
+
+<script>
+    {
+        $('#image-class-btn').click(function () {
+            $('#class-image').click()
+        })
+        $('#class-image').change(function () {
+            $('#image-class-btn').attr('src', window.URL.createObjectURL($('#class-image').prop('files')[0]))
+        })
+    }
+    {
+        $('#class-video-btn').click(function () {
+            $('#class-video').click()
+        })
+        $('#class-video').change(function () {
+            $('#video').attr('src', window.URL.createObjectURL($('#class-video').prop('files')[0]))
+            $('#class-video-btn')[0].load()
+        })
+    }
+
+</script>
 {% endblock %}

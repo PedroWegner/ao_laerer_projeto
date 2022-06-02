@@ -1,4 +1,3 @@
-from django.forms.models import model_to_dict
 from django.contrib import messages
 from django.core.files.storage import default_storage
 from django.conf import settings
@@ -209,7 +208,6 @@ class PerfilUsuarioView(DetailView):
                     }
                 )
 
-        print(context['aulas_concluidas'])
         context['postagens'] = Postagem.objects.filter(
             autor=self.get_object()
         )[:5]
@@ -246,7 +244,6 @@ class ConversaView(DetailView):
             usuario_id=self.request.session['usuario_logado']['usuario_id'],
             conversa_id=self.get_object(),
         )
-        print(checagem)
         if not checagem:
             return redirect('usuario:home')
         checagem.update(

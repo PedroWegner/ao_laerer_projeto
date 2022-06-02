@@ -8,10 +8,9 @@
         <div class="form-update">
             <div class="atualiza-imagem">
                 <div>
-                    <input type="file" name="asgnmnt_file" id="asgnmnt_file" onchange="fileSelected(this)">
+                    <input class="input-none" type="file" name="asgnmnt_file" id="image-profile">
                     <h3>Alterar foto</h3>
-                    <img id="asgnmnt_file_img" src="{{ request.session.usuario_logado.img_usuario }}"
-                        onclick="passFileUrl()">
+                    <img id="image-profile-btn" src="{{ request.session.usuario_logado.img_usuario }}">
                 </div>
             </div>
             <div class="atualiza-dados">
@@ -42,13 +41,25 @@
 
 
 <script>
-    function passFileUrl() {
-        document.getElementById('asgnmnt_file').click();
-    }
+    $('#image-profile-btn').click(function () {
+        $('#image-profile').click()
+    })
+    $('#image-profile').change(function () {
+        $('#image-profile-btn').attr('src', window.URL.createObjectURL($('#image-profile').prop('files')[0]))
+    })
+    // function passFileUrl() {
+    //     document.getElementById('asgnmnt_file').click();
+    // }
 
-    function fileSelected(inputData) {
-        document.getElementById('asgnmnt_file_img').src = window.URL.createObjectURL(inputData.files[0])
-    }
+    // function fileSelected(inputData) {
+    //     document.getElementById('asgnmnt_file_img').src = window.URL.createObjectURL(inputData.files[0])
+    // }
+
+    // <input class="input-none" type="file" name="asgnmnt_file" id="asgnmnt_file"
+    //                     onchange="fileSelected(this)">
+    //                 <h3>Alterar foto</h3>
+    //                 <img id="asgnmnt_file_img" src="{{ request.session.usuario_logado.img_usuario }}"
+    //                     onclick="passFileUrl()">
 </script>
 
 {% endblock %}

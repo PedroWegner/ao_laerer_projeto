@@ -5,11 +5,12 @@ from django.conf import settings
 from django.core.files.storage import default_storage
 from datetime import date
 from utils.services_ensino import *
+from utils.validate_form import form_html_validated
 from utils.send_messages import send_message_success, send_message_error, send_message_info
 from django.db.models import Q
 from django.views.generic import TemplateView
 from .forms import *
-from django.http import HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.views import View
 from django.views.generic.list import ListView
 from django.views.generic.edit import UpdateView
@@ -231,7 +232,6 @@ class AulaCadastroView(View):
                 files=self.request.FILES or None,
             ),
             'linguas': Lingua.objects.all(),
-            'niveis': NivelLingua.objects.all().exclude(valor_nivel=0)
         }
 
         # atribuidas variaveis para utilizar no post
@@ -248,19 +248,40 @@ class AulaCadastroView(View):
         return self.renderizar
 
     def post(self, *args, **kwargs):
-        if not self.criar_aula.is_valid():
+        if not form_html_validated(self.request.POST):
             return self.renderizar
-
-        aula = self.criar_aula.save(commit=False)
-        aula.autor_aula = get_object_or_404(
-            Usuario, id=self.request.session['usuario_logado']['usuario_id']
+        class_image = self.request.FILES.get('class-image')
+        class_video = self.request.FILES.get('class-video')
+        ano = date.today().strftime("%Y")
+        mes = date.today().strftime("%m")
+        aula = Aula(
+            aula=self.request.POST.get('class-name'),
+            conteudo=self.request.POST.get('class-content'),
+            nivel_id=self.request.POST.get('class-nivel'),
+            lingua_id=self.request.POST.get('class-language'),
+            img_aula=class_image,
+            aula_gravada=class_video,
+            autor_aula_id=self.request.session['usuario_logado']['usuario_id']
         )
+
+        img_path = default_storage.save(
+            rf"img_aula\{ano}\{mes}\{class_image}", ContentFile(
+                class_image.read())
+        )
+        os.path.join(settings.MEDIA_ROOT, img_path)
+        video_path = default_storage.save(
+            rf'aula\{ano}\{mes}\{class_video}', ContentFile(
+                class_video.read())
+        )
+        os.path.join(settings.MEDIA_ROOT, video_path)
         if self.request.session['usuario_logado']['is_licenced']:
             aula.is_licenced = self.request.POST.get('is_licenced') == 'on'
 
         aula.save()
+
         send_message_success(self.request, "Aula adicionada")
         return redirect(f'/ensino/meu_ensino/aula/{aula.id}/add_palavra')
+
 
 # class AulaCadastroView(View):
 #     """
@@ -940,4 +961,23 @@ class BuscaView(DetailView):
         return self.renderizar
 
 
-# SERVICES
+# AJAX VIEWS
+def ajax_alter_nivel(request):
+    lingua_id = request.GET.get('lingua')
+    if not lingua_id:
+        return render(request, 'ensino/ajax/nivel_list.html', {'niveis': ['Please select a language']})
+    lingua = Lingua.objects.filter(
+        id=lingua_id
+    ).first()
+    niveis = NivelLingua.objects.filter(
+        valor_nivel__lte=NivelLingua.objects.filter(
+            id__in=UsuarioLingua.objects.filter(
+                usuario_id=request.session['usuario_logado']['usuario_id'],
+                lingua=lingua,
+            ).values('nivel__id')
+        ).first().valor_nivel
+    ).exclude(valor_nivel=0)
+    if not niveis:
+        niveis = ["You cannot post a class for this language"]
+
+    return render(request, 'ensino/ajax/nivel_list.html', {'niveis': niveis})

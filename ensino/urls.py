@@ -32,5 +32,8 @@ urlpatterns = [
     path('questao-update/<int:pk>', views.UpdateQuestao.as_view()),
     path('lingua/modulo/<int:pk>', views.ModuloView.as_view()),
     path('busca/<int:pk>/', views.BuscaView.as_view(), name='busca'),
-    path('meu_ensino/aula/<int:pk>/add_palavra', views.AddPalavra.as_view())
+    path('meu_ensino/aula/<int:pk>/add_palavra', views.AddPalavra.as_view()),
+
+    # AJJAXXXXXXX
+    path('ajax/alter_nivel/', views.ajax_alter_nivel, name='ajax_alter_nivel')
 ]

@@ -4,13 +4,13 @@
 {% block 'conteudo' %}
 <div class="principal-box-cad">
     <div class="principal-box-atualiza-aula">
-        <form class="box-att-aula" method="POST" enctype="multipart/form-data">
+        <form class="box-att-aula" method="POST" enctype="multipart/form-data" id="alter-nivel"
+            data-class-url="{% url 'ensino:ajax_alter_nivel' %}" novalidate name="formulario">
             {% csrf_token %}
             <div class="form-aula">
                 <div class="midia-aula">
                     <h3>Mídia da aula</h3>
-                    <input class="input-none" type="file" name="class-image" id="class-image"
-                        onchange="fileSelected(this)">
+                    <input class="input-none" type="file" name="class-image" id="class-image">
                     <img class="x" src="{% static 'imgs/basic_class.jpg' %}" id="image-class-btn" alt="">
                     <input class="input-none" type="file" name="class-video" id="class-video">
                     <video class="x" controls="controls" autoplay="autoplay" id="class-video-btn">
@@ -20,23 +20,21 @@
                 <div class="conteudo-aula">
                     <h3>Nova aula</h3>
                     <label for="id_aula">Aula</label>
-                    <input type="text" name="aula" placeholder="Here comes class' name" maxlength="250" id="id_aula">
+                    <input type="text" name="class-name" placeholder="Here comes class' name" maxlength="250"
+                        id="id_aula" required>
                     <label for="id_conteudo">Conteudo</label>
-                    <textarea name="conteudo" cols="40" rows="10" id="id_conteudo"
+                    <textarea name="class-content" cols="40" rows="10" id="id_conteudo"
                         placeholder="Now you can comment the subject which you have mentioned in your class' video."></textarea>
                     <label for="">Lingua</label>
-                    <select name="" id="">
-                        <option value="">-------</option>
+                    <select name="class-language" id="id_lingua">
+                        <option value="">Language</option>
                         {% for lingua in linguas %}
                         <option value="{{ lingua.id }}">{{lingua}}</option>
                         {% endfor %}
                     </select>
                     <label for="">Nível</label>
-                    <select name="" id="">
-                        <option value="">------</option>
-                        {% for nivel in niveis %}
-                        <option value="{{ nivel.id }}">{{ nivel}}</option>
-                        {% endfor %}
+                    <select name="class-nivel" id="id_nivel">
+                        <option value="">Please, select a language</option>
                     </select>
                     {% if request.session.usuario_logado.is_licenced %}
                     <label for="id_is_licened">Aula licenciada</label>
@@ -49,24 +47,6 @@
     </div>
 
 
-    <div>
-        <form class='principal-box-form tam-form' method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="form-inputs">
-                <h3>Nova aula</h3>
-                <div class="form-inputs-div">
-                    {{ criar_aula }}
-                    {% if request.session.usuario_logado.is_licenced %}
-                    <label for="id_is_licened">Aula licenciada</label>
-                    <input type="checkbox" id='id_is_licened' name="is_licenced">
-                    {% endif %}
-                </div>
-
-            </div>
-
-            <button class="btn-cadastro" type="submit">Cadastrar</button>
-        </form>
-    </div>
 </div>
 
 <script>
@@ -87,6 +67,21 @@
             $('#class-video-btn')[0].load()
         })
     }
+    {
+        $('#id_lingua').change(function () {
+            var url = $('#alter-nivel').attr('data-class-url')
+            var linguaId = $(this).val()
 
+            $.ajax({
+                url: url,
+                data: {
+                    'lingua': linguaId
+                },
+                success: function (data) {
+                    $('#id_nivel').html(data)
+                }
+            })
+        })
+    }
 </script>
 {% endblock %}

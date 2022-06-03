@@ -1,0 +1,52 @@
+<div class="info-coautor">
+    <div>
+        <a href="/perfil/{{coautor.usuario.id}}">
+            <p>{{ coautor.usuario}}</p>
+        </a>
+        <span> {{ coautor.ultimo_acesso }}</span>
+    </div>
+    {% if coautor.usuario.img_usuario %}
+    <a href="/perfil/{{coautor.usuario.id}}">
+        <img class="coautor-img" src="{{ coautor.usuario.img_usuario.url}}" alt="">
+    </a>
+
+    {% endif %}
+</div>
+<div class="box-mensagens">
+    {% for mensagem in mensagens %}
+    {% if mensagem.autor.id == request.session.usuario_logado.usuario_id %}
+    <div class="menssagem autor">
+        <p>{{mensagem.texto|linebreaks }}</p>
+        {% if mensagem.imagem_mensagem %}
+        <img class="box-mensagem-imagem" src="{{ mensagem.imagem_mensagem.url}}" alt="">
+        {% endif %}
+        <span>{{ mensagem.data_envio}}</span>
+    </div>
+    {% else %}
+    <div class="menssagem coautor">
+        <p>{{mensagem.texto|linebreaks }}</p>
+        <span>{{ mensagem.data_envio}}</span>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+<form class="box-escreve-msg " method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="box-mensagem">
+        <textarea class='textarea-mensagem' name="texto" required="" id="id_texto"></textarea>
+        <div class='box-mensagem-btn'>
+            <input class="input-none" type="text" name="class-id" value="{{ conversa.id }}">
+            <input class="input-none" type="file" name="asgnmnt_file" id="asgnmnt_file" onchange="fileSelected(this)">
+            <a class="btn-conversa" onclick="passFileUrl()">Imagem</a>
+            <button class="btn-conversa" id="send-message" type="button">Cadastrar</button>
+        </div>
+
+    </div>
+</form>
+
+<script>
+
+    $('#send-message').click(function () {
+        console.log('send')
+    })
+</script>

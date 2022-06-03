@@ -1,3 +1,4 @@
+from typing import Dict
 from django.contrib import messages
 from django.core.files.storage import default_storage
 from django.conf import settings
@@ -229,6 +230,97 @@ class PerfilUsuarioView(DetailView):
                 ).values('conversa_id'),
             ).first()
         return context
+
+
+class TodasConversas(View):
+    template_name = 'usuario/teste.html'
+
+    def setup(self, *args, **kwargs):
+        super().setup(*args, **kwargs)
+
+        self.context = {
+            'lista_conversas': {
+
+            }
+        }
+
+        self.conversas = Conversa.objects.filter(
+            id__in=ConversaUsuario.objects.filter(
+                usuario_id=self.request.session['usuario_logado']['usuario_id']
+            ).values('conversa_id')
+        )
+        self.usuarios = Usuario.objects.filter(
+            id__in=ConversaUsuario.objects.filter(
+                conversa_id__in=self.conversas
+            ).values('usuario_id')
+        ).exclude(id=self.request.session['usuario_logado']['usuario_id'])
+
+        for usuario in self.usuarios:
+            conversa = Conversa.objects.filter(
+                id__in=ConversaUsuario.objects.filter(
+                    usuario_id=usuario.id
+                ).values('conversa_id')
+            ).filter(
+                id__in=ConversaUsuario.objects.filter(
+                    usuario_id=self.request.session['usuario_logado']['usuario_id']
+                ).values('conversa_id')
+            ).first()
+            self.context['lista_conversas'].update(
+                {
+                    usuario: conversa
+                }
+            )
+        self.renderizar = render(
+            self.request, self.template_name, self.context)
+
+    def get(self, *args, **kwargs):
+        return self.renderizar
+
+    def post(self, *args, **kwargs):
+        print(self.request.POST)
+
+        ano = date.today().strftime("%Y")
+        mes = date.today().strftime("%m")
+        img = self.request.FILES.get('asgnmnt_file')
+        path = None
+        if img:
+            path = default_storage.save(
+                rf"chat\{ano}\{mes}\{img}", ContentFile(img.read()))
+            os.path.join(settings.MEDIA_ROOT, path)
+
+        Mensagem(
+            conversa_id=self.request.POST.get('class-id'),
+            autor=get_object_or_404(
+                Usuario, id=self.request.session['usuario_logado']['usuario_id'],
+            ),
+            texto=self.request.POST.get('texto'),
+            imagem_mensagem=path or None,
+        ).save()
+        return HttpResponseRedirect(self.request.path_info)
+
+
+def AlterChat(request):
+    conversa_id = request.GET.get('conversa')
+    context = {}
+    context['form'] = MensagemForms(
+        data=request.POST or None,
+        files=request.FILES or None
+    )
+    context['mensagens'] = Mensagem.objects.filter(
+        conversa_id=conversa_id
+    )
+    context['coautor'] = ConversaUsuario.objects.filter(
+        conversa_id=conversa_id
+    ).exclude(usuario_id=request.session['usuario_logado']['usuario_id']).first()
+    context['conversa'] = Conversa.objects.filter(
+        id=conversa_id
+    ).first()
+
+    return render(request, 'usuario/conv.html', context)
+
+
+def get_conversations_list(request) -> Dict:
+    pass
 
 
 class ConversaView(DetailView):

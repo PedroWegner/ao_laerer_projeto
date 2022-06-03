@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block 'conteudo' %}
+<div class="box-principal-blog">
+    <div id="chat" data-class-url="{% url 'usuario:ajax' %}" style="width: 100%;">
+        <div class="info-coautor">
+            <div>
+            </div>
+
+        </div>
+        <div class="box-mensagens">
+
+
+        </div>
+        <form class="box-escreve-msg " method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="box-mensagem">
+                <textarea class='textarea-mensagem' name="texto" required="" id="id_texto"></textarea>
+                <div class='box-mensagem-btn'>
+                    <input class="input-none" type="file" name="asgnmnt_file" id="asgnmnt_file"
+                        onchange="fileSelected(this)">
+                    <a class="btn-conversa" onclick="passFileUrl()">Imagem</a>
+                    <button class="btn-conversa" id="send-message" type="button">Cadastrar</button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+<div class="nav-bar-aula-modulo show">
+    <span class="btn-show"><img src="{% static 'imgs/ponteiro_roxo_direita.png' %}" alt=""></span>
+</div>
+<div class="nav-bar-aula-aulas show">
+    <ul>
+
+        {% for usuario, conversa in lista_conversas.items %}
+        <li>
+            <div class="aula-ind">
+                <p class="user-chat" chat-id="{{conversa.id}}">{{ usuario }} {{ conversa.id }}</p>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<script>
+    function passFileUrl() {
+        document.getElementById('asgnmnt_file').click();
+    }
+    function fileSelected(inputData) {
+        document.getElementById('asgnmnt_file_img').src = window.URL.createObjectURL(inputData.files[0])
+    }
+    {
+        $('.user-chat').click(function () {
+            var url = $('#chat').attr('data-class-url')
+            var conversaId = $(this).attr('chat-id')
+
+            $.ajax({
+                url: url,
+                data: {
+                    'conversa': conversaId
+                },
+                success: function (data) {
+                    $('#chat').html(data)
+                }
+            })
+        })
+    }
+
+</script>
+{%endblock%}

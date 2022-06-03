@@ -14,5 +14,8 @@ urlpatterns = [
          views.ConversaView.as_view(), name='conversa'),
     path('perfil/cad/conv/<int:pk>',
          views.IniciaConversa.as_view(), name='ini_conv'),
-    path('person_update', views.UpdateInformacoesView.as_view(), name='update_infos')
+    path('person_update', views.UpdateInformacoesView.as_view(), name='update_infos'),
+    path('teste', views.TodasConversas.as_view(), name='teste'),
+
+    path('ajax/alter_chat', views.AlterChat, name='ajax')
 ]

@@ -17,7 +17,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;500;700&display=swap" rel="stylesheet">
 </head>
-
 <body class='site dark'>
     <div class="content">
         <div class='fixed-nav-bar'>
@@ -26,6 +25,7 @@
                 {% if request.session.usuario_logado %}
                 <li><a href="{% url 'ensino:menu_linguas' %}">Línguas</a></li>
                 <li><a href="{% url 'ensino:meu_ensino' %}">Meu ensino</a></li>
+                <li><a href="{% url 'usuario:teste' %}">teste</a></li>
                 {% endif %}
             </ul>
             <ul class='nav-ul'>
@@ -57,22 +57,23 @@
                 </li>
             </ul>
         </div>
-    
+        
         {% block 'nav-bar-aula' %}
         {% endblock %}
         {% block 'menu-lingua' %}
-            {% endblock %}
-    <div class="box-novo">
+        {% endblock %}
+        <div class="box-novo">
             {% block 'conteudo' %}
             
             {% endblock %}
-    </div>
-    
+        </div>
+        
     </div>
     {% include 'parcial/_messages.html' %}
-<footer>
-</footer>
+    <footer>
+    </footer>
+    
+    
     <script type="text/javascript" src="{% static 'javascript/script.js' %}"></script>
-
 </body>
 </html>

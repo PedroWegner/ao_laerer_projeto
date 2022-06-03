@@ -4,19 +4,79 @@
 
 
 <div class="box-principal-questao box-principal-blog">
-
-    <form method="POST">
-        {% csrf_token %}
-        {% for q in questoes_disponiveis %}
-        <div class="questao">
-            <label for="id-{{q.id}}">
-                <p>{{ q.frase}}</p>
-            </label>
-            <input type="checkbox" id="id-{{q.id}}" name="questoes" value="{{q.id}}">
+    <div class="add-palavra-aula">
+        <div class="questao-cadastrada">
+            <h3>Questões já cadastradas</h3>
+            {% if questoes_ja_add %}
+            {% for questao in questoes_ja_add %}
+            <div>
+                <p>{{ questao.frase }}</p>
+            </div>
+            {% endfor %}
+            {% endif %}
         </div>
-        {% endfor %}
-        <button type="submit">Resposta</button>
-    </form>
 
+
+        <form class="form-cadastra-questao form-questoes" method="POST">
+            {% csrf_token %}
+            <h3>Cadastre novas questões</h3>
+            <div class="cadastra-palavra-btn">
+                <div class='questao-add' id="form-container">
+                    <div class="questao-form">
+                        <label for="id_form-0-questao">Questão</label>
+                        <select name="form-0-questao" id="id_form-0-questao">
+                            <option value="">---------</option>
+                            {% for q in questoes_disponiveis %}
+                            <option value="{{q.id}}">{{ q.frase}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div id='hidden-div'></div>
+                </div>
+                <button class='btn-add' id="add-form" type="button">+</button>
+            </div>
+
+
+            <button class="btn-cadastro" type="submit">add palavra</button>
+        </form>
+    </div>
 </div>
+
+
+<script>
+    let palavra_form = document.querySelectorAll(".questao-form")
+    let palavraForm = document.querySelector(".questao-form")
+    let container = document.querySelector("#form-container")
+    let addButton = document.querySelector("#add-form")
+    let hiddenDiv = document.querySelector('#hidden-div')
+    let btnCadastra = document.querySelector('.btn-cadastro')
+    let qtdQuestao = document.querySelectorAll(".questao-cadastrada div").length
+    let formNum = palavra_form.length - 1
+
+    addButton.addEventListener('click', addForm)
+    console.log()
+    function delBtn() {
+        if (formNum + qtdQuestao == 14) {
+            addButton.remove()
+        }
+        if (formNum + qtdQuestao > 14) {
+            addButton.remove()
+            palavraForm.remove()
+            btnCadastra.remove()
+        }
+    }
+
+    function addForm(e) {
+        e.preventDefault()
+
+        let newForm = palavra_form[0].cloneNode(true)
+        let formRegex = RegExp(`form-(\\d){1}-`, 'g')
+
+        formNum++
+        newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNum}-`)
+        container.insertBefore(newForm, hiddenDiv)
+        delBtn()
+    }
+    delBtn()
+</script>
 {% endblock %}

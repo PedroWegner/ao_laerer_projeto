@@ -12,5 +12,11 @@
     <p>{{ message }}</p>
 </div>
 {% endif %}
+{% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+<div class="aviso info" id="aviso">
+    <p class="fecha-aviso">x</p>
+    <p>{{ message }}</p>
+</div>
+{% endif %}
 {% endfor %}
 {% endif %}

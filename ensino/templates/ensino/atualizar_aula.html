@@ -7,6 +7,7 @@
             {% csrf_token %}
             <div class="form-aula">
                 <div class="midia-aula">
+                    <h3>Atualizar mídia</h3>
                     <input class="input-none" type="file" name="class-image" id="class-image"
                         onchange="fileSelected(this)">
                     <img class="x" src="{{ aula.img_aula.url }}" id="image-class-btn" alt="">
@@ -27,15 +28,15 @@
         </form>
     </div>
     <div class="box-principal-aula">
-        <div class="box-video-aula">
-            <h2>{{ aula }}</h2>
-            <div>
-
-            </div>
-        </div>
-
         <div class="box-conteudo-aula">
             <div class="box-conteudo">
+                <h2>Questões da atividade</h2>
+                {% for questao in questoes %}
+                <div>
+                    <p>{{ questao.frase }}</p>
+                </div>
+                {% endfor %}
+                <a class='btn-cadastro' href="{{ aula.id }}/adiciona_atividade">Adicionar atividade</a>
             </div>
             <div class="box-conteudo">
                 <h2>Palavras</h2>
@@ -49,11 +50,6 @@
                 {% endfor %}
                 <a class='btn-cadastro' href="{{ aula.id }}/add_palavra">Adicionar palavras</a>
             </div>
-        </div>
-        <div class="box-conteudo-aula">
-            {% if not tem_atividade %}
-            <a class='btn-cadastro' href="{{ aula.id }}/adiciona_atividade">Adicionar atividade</a>
-            {% endif %}
         </div>
     </div>
 </div>

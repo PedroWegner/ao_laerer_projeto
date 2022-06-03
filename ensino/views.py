@@ -1,10 +1,11 @@
+from django.forms.models import model_to_dict
 import os
 from django.core.files.base import ContentFile
 from django.conf import settings
 from django.core.files.storage import default_storage
 from datetime import date
 from utils.services_ensino import *
-from utils.send_messages import send_message_success, send_message_error
+from utils.send_messages import send_message_success, send_message_error, send_message_info
 from django.db.models import Q
 from django.views.generic import TemplateView
 from .forms import *
@@ -95,6 +96,7 @@ class ModuloView(DetailView):
 
     def get(self, *args, **kwargs):
         if not checa_nivel_aula_user(self.get_object().nivel, self.request.session, self.get_object().lingua):
+            send_message_info(self.request, 'Você não pode estar aqui!!')
             return redirect('usuario:home')
 
         return super().get(*args, **kwargs)
@@ -228,6 +230,8 @@ class AulaCadastroView(View):
                 data=self.request.POST or None,
                 files=self.request.FILES or None,
             ),
+            'linguas': Lingua.objects.all(),
+            'niveis': NivelLingua.objects.all().exclude(valor_nivel=0)
         }
 
         # atribuidas variaveis para utilizar no post
@@ -256,7 +260,52 @@ class AulaCadastroView(View):
 
         aula.save()
         send_message_success(self.request, "Aula adicionada")
-        return redirect(f'/ensino/minhas_aulas/aula/{aula.id}/add_palavra')
+        return redirect(f'/ensino/meu_ensino/aula/{aula.id}/add_palavra')
+
+# class AulaCadastroView(View):
+#     """
+#     View com dois forms: de criar aula e de criar atividade
+#     """
+#     template_name = 'ensino/cadastro/cadastro_aula.html'
+
+#     def setup(self, *args, **kwargs):
+#         super().setup(*args, **kwargs)
+
+#         # contexto com os dois forms
+#         self.context = {
+#             'criar_aula': CriarAulaForms(
+#                 data=self.request.POST or None,
+#                 files=self.request.FILES or None,
+#             ),
+#         }
+
+#         # atribuidas variaveis para utilizar no post
+#         self.criar_aula = self.context['criar_aula']
+
+#         self.renderizar = render(
+#             self.request, self.template_name, self.context
+#         )
+
+#     def get(self, *args, **kwargs):
+#         if not 'usuario_logado' in self.request.session:
+#             return redirect('usuario:login')
+
+#         return self.renderizar
+
+#     def post(self, *args, **kwargs):
+#         if not self.criar_aula.is_valid():
+#             return self.renderizar
+
+#         aula = self.criar_aula.save(commit=False)
+#         aula.autor_aula = get_object_or_404(
+#             Usuario, id=self.request.session['usuario_logado']['usuario_id']
+#         )
+#         if self.request.session['usuario_logado']['is_licenced']:
+#             aula.is_licenced = self.request.POST.get('is_licenced') == 'on'
+
+#         aula.save()
+#         send_message_success(self.request, "Aula adicionada")
+#         return redirect(f'/ensino/meu_ensino/aula/{aula.id}/add_palavra')
 
 
 class AtualizarAulaView(DetailView):
@@ -287,6 +336,11 @@ class AtualizarAulaView(DetailView):
         context['tem_atividade'] = AtividadeAula.objects.filter(
             aula=self.get_object()
         ).first()
+        context['questoes'] = Questao.objects.filter(
+            id__in=AtividadeQuestao.objects.filter(
+                atividade=context['tem_atividade']
+            ).values('questao_id')
+        )
         return context
 
     def post(self, *args, **kwargs):
@@ -294,6 +348,8 @@ class AtualizarAulaView(DetailView):
         mes = date.today().strftime("%m")
         class_img = self.request.FILES.get('class-image')
         class_video = self.request.FILES.get('class-video')
+        img_path = None
+        video_path = None
         if class_img:
             img_path = default_storage.save(
                 rf"img_aula\{ano}\{mes}\{class_img}", ContentFile(
@@ -309,14 +365,17 @@ class AtualizarAulaView(DetailView):
         Aula.objects.filter(
             id=self.get_object().id
         ).update(
-            aula_gravada=video_path or None,
-            img_aula=img_path or None,
+            aula=self.request.POST.get('aula') or self.get_object().aula,
+            conteudo=self.request.POST.get(
+                'conteudo') or self.get_object().conteudo,
+            aula_gravada=video_path or self.get_object().aula_gravada,
+            img_aula=img_path or self.get_object().img_aula,
         )
         send_message_success(self.request, "Aula atualizada")
         return redirect('ensino:meu_ensino')
 
-    # def form_valid(self, form):
-   #     return super().form_valid(form)
+ # def form_valid(self, form):
+#     return super().form_valid(form)
 # class AtualizarAulaView(UpdateView):
 #     """
 #     View para atualizacao de aula
@@ -371,6 +430,7 @@ class AulaView(DetailView):
 
     def get(self, *args, **kwargs):
         if not checa_nivel_aula_user(self.get_object().nivel, self.request.session, self.get_object().lingua):
+            send_message_info(self.request, 'Você não pode estar aqui!!')
             return redirect('usuario:home')
         return super().get(*args, **kwargs)
 
@@ -546,16 +606,15 @@ class AddPalavra(DetailView):
             ).first()
             if not palavra:
                 working = False
-            else:
-                AulaPalavra(
-                    palavra=palavra,
-                    aula=self.get_object(),
-                ).save()
-                word += 1
+            AulaPalavra(
+                palavra=palavra,
+                aula=self.get_object(),
+            ).save()
+            word += 1
 
         send_message_success(self.request, "Palavras adicionadas à aula")
         if not self.get_object().atividade.first():
-            return redirect(f'/ensino/minhas_aulas/aula/{self.get_object().id}/adiciona_atividade')
+            return redirect(f'/ensino/meu_ensino/aula/{self.get_object().id}/adiciona_atividade')
 
         return redirect((f'/ensino/aula/{self.get_object().id}'))
 
@@ -676,7 +735,7 @@ class UpdateQuestao(DetailView):
                 f'id_alternativa_set-{id_nov}-alternativa')
         send_message_success(self.request, "Questão atualizada")
         # preciso mudar aqui em baixo
-        return redirect(reverse_lazy('ensino:minhas_aulas'))
+        return redirect(reverse_lazy('ensino:meu_ensino'))
 
 # TENHO QUE MELHORAR ISSO
 
@@ -715,28 +774,54 @@ class AdicionaAtividadeAula(DetailView):
         context = super(AdicionaAtividadeAula,
                         self).get_context_data(**kwargs)
         context['aula'] = self.get_object()
-
+        context['questoes_ja_add'] = Questao.objects.filter(
+            id__in=AtividadeQuestao.objects.filter(
+                atividade__aula=self.get_object()
+            ).values('questao_id')
+        )
         context['questoes_disponiveis'] = Questao.objects.filter(
             nivel=self.get_object().nivel,
             lingua=self.get_object().lingua
+        ).exclude(id__in=AtividadeQuestao.objects.filter(
+            atividade__aula=self.get_object()
+        ).values('questao_id')
         )
 
+        print(context['questoes_ja_add'])
         return context
 
     def post(self, *args, **kwargs):
-        get_questoes = self.request.POST.getlist('questoes')
-        atividade = AtividadeAula(
-            aula=self.get_object()
-        )
-        atividade.save()
-        for id_questao in get_questoes:
-            questao = get_object_or_404(
-                Questao, id=id_questao
-            )
-            AtividadeQuestao(
-                atividade=atividade,
-                questao=questao,
-            ).save()
+        working = True
+        question = 0
+
+        while working:
+            questao = Questao.objects.filter(
+                id=self.request.POST.get(f'form-{question}-questao')
+            ).first()
+            print(questao)
+            if not questao:
+                working = False
+            else:
+                AtividadeQuestao(
+                    atividade=AtividadeAula.objects.filter(
+                        aula=self.get_object()
+                    ).first(),
+                    questao=questao
+                ).save()
+                question += 1
+        # get_questoes = self.request.POST.getlist('questoes')
+        # atividade = AtividadeAula(
+        #     aula=self.get_object()
+        # )
+        # atividade.save()
+        # for id_questao in get_questoes:
+        #     questao = get_object_or_404(
+        #         Questao, id=id_questao
+        #     )
+        #     AtividadeQuestao(
+        #         atividade=atividade,
+        #         questao=questao,
+        #     ).save()
         send_message_success(self.request, "Atividade adicionada à aula")
         return redirect(f'/ensino/aula/{self.get_object().id}')
 

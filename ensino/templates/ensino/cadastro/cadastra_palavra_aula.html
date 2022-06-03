@@ -7,24 +7,33 @@
             <h3>Palavras já cadastradas</h3>
             {% if palavras_ja_add %}
             {% for palavra in palavras_ja_add %}
-            <p>{{ palavra }}</p>
+            <a href="/ensino/lingua/palavra/{{ palavra.id }}" class="aula-palavra">
+                <p>{{ palavra }}</p>
+            </a>
             {% endfor %}
             {% endif %}
         </div>
-        <form class="form-cadastra-palavra" id="form-container" method="POST">
+        <form class="form-cadastra-palavra form-palavras" method="POST">
             {% csrf_token %}
             <h3>Cadastre novas palavras</h3>
-            <div class="palavra-form">
-                <label for="id_form-0-palavra">Palavra:</label>
-                <select name="form-0-palavra" id="id_form-0-palavra">
-                    <option value="">---------</option>
-                    {% for palavra in palavras_disponiveis %}
-                    <option value="{{palavra.id}}">{{palavra}}</option>
-                    {% endfor %}
-                </select>
+            <div class="cadastra-palavra-btn">
+                <div class='palavra-add' id="form-container">
+                    <div class="palavra-form">
+                        <label for="id_form-0-palavra">Palavra:</label>
+                        <select name="form-0-palavra" id="id_form-0-palavra">
+                            <option value="">---------</option>
+                            {% for palavra in palavras_disponiveis %}
+                            <option value="{{palavra.id}}">{{palavra}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div id='hidden-div'></div>
+                </div>
+                <button class='btn-add' id="add-form" type="button">+</button>
             </div>
-            <button class='btn-add' id="add-form" type="button">+</button>
-            <button type="submit">add palavra</button>
+
+
+            <button class="btn-cadastro" type="submit">add palavra</button>
         </form>
     </div>
 
@@ -36,14 +45,18 @@
     let palavra_form = document.querySelectorAll(".palavra-form")
     let container = document.querySelector("#form-container")
     let addButton = document.querySelector("#add-form")
+    let hiddenDiv = document.querySelector('#hidden-div')
     let qtdPalavra = document.querySelectorAll(".palavra-cadastrada p").length
     let formNum = palavra_form.length - 1
+
     addButton.addEventListener('click', addForm)
+
     function delBtn() {
         if (formNum + qtdPalavra == 19) {
             addButton.remove()
         }
     }
+
     function addForm(e) {
         e.preventDefault()
 
@@ -52,7 +65,7 @@
 
         formNum++
         newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formNum}-`)
-        container.insertBefore(newForm, addButton)
+        container.insertBefore(newForm, hiddenDiv)
         delBtn()
     }
 </script>

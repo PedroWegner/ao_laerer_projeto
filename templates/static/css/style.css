@@ -76,6 +76,18 @@
 
 }
 
+.info {
+    background-color: #FDF756;
+}
+
+.info .fecha-aviso {
+    color: #e7e42d;
+}
+
+.info .fecha-aviso:hover {
+    color: #C9C544
+}
+
 .error {
     background-color: #E64132;
 }
@@ -2329,6 +2341,7 @@ input[type="radio"]:focus {
     width: 100%;
     display: grid;
     grid-template-columns: 1.4fr 1fr;
+    margin-bottom: 60px;
 }
 
 .midia-aula,
@@ -2375,6 +2388,13 @@ input[type="radio"]:focus {
 
 /**/
 /**/
+.form-palavras,
+.form-questoes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .add-palavra-aula {
     width: 100%;
     display: grid;
@@ -2382,26 +2402,61 @@ input[type="radio"]:focus {
 }
 
 .palavra-cadastrada,
-.form-cadastra-palavra {
+.form-cadastra-palavra,
+.questao-cadastrada,
+.form-cadastra-questao {
     padding: 25px;
 }
 
 .palavra-cadastrada h3,
-.form-cadastra-palavra h3 {
+.form-cadastra-palavra h3,
+.questao-cadastrada h3,
+.form-cadastra-questao h3 {
     color: var(--thr-font-color);
     font-weight: 600;
-    margin-bottom: 4px;
+    margin-bottom: 12px;
     margin-top: 6px;
+    align-self: flex-start;
 }
 
-.palavra-cadastrada {
+.palavra-cadastrada,
+.questao-cadastrada {
     background-color: var(--color-medium);
     border-radius: 5px 0 0 5px;
 }
 
-.form-cadastra-palavra {
+.form-cadastra-palavra,
+.form-cadastra-questao {
     background-color: var(--color-low);
     border-radius: 0 5px 5px 0;
+}
+
+.palavra-form select {
+    width: 240px;
+}
+
+.questao-form select {
+    width: 450px;
+}
+
+.cadastra-palavra-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 25px;
+}
+
+.palavra-add {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 1fr 1fr;
+}
+
+.questao-add {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 1fr;
 }
 
 /**/

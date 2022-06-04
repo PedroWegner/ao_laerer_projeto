@@ -47,19 +47,6 @@
     $('#image-profile').change(function () {
         $('#image-profile-btn').attr('src', window.URL.createObjectURL($('#image-profile').prop('files')[0]))
     })
-    // function passFileUrl() {
-    //     document.getElementById('asgnmnt_file').click();
-    // }
-
-    // function fileSelected(inputData) {
-    //     document.getElementById('asgnmnt_file_img').src = window.URL.createObjectURL(inputData.files[0])
-    // }
-
-    // <input class="input-none" type="file" name="asgnmnt_file" id="asgnmnt_file"
-    //                     onchange="fileSelected(this)">
-    //                 <h3>Alterar foto</h3>
-    //                 <img id="asgnmnt_file_img" src="{{ request.session.usuario_logado.img_usuario }}"
-    //                     onclick="passFileUrl()">
 </script>
 
 {% endblock %}

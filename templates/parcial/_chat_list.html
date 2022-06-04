@@ -1,0 +1,17 @@
+{% load static %}
+<div class="side-nav-bar show">
+    <span class="btn-show"><img src="{% static 'imgs/ponteiro_roxo_direita.png' %}" alt=""></span>
+</div>
+<div class="side-nav-bar-items show">
+    <ul>
+
+        {% for usuario, conversa in lista_conversas.items %}
+        <li class="link-chat">
+            <a href="/perfil/conversa/{{conversa.id}}">
+                <img src="{{ usuario.img_usuario.url }}" alt="">
+                <p class="user-chat sive-bar-item">{{ usuario }}</p>
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>

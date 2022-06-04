@@ -149,10 +149,15 @@ class LoginView(View):
                         'is_licenced': usuario.is_licenced,
                     }
                 )
+
+                self.request.session['usuario_logado'].update(
+                    {
+                        'conversa_id': get_last_chat(self.request).id
+                    }
+                )
                 self.request.session.save()
 
                 if usuario:
-                    print('dada')
                     return redirect('usuario:home')
             else:
                 messages.add_message(
@@ -232,101 +237,29 @@ class PerfilUsuarioView(DetailView):
         return context
 
 
-class TodasConversas(View):
-    template_name = 'usuario/teste.html'
-
-    def setup(self, *args, **kwargs):
-        super().setup(*args, **kwargs)
-
-        self.context = {
-            'lista_conversas': {
-
-            }
-        }
-
-        self.conversas = Conversa.objects.filter(
-            id__in=ConversaUsuario.objects.filter(
-                usuario_id=self.request.session['usuario_logado']['usuario_id']
-            ).values('conversa_id')
-        )
-        self.usuarios = Usuario.objects.filter(
-            id__in=ConversaUsuario.objects.filter(
-                conversa_id__in=self.conversas
-            ).values('usuario_id')
-        ).exclude(id=self.request.session['usuario_logado']['usuario_id'])
-
-        for usuario in self.usuarios:
-            conversa = Conversa.objects.filter(
-                id__in=ConversaUsuario.objects.filter(
-                    usuario_id=usuario.id
-                ).values('conversa_id')
-            ).filter(
-                id__in=ConversaUsuario.objects.filter(
-                    usuario_id=self.request.session['usuario_logado']['usuario_id']
-                ).values('conversa_id')
-            ).first()
-            self.context['lista_conversas'].update(
-                {
-                    usuario: conversa
-                }
-            )
-        self.renderizar = render(
-            self.request, self.template_name, self.context)
-
-    def get(self, *args, **kwargs):
-        return self.renderizar
-
-    def post(self, *args, **kwargs):
-        print(self.request.POST)
-
-        ano = date.today().strftime("%Y")
-        mes = date.today().strftime("%m")
-        img = self.request.FILES.get('asgnmnt_file')
-        path = None
-        if img:
-            path = default_storage.save(
-                rf"chat\{ano}\{mes}\{img}", ContentFile(img.read()))
-            os.path.join(settings.MEDIA_ROOT, path)
-
-        Mensagem(
-            conversa_id=self.request.POST.get('class-id'),
-            autor=get_object_or_404(
-                Usuario, id=self.request.session['usuario_logado']['usuario_id'],
-            ),
-            texto=self.request.POST.get('texto'),
-            imagem_mensagem=path or None,
-        ).save()
-        return HttpResponseRedirect(self.request.path_info)
-
-
-def AlterChat(request):
-    conversa_id = request.GET.get('conversa')
-    context = {}
-    context['form'] = MensagemForms(
-        data=request.POST or None,
-        files=request.FILES or None
-    )
-    context['mensagens'] = Mensagem.objects.filter(
-        conversa_id=conversa_id
-    )
-    context['coautor'] = ConversaUsuario.objects.filter(
-        conversa_id=conversa_id
-    ).exclude(usuario_id=request.session['usuario_logado']['usuario_id']).first()
-    context['conversa'] = Conversa.objects.filter(
-        id=conversa_id
-    ).first()
-
-    return render(request, 'usuario/conv.html', context)
-
-
-def get_conversations_list(request) -> Dict:
-    pass
-
-
 class ConversaView(DetailView):
     template_name = 'usuario/conversa.html'
     model = Conversa
     object_context_name = 'conversa'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = MensagemForms(
+            data=self.request.POST or None,
+            files=self.request.FILES or None
+        )
+        context['mensagens'] = Mensagem.objects.filter(
+            conversa=self.get_object()
+        )
+        context['coautor'] = ConversaUsuario.objects.filter(
+            conversa=self.get_object()
+        ).exclude(usuario_id=self.request.session['usuario_logado']['usuario_id']).first()
+        context.update(
+            {
+                'lista_conversas': get_conversations_list(self.request)
+            }
+        )
+        return context
 
     def get(self, *args, **kwargs):
         if not "usuario_logado" in self.request.session:
@@ -343,24 +276,11 @@ class ConversaView(DetailView):
         )
         return super().get(*args, **kwargs)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = MensagemForms(
-            data=self.request.POST or None,
-            files=self.request.FILES or None
-        )
-        context['mensagens'] = Mensagem.objects.filter(
-            conversa=self.get_object()
-        )
-        context['coautor'] = ConversaUsuario.objects.filter(
-            conversa=self.get_object()
-        ).exclude(usuario_id=self.request.session['usuario_logado']['usuario_id']).first()
-        return context
-
     def post(self, *args, **kwargs):
         ano = date.today().strftime("%Y")
         mes = date.today().strftime("%m")
         img = self.request.FILES.get('asgnmnt_file')
+        path = None
         if img:
             path = default_storage.save(
                 rf"chat\{ano}\{mes}\{img}", ContentFile(img.read()))
@@ -453,6 +373,46 @@ class UpdateInformacoesView(View):
 
 
 # SERVICES
+def get_last_chat(request):
+    conversa = Conversa.objects.filter(
+        id__in=ConversaUsuario.objects.filter(
+            usuario_id=request.session['usuario_logado']['usuario_id']
+        ).values('conversa_id')
+    ).order_by('-ultima_atualizcao').first()
+    return conversa
+
+
+def get_conversations_list(request) -> Dict:
+    lista_conversas = {}
+    conversas = Conversa.objects.filter(
+        id__in=ConversaUsuario.objects.filter(
+            usuario_id=request.session['usuario_logado']['usuario_id']
+        ).values('conversa_id')
+    )
+    usuarios = Usuario.objects.filter(
+        id__in=ConversaUsuario.objects.filter(
+            conversa_id__in=conversas
+        ).values('usuario_id')
+    ).exclude(id=request.session['usuario_logado']['usuario_id'])
+
+    for usuario in usuarios:
+        conversa = Conversa.objects.filter(
+            id__in=ConversaUsuario.objects.filter(
+                usuario_id=usuario.id
+            ).values('conversa_id')
+        ).filter(
+            id__in=ConversaUsuario.objects.filter(
+                usuario_id=request.session['usuario_logado']['usuario_id']
+            ).values('conversa_id')
+        ).first()
+        lista_conversas.update(
+            {
+                usuario: conversa
+            }
+        )
+    return lista_conversas
+
+
 def update_password(request, pass_1, pass_2, new_pass):
     if not pass_1 or not pass_2:
         return False

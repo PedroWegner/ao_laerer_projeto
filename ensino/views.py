@@ -872,6 +872,7 @@ class ResolucaoAtividade(DetailView):
                     }
                 }
             )
+        context['atividade_aula'] = self.get_object()
         return context
 
     def post(self, *args, **kwargs):
@@ -907,6 +908,7 @@ class UpdateAtividadeConcluida(DetailView):
                     }
                 }
             )
+        context['atividade_aula'] = self.get_object().atividade
         return context
 
     def post(self, *args, **kwargs):

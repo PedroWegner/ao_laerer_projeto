@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
-{% block 'titulo'%} Blog {% endblock %}
+{% block 'titulo'%} Conversa - {{ coautor.usuario}} {% endblock %}
 {% block 'conteudo' %}
+{% include 'parcial/_chat_list.html' %}
+<h1>{{ request.session.conversa }}</h1>
 <div class="box-principal-blog">
     <div class="info-coautor">
         <div>
@@ -39,9 +41,9 @@
         <div class="box-mensagem">
             <textarea class='textarea-mensagem' name="texto" required="" id="id_texto"></textarea>
             <div class='box-mensagem-btn'>
-                <input class="input-none" type="file" name="asgnmnt_file" id="asgnmnt_file"
+                <input class="input-none" type="file" name="asgnmnt_file" id="chat-img-input"
                     onchange="fileSelected(this)">
-                <a class="btn-conversa" onclick="passFileUrl()">Imagem</a>
+                <a class="btn-conversa" id="chat-img-btn">Imagem</a>
                 <button class="btn-conversa" type="submit">Cadastrar</button>
             </div>
 
@@ -50,11 +52,8 @@
 
 </div>
 <script>
-    function passFileUrl() {
-        document.getElementById('asgnmnt_file').click();
-    }
-    function fileSelected(inputData) {
-        document.getElementById('asgnmnt_file_img').src = window.URL.createObjectURL(inputData.files[0])
-    }
+    $('#chat-img-btn').click(function () {
+        $('#chat-img-input').click()
+    })
 </script>
 {% endblock %}

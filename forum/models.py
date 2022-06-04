@@ -85,6 +85,9 @@ class Conversa(models.Model):
     data_inicio = models.DateField(
         default=timezone.now
     )
+    ultima_atualizcao = models.DateField(
+        default="2002-02-02"
+    )
 
 
 class ConversaUsuario(models.Model):

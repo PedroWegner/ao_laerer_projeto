@@ -859,7 +859,7 @@ ul.drop-menu-usuario li:first-child {
 
 
 /* INICIO HTML NAVBAR AULAS  */
-.nav-bar-aula-modulo {
+.side-nav-bar {
     min-width: 285px;
     height: 80px;
     display: flex;
@@ -873,12 +873,12 @@ ul.drop-menu-usuario li:first-child {
     background-color: var(--color-medium);
 }
 
-.nav-bar-aula-modulo a:first-child {
+.side-nav-bar a:first-child {
     margin-right: 50px;
     font-size: 20pt;
 }
 
-.nav-bar-aula-modulo.show {
+.side-nav-bar.show {
     left: -200px;
 }
 
@@ -898,7 +898,7 @@ ul.drop-menu-usuario li:first-child {
     background: var(--hover-font-color);
 }
 
-.nav-bar-aula-aulas {
+.side-nav-bar-items {
     z-index: 1;
     position: fixed;
     top: 170px;
@@ -910,23 +910,23 @@ ul.drop-menu-usuario li:first-child {
     background-color: var(--color-low);
 }
 
-.nav-bar-aula-aulas.show {
+.side-nav-bar-items.show {
     left: -200px;
     overflow: hidden;
 }
 
-.nav-bar-aula-aulas ul {
+.side-nav-bar-items ul {
     margin: 0;
     padding: 0;
 }
 
 
-.nav-bar-aula-modulo span {
+.side-nav-bar span {
     margin-right: 26px;
     transition: 0.5s;
 }
 
-.nav-bar-aula-modulo span.move {
+.side-nav-bar span.move {
     transform: rotate(90deg);
 }
 
@@ -936,12 +936,12 @@ ul.drop-menu-usuario li:first-child {
     color: var(--font-color);
 }
 
-.nav-bar-aula-modulo a:hover,
-.nav-bar-aula-aulas a:hover {
+.side-nav-bar a:hover,
+.side-nav-bar-items a:hover {
     color: var(--hover-font-color);
 }
 
-.nav-bar-aula-aulas ul li div {
+.side-nav-bar-items ul li div {
     display: flex;
     flex-direction: column;
     color: var(--font-color);
@@ -951,29 +951,65 @@ ul.drop-menu-usuario li:first-child {
     min-height: 50px;
 }
 
-.nav-bar-aula-aulas ul li div p {
+.side-nav-bar-items ul li div p {
     font-size: 0.7em;
     margin-left: 20px;
     margin-top: 2px;
 }
 
-.nome-autor,
-.titulo-modulo,
-.titulo-aula {
+.sive-bar-item,
+.sive-bar-item,
+.sive-bar-item {
     display: none;
 }
 
-.nome-autor.show,
-.titulo-modulo.show,
-.titulo-aula.show {
+.sive-bar-item.show,
+.sive-bar-item.show,
+.sive-bar-item.show {
     display: block;
     transition: 0.2s;
 }
 
-
-
 /* FIM HTML NAVBAR AULAS */
+.link-chat {
+    margin-left: 25px;
+    width: 70%;
+    height: 70px;
+    display: flex;
+    align-items: center;
+}
 
+.link-chat a p {
+    margin: 0;
+    font-weight: 600;
+}
+
+.link-chat a {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.link-chat a img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.link-chat a:hover>img {
+    box-shadow: 0 0 0 2px var(--color-medium), 0 0 0 5px var(--thr-font-color);
+}
+
+.link-chat a:hover>p {
+    color: var(--thr-font-color);
+}
+
+/* INICIO HTML NAVBAR CHAT */
+
+/* FIM HTML NAVBAR CHAT */
 /* INICIO HTML NIVEL LINGUA MODULO*/
 .box-modulo-painel {
     display: flex;

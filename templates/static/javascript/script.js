@@ -1,10 +1,10 @@
 $('.btn-show').click(function () {
-    $('.nav-bar-aula-modulo').toggleClass('show')
-    $('.nav-bar-aula-aulas').toggleClass('show')
-    $('.nome-autor').toggleClass('show')
-    $('.titulo-modulo').toggleClass('show')
-    $('.titulo-aula').toggleClass('show')
-    $('.nav-bar-aula-modulo span').toggleClass('move')
+    $('.side-nav-bar').toggleClass('show')
+    $('.side-nav-bar-items').toggleClass('show')
+    $('.sive-bar-item').toggleClass('show')
+    $('.sive-bar-item').toggleClass('show')
+    $('.sive-bar-item').toggleClass('show')
+    $('.side-nav-bar span').toggleClass('move')
 })
 
 

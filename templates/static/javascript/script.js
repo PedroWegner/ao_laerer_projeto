@@ -60,4 +60,3 @@ $('.label-questoes').click(function () {
         }
     }
 }
-

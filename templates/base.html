@@ -25,7 +25,9 @@
                 {% if request.session.usuario_logado %}
                 <li><a href="{% url 'ensino:menu_linguas' %}">Línguas</a></li>
                 <li><a href="{% url 'ensino:meu_ensino' %}">Meu ensino</a></li>
+                {% if request.session.usuario_logado.conversa_id %}
                 <li><a href="/perfil/conversa/{{ request.session.usuario_logado.conversa_id }}">Conversas</a></li>
+                {% endif %}
                 {% endif %}
             </ul>
             <ul class='nav-ul'>
@@ -71,9 +73,14 @@
     </div>
     {% include 'parcial/_messages.html' %}
     <footer>
+        <p>Desenvolvido por Pedro Henrique Wegner - 2022</p>
     </footer>
     
     
-    <script type="text/javascript" src="{% static 'javascript/script.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'javascript/script.js' %}">
+
+
+    </script>
 </body>
 </html>

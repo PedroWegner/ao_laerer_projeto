@@ -19,25 +19,18 @@
 
         </div>
         <div class="cursos-user">
-            {% if usuario.tipo_usuario.id == 1 %}
-            <h3>Cursos completos</h3>
-            {% if cursos_vinculados %}
-            {% for curso in cursos_vinculados %}
-            <p>{{curso}}</p>
-            {% endfor %}
-            {% else %}
-            <p>Esse aluno não completou nenhum curso</p>
-            {% endif %}
-            {% elif usuario.tipo_usuario.id == 2%}
-
-            {% elif usuario.tipo_usuario.id == 3 %}
-            <h3>Cursos que dá aula</h3>
-            {% for curso in cursos_vinculados %}
-            <p>{{curso}}</p>
-            {% endfor %}
-            {% else %}
-
-            {% endif %}
+            <h3>Línguas apreendidas</h3>
+            <div class="box-linguas-nivel">
+                {% for lingua, nivel in nivel_perfil.items %}
+                <div class="lingua-nivel" style="color:aliceblue">
+                    <div>
+                        <img src="{{ lingua.lingua_img.url}}" alt="">
+                        <p>{{lingua}}</p>
+                    </div>
+                    <span>{{nivel}}</span>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
     <div class="forum-info">
@@ -64,17 +57,6 @@
         </div>
     </div>
 
-    <div style="color:white;">
-        {% for lingua, niveis in aulas_concluidas.items %}
-        {% for nivel, qt_concluida in niveis.items %}
-        {% if qt_concluida %}
-        <p>{{lingua}}</p>
-        <p>{{ nivel }}</p>
-        <p>{{ qt_concluida }}</p>
-        {% endif %}
-        {% endfor %}
-        {% endfor %}
-    </div>
 </div>
 
 {% endblock %}

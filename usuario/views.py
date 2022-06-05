@@ -1,4 +1,4 @@
-from typing import Dict
+from utils.services_usuario import *
 from django.contrib import messages
 from django.core.files.storage import default_storage
 from django.conf import settings
@@ -149,12 +149,13 @@ class LoginView(View):
                         'is_licenced': usuario.is_licenced,
                     }
                 )
-
-                self.request.session['usuario_logado'].update(
-                    {
-                        'conversa_id': get_last_chat(self.request).id
-                    }
-                )
+                conversa = get_last_chat(self.request)
+                if conversa:
+                    self.request.session['usuario_logado'].update(
+                        {
+                            'conversa_id': conversa.id
+                        }
+                    )
                 self.request.session.save()
 
                 if usuario:
@@ -166,6 +167,7 @@ class LoginView(View):
                     self.request, self.template_name, self.context)
                 return self.renderizar
         except Exception as e:
+            print(e)
             messages.add_message(
                 self.request, messages.ERROR, 'Usuário não existe')
             self.renderizar = render(
@@ -198,21 +200,27 @@ class PerfilUsuarioView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['aulas_concluidas'] = {}
-        for lingua in Lingua.objects.all():
-            context['aulas_concluidas'][f'{lingua}'] = {}
-            for nivel in NivelLingua.objects.all().exclude(valor_nivel=0):
-                context['aulas_concluidas'][f'{lingua}'].update(
-                    {
-                        f'{nivel}': Aula.objects.filter(
-                            id__in=EnvioAtividadeAula.objects.filter(
-                                autor=self.get_object(),
-                                aprovado=True,
-                                atividade__aula__lingua=lingua,
-                                atividade__aula__nivel=nivel,
-                            ).values('atividade__aula_id')).count()
-                    }
-                )
+        # context['aulas_concluidas'] = {}
+        # for lingua in Lingua.objects.all():
+        #     context['aulas_concluidas'][f'{lingua}'] = {}
+        #     for nivel in NivelLingua.objects.all().exclude(valor_nivel=0):
+        #         context['aulas_concluidas'][f'{lingua}'].update(
+        #             {
+        #                 f'{nivel}': Aula.objects.filter(
+        #                     id__in=EnvioAtividadeAula.objects.filter(
+        #                         autor=self.get_object(),
+        #                         aprovado=True,
+        #                         atividade__aula__lingua=lingua,
+        #                         atividade__aula__nivel=nivel,
+        #                     ).values('atividade__aula_id')).count()
+        #             }
+        #         )
+        nivel_perfil = UsuarioLingua.objects.filter(
+            usuario=self.get_object()
+        )
+        context['nivel_perfil'] = {}
+        for nivel in nivel_perfil:
+            context['nivel_perfil'][nivel.lingua] = nivel.nivel
 
         context['postagens'] = Postagem.objects.filter(
             autor=self.get_object()
@@ -302,11 +310,16 @@ class IniciaConversa(DetailView):
 
     def get(self, *args, **kwargs):
         # AQUI COLOCAR ALGO QUE IMPEÇA CRIAR UMA NOVA COISA
+        last_chat = get_last_chat(self.request)
         conversa = Conversa.objects.create()
         conversa.usuario.add(self.get_object())
         conversa.usuario.add(get_object_or_404(
             Usuario, id=self.request.session['usuario_logado']['usuario_id']
         ))
+        if not last_chat:
+            last_chat = get_last_chat(self.request)
+            self.request.session['usuario_logado']['conversa_id'] = last_chat.id
+            self.request.session.save()
 
         return redirect(reverse('usuario:conversa', kwargs={'pk': conversa.id}))
 
@@ -370,100 +383,3 @@ class UpdateInformacoesView(View):
             )
             return redirect('usuario:home')
         return self.renderizar
-
-
-# SERVICES
-def get_last_chat(request):
-    conversa = Conversa.objects.filter(
-        id__in=ConversaUsuario.objects.filter(
-            usuario_id=request.session['usuario_logado']['usuario_id']
-        ).values('conversa_id')
-    ).order_by('-ultima_atualizcao').first()
-    return conversa
-
-
-def get_conversations_list(request) -> Dict:
-    lista_conversas = {}
-    conversas = Conversa.objects.filter(
-        id__in=ConversaUsuario.objects.filter(
-            usuario_id=request.session['usuario_logado']['usuario_id']
-        ).values('conversa_id')
-    )
-    usuarios = Usuario.objects.filter(
-        id__in=ConversaUsuario.objects.filter(
-            conversa_id__in=conversas
-        ).values('usuario_id')
-    ).exclude(id=request.session['usuario_logado']['usuario_id'])
-
-    for usuario in usuarios:
-        conversa = Conversa.objects.filter(
-            id__in=ConversaUsuario.objects.filter(
-                usuario_id=usuario.id
-            ).values('conversa_id')
-        ).filter(
-            id__in=ConversaUsuario.objects.filter(
-                usuario_id=request.session['usuario_logado']['usuario_id']
-            ).values('conversa_id')
-        ).first()
-        lista_conversas.update(
-            {
-                usuario: conversa
-            }
-        )
-    return lista_conversas
-
-
-def update_password(request, pass_1, pass_2, new_pass):
-    if not pass_1 or not pass_2:
-        return False
-    if pass_1 == pass_2 and new_pass:
-        if bcrypt.checkpw(pass_1.encode('utf-8'), request['usuario_logado']['senha'].encode('utf-8')):
-
-            Usuario.objects.filter(
-                id=request['usuario_logado']['usuario_id']
-            ).update(
-                senha=str(bcrypt.hashpw(new_pass.encode(
-                    'utf-8'), bcrypt.gensalt()))[2:-1]
-            )
-            return True
-        return False
-
-
-def update_person(request, nome, sobrenome, id_pessoa):
-    pessoa = Pessoa.objects.filter(
-        id=id_pessoa).first()
-    Pessoa.objects.filter(
-        id=id_pessoa).update(
-        nome=nome or pessoa.nome,
-        sobrenome=sobrenome or pessoa.sobrenome,
-    )
-    if sobrenome:
-        request['usuario_logado']['sobrenome'] = sobrenome
-    if nome:
-        request['usuario_logado']['nome'] = nome
-
-    if nome or sobrenome:
-        request.save()
-        return True
-    return False
-
-
-def update_img(request, img):
-    ano = date.today().strftime("%Y")
-    mes = date.today().strftime("%m")
-    if img:
-        path = default_storage.save(
-            rf"img_perfis\{ano}\{mes}\{img}", ContentFile(img.read()))
-        os.path.join(settings.MEDIA_ROOT, path)
-
-        usuario = Usuario.objects.filter(
-            id=request['usuario_logado']['usuario_id']
-        ).update(
-            img_usuario=path
-        )
-        usuario = get_object_or_404(Usuario,
-                                    id=request['usuario_logado']['usuario_id'])
-        request['usuario_logado']['img_usuario'] = usuario.img_usuario.url
-        request.save()
-        return True
-    return False

@@ -28,3 +28,13 @@ The languages are sorted on the languages menu. After choosing which idiom to st
 <p align="center">
 <img src="https://user-images.githubusercontent.com/90400199/172086382-ae6d325e-cc59-4722-b131-ffb95ea8f71a.gif">
 </p>
+
+> :construction: Description under construction :construction:
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/90400199/172088077-d30fefc9-51e8-4dcf-9f27-1d8ae0941acb.gif">
+</p>
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/90400199/172088095-7a20ad2b-d7a8-4b44-950d-1bed10da9243.gif">
+</p>

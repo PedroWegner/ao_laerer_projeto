@@ -5,6 +5,8 @@
 ##### Table of Contents  
 [Instructions](#instructions)
 
+[Programming tools](#programming-tools)
+
 [Functionalities](#functionalities)  
 
 
@@ -89,3 +91,9 @@ pip install mysql-client
 pip install Pillow
 `
 
+It will provide the virtual environment with the knowledge of applying properly frameworks utilised.
+
+## Programming tools
+
+The project has used some programmings tools to reach the result. The principle programming language utilised is Python 3.10.3. Since the app is a web application, this case claims a Framework with which the developer can expedite its development, so it has been used Django 4.0.4 framework.
+Another tools are HTML 5, CSS 3 and JavaScript (JQuery). For to save datas, the app has utilised MySql Workbech DataBase.

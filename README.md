@@ -2,6 +2,9 @@
  
 Å lære is a language Exchange web application on which an user can share short classes explaining something that they know. The project is coded using Django framework based on Python.
 
+> :construction: Description under construction :construction:
+
+
 ##### Table of Contents  
 [Instructions](#instructions)
 
@@ -64,7 +67,6 @@ Below there is a example of it. The word's page displays all word's informations
 <img width="550" src="https://user-images.githubusercontent.com/90400199/172088095-7a20ad2b-d7a8-4b44-950d-1bed10da9243.gif">
 </p>
 
-> :construction: Description under construction :construction:
 
 <p align="center">
 <img width="400" src="https://user-images.githubusercontent.com/90400199/172226079-cddf1783-713b-4c85-a185-3265a1802536.gif">
